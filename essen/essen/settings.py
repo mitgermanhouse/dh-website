@@ -25,7 +25,7 @@ SECRET_KEY = 'uv)^nu2i1z=f89!ld@6si^5y&v7$doq1vt*ce2=7=xlk+)_=^o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kderek.scripts.mit.edu']
 
 
 # Application definition
