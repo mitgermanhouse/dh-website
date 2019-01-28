@@ -1,0 +1,45 @@
+ul.navbar li a {
+    display: block;
+    color: #000;
+    padding: 15px;
+    float: left;
+    text-decoration: none;
+}
+
+
+ul.navbar li a:hover {
+    background-color: #555;
+    color: white;
+}
+
+ul.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: #f1f1f1;
+    position: relative;
+    height: auto;
+    overflow: auto;
+}
+
+div.day_menu {
+    padding: 15px;
+    border-style: solid;
+    margin: 10px;
+    border-color: maroon;
+    border-width: 2px;
+}
+
+div.day_assignment {
+    padding: 0px 0px 0px 0px;
+
+}
+
+div.container {
+    width: 100%;
+}
+
+div.leftfloat {
+    float: left;
+}

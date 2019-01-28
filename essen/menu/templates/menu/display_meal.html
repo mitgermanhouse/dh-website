@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+{% load menu_extras %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+
+
+<body>
+
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+
+<div>
+    <h1> {{ meal }} </h1>
+    <h3> Serves: {{ meal.menu.servings }} </h3>
+</div>
+
+
+<div>
+    <div style='float:left;'>
+        {% for recipe in meal.recipes.all %}
+        <h2>{{recipe}}</h2>
+        <h3>Ingredients</h3>
+        <table>
+            <tr>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+            </tr>
+        {% for ingredient in recipe.ingredient_set.all %}
+            <tr>
+                <td>{{ingredient}}</td>
+                <td>{{ ingredient.quantity | mult:meal.menu.servings | div:ingredient.recipe.serving_size}}</td>
+                <td>{{ingredient.units}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <h3>Directions</h3>
+        {{recipe.directions}}
+        {% endfor %}
+    </div>
+    <div style='float:right;'>
+        Late Plates:
+        <ul>
+        {% for lateplate in meal.lateplate_set.all %}
+            <li>{{ lateplate }}</li>
+        {% endfor %}
+        </ul>
+        <form id="lateplate_form" action="{% url 'menu:add_lateplate' meal.id %}" method="post">
+        {% csrf_token %}
+            <input type="text" id="name" name="name">
+            <input id="submit" type="submit" value="Submit"/>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

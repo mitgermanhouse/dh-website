@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<body>
+
+{% load static %}
+{% load menu_extras %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+<h1>Shopping List</h1>
+
+<ul>
+{% for key, item in ingredient_dict.items %}
+    <li>{{ key }} : {{item}}</li>
+{% endfor %}
+
+</ul>
+
+
+</body>
+</html>

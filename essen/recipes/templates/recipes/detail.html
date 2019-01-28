@@ -1,0 +1,21 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'recipes/css/style.css' %}">
+
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+
+<h1> <a href="{% url 'recipes:index' %}"> {{ recipe }} </a> </h1>
+
+<ul>
+{% for ingredient in recipe.ingredient_set.all %}
+    <li> {{ ingredient.ingredient_name }} : {{ingredient.quantity}} {{ingredient.units}} </li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'recipes:edit' recipe.id %}"> Click Me to Edit! </a>

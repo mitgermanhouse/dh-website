@@ -1,0 +1,24 @@
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'recipes/css/style.css' %}">
+
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+
+<a href="{% url 'recipes:add_recipe' %}">Add Recipes!</a>
+
+<div>
+<ul>
+{% for recipe in recipe_list %}
+    <li> <a href="{% url 'recipes:detail' recipe.id %}"> {{recipe.recipe_name}} </a> </li>
+{% endfor %}
+</ul>
+</div>
+
+

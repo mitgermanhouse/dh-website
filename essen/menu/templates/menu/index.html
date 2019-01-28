@@ -1,0 +1,35 @@
+{% load static %}
+{% load menu_extras %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+<a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a>
+<a href="{% url 'menu:index' %}">This Week</a>
+<a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
+
+<h1> {{ menu }} </h1>
+
+<ul>
+{% for meal in menu.meal_set.all %}
+    <li>
+        <h2> <a href="{% url 'menu:display_meal' meal.id %}" >{{ meal }}</a> </h2>
+        <ul>
+        {% for recipe in meal.recipes.all %}
+            <li> {{ recipe }} </li>
+        {% endfor %}
+        </ul>
+    </li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'menu:add_menu' %}"> Add Menus! </a>
+
+{% if menu != None %}
+    <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
+{% endif %}

@@ -1,0 +1,33 @@
+
+{% load static %}
+<script src="{% static 'recipes/js/edit_script.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'recipes/css/style.css' %}">
+
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+
+<h1> <a href="{% url 'recipes:index' %}"> {{ recipe }} </a> </h1>
+
+<form id="edit_form" action="{% url 'recipes:submit_edit' recipe.id %}" method="post" onsubmit="return validateForm()">
+{% csrf_token %}
+{% for ingredient in recipe.ingredient_set.all %}
+    <div>
+        <label for='ingredient'>Ingredient:</label>
+        <input type="text" id="ingredient" name="ingredient", value="{{ ingredient.ingredient_name }}">
+        <label for='quantity'>Quantity:</label>
+        <input type="number" id="quantity" name="quantity", value="{{ ingredient.quantity }}">
+        <label for='units'>Unit:</label>
+        <input type="text" id="units" name="units", value="{{ ingredient.units }}">
+    </div>
+{% endfor %}
+<input id="submit" type="submit" value="Submit"/>
+</form>
+
+<button type="button" onclick="addIngredient()">Add Ingredient</button>
+

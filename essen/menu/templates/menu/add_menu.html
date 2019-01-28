@@ -1,0 +1,46 @@
+{% load static %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="{% static 'menu/js/add_menu.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+
+
+<div>
+    <ul class = 'navbar'>
+        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
+        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+    </ul>
+</div>
+
+
+<form id="edit_form" action="{% url 'menu:submit_menu'%}" method="post" onsubmit="return validateForm()">
+{% csrf_token %}
+    <div>
+        <label for="start_date">Enter the Menu Start Date: </label>
+        <input type="date" id="start_date" name="start_date" oninput="validateDate()" value="">
+    </div>
+
+
+    <button type="button" id="add_day_menu" onclick="addDayMenu()">Add Meal</button>
+    <input id="submit" type="submit" value="Submit"/>
+</form>
+
+
+
+<datalist id="recipe_choices">
+{% for recipe in recipe_choices %}
+    <option value={{recipe}}>
+{% endfor %}
+</datalist>
+
+<datalist id="days">
+    <option value="Sunday Brunch">
+    <option value="Sunday Dinner">
+    <option value="Monday Dinner">
+    <option value="Tuesday Dinner">
+    <option value="Wednesday Dinner">
+    <option value="Thursday Dinner">
+</datalist>
+
+<!--<button type="button" onclick="addIngredient()">Add Ingredient</button>-->
