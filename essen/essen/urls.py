@@ -1,9 +1,9 @@
-from django.urls import include, path
+from django.conf.urls import url, include
 from django.contrib import admin
 
 
 urlpatterns = [
-    path('recipes/', include('recipes.urls')),
-    path('essen/', include('menu.urls')),
-    path('admin/', admin.site.urls),
+    url('recipes/', include('recipes.urls')),
+    url('essen/', include('menu.urls')),
+    url('admin/', admin.site.urls),
 ]
