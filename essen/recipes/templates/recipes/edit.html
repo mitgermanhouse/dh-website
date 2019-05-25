@@ -1,5 +1,7 @@
 
 {% load static %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="{% static 'recipes/js/edit_script.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'recipes/css/style.css' %}">
 
@@ -16,15 +18,29 @@
 
 <form id="edit_form" action="{% url 'recipes:submit_edit' recipe.id %}" method="post" onsubmit="return validateForm()">
 {% csrf_token %}
-{% for ingredient in recipe.ingredient_set.all %}
-    <div>
-        <label for='ingredient'>Ingredient:</label>
-        <input type="text" id="ingredient" name="ingredient", value="{{ ingredient.ingredient_name }}">
-        <label for='quantity'>Quantity:</label>
-        <input type="number" id="quantity" name="quantity", value="{{ ingredient.quantity }}">
-        <label for='units'>Unit:</label>
-        <input type="text" id="units" name="units", value="{{ ingredient.units }}">
+        <div>
+        <label for='recipe_name'>Name:</label>
+        <input type="text" id="recipe_name" name="recipe_name"  value="{{ recipe.recipe_name }}">
+        <label for='serving_size'>Serving Size:</label>
+        <input type="number" id="serving_size" name="serving_size" value="{{ recipe.serving_size }}">
     </div>
+
+    <div>
+        <label for='directions'>Directions:</label>
+        <input type="text" id="directions" name="directions" value="{{ recipe.directions }}">
+    </div>
+
+{% for ingredient in recipe.ingredient_set.all %}
+    <div id="div_{{forloop.counter}}" class="ing_div">
+        <label for='ingredient_{{forloop.counter}}'>Ingredient:</label>
+        <input type="text" id="ingredient_{{forloop.counter}}" name="ingredient", value="{{ ingredient.ingredient_name }}">
+        <label for='quantity_{{forloop.counter}}'>Quantity:</label>
+        <input type="number" id="quantity_{{forloop.counter}}" name="quantity", value="{{ ingredient.quantity }}">
+        <label for='units_{{forloop.counter}}'>Unit:</label>
+        <input type="text" id="units_{{forloop.counter}}" name="units", value="{{ ingredient.units }}">
+        <label for="div_{{forloop.counter}}" class="remove"> &#x2717 </label>
+    </div>
+
 {% endfor %}
 <input id="submit" type="submit" value="Submit"/>
 </form>

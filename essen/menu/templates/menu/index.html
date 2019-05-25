@@ -28,8 +28,16 @@
 {% endfor %}
 </ul>
 
-<a href="{% url 'menu:add_menu' %}"> Add Menus! </a>
+<div>
+    <a href="{% url 'menu:add_menu' %}"> Add Menus </a>
+</div>
 
+<div>
+    <a href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
+</div>
+
+<div>
 {% if menu != None %}
     <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
 {% endif %}
+</div>

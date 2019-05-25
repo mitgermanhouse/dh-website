@@ -25,7 +25,7 @@ SECRET_KEY = 'uv)^nu2i1z=f89!ld@6si^5y&v7$doq1vt*ce2=7=xlk+)_=^o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['kderek.scripts.mit.edu']
+ALLOWED_HOSTS = ['kderek.scripts.mit.edu', 'localhost']
 
 
 # Application definition
@@ -121,8 +121,4 @@ USE_TZ = True
 
 STATIC_ROOT = ""
 
-STATIC_URL = "static"
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_URL = "/static/"

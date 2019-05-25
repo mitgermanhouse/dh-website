@@ -20,7 +20,14 @@
         <label for="start_date">Enter the Menu Start Date: </label>
         <input type="date" id="start_date" name="start_date" oninput="validateDate()" value="">
     </div>
-
+    <div>
+        <label for="serving_size">Serving Size:</label>
+        <input type="number" id="serving_size" name="notes" value="">
+    </div>
+    <div>
+        <label for="notes">Notes Displayed to Shopper:</label>
+        <input type="text" id="notes" name="notes" value="">
+    </div>
 
     <button type="button" id="add_day_menu" onclick="addDayMenu()">Add Meal</button>
     <input id="submit" type="submit" value="Submit"/>
@@ -30,7 +37,7 @@
 
 <datalist id="recipe_choices">
 {% for recipe in recipe_choices %}
-    <option value={{recipe}}>
+    <option value='{{recipe}}'>
 {% endfor %}
 </datalist>
 

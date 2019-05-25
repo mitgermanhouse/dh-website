@@ -3,11 +3,10 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from models import Menu
-from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
-from recipes.models import Recipe
-from .models import Menu, Meal, LatePlate
+import sys
+from recipes.models import Recipe, Ingredient
+from menu.models import Menu, Meal, LatePlate, AutoLatePlate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
@@ -57,10 +56,11 @@ def submit_menu(request):
 
     Menu.objects.filter(start_date=start_date).delete()
 
-    menu = Menu(start_date = start_date,
-                servings = 24,
-                notes = "none")
+    menu = Menu(start_date = start_date)
+                # servings = request.POST.get("serving_size"),
+                # notes = request.POST.get("notes"))
     menu.save()
+
 
     for key, item in d.items():
         if "day" in key:
@@ -70,8 +70,13 @@ def submit_menu(request):
             recipes = d[meal_key]
             meal = Meal(menu=menu,
                         date=start_date+timedelta(days_to_num[request.POST.get(key)]),
-                        meal_name = request.POST.get(key))
+                        meal_name=request.POST.get(key))
             meal.save()
+
+            for user in AutoLatePlate.objects.all():
+                if str(days_to_num[request.POST.get(key)]) in str(user.days):
+                    l = LatePlate(meal=meal, name=user.username)
+                    l.save()
 
             for r in recipes:
                 recipe = Recipe.objects.filter(recipe_name=r).first()
@@ -93,6 +98,38 @@ def add_lateplate(request, pk):
 
     return HttpResponseRedirect(reverse('menu:display_meal', args=[pk]))
 
+
+def remove_lateplate(request, pk):
+    lateplate = get_object_or_404(LatePlate, pk=pk)
+    meal_id = lateplate.meal.id
+    lateplate.delete()
+
+    return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_id]))
+
+
+class AutoLatePlates(generic.ListView):
+    model = AutoLatePlate
+    template_name = 'menu/auto_lateplates.html'
+
+
+def submit_auto_lateplates(request):
+    username = request.POST.get("username")
+    days = request.POST.get("days")
+
+    auto = AutoLatePlate(username=username, days=days)
+
+    auto.save()
+
+    return HttpResponseRedirect(reverse('menu:index'))
+
+
+def remove_auto_lateplates(request, pk):
+    auto = get_object_or_404(AutoLatePlate, pk=pk)
+    auto.delete()
+
+    return HttpResponseRedirect(reverse('menu:index'))
+
+
 def shopper(request, pk):
     template_name = 'menu/shopper.html'
     context_object_name = 'ingredient_dict'
@@ -112,5 +149,24 @@ def shopper(request, pk):
 
     return render(request, template_name, {context_object_name: all_ingredients})
 
+
+def ingredient_info(request, ing, menu):
+    template_name = 'menu/ingredient_info.html'
+    context_object_name = 'usages'
+
+    search = get_object_or_404(Ingredient, pk=str(ing))
+    menu = get_object_or_404(Menu, pk=str(menu))
+
+    ingredient_uses = []
+
+    for meal in menu.meal_set.all():
+        for recipe in meal.recipes.all():
+            scale_factor = menu.servings/recipe.serving_size
+            for ingredient in recipe.ingredient_set.all():
+
+                if ingredient.ingredient_name == search.ingredient_name and meal.date > datetime.now().date():
+                    ingredient_uses.append(str(ingredient.quantity * scale_factor) + " " + ingredient.units + " for " + meal.meal_name)
+
+    return render(request, template_name, {context_object_name: ingredient_uses})
 
 

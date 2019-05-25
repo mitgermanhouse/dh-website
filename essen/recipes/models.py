@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
 
 from django.db import models
 
 
-@python_2_unicode_compatible
 class Recipe(models.Model):
     recipe_name = models.CharField(max_length=200)
     directions = models.TextField()
@@ -15,7 +13,7 @@ class Recipe(models.Model):
         return self.recipe_name
 
 
-@python_2_unicode_compatible
+
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True)
     ingredient_name = models.CharField(max_length=100, null=True)

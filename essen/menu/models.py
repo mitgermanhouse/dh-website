@@ -40,3 +40,11 @@ class LatePlate(models.Model):
     def __str__(self):
         return self.name
 
+
+@python_2_unicode_compatible
+class AutoLatePlate(models.Model):
+    username = models.TextField()
+    days = models.TextField()
+
+    def __str__(self):
+        return self.username + " " + self.days

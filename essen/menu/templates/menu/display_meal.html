@@ -2,6 +2,14 @@
 
 {% load menu_extras %}
 {% load static %}
+
+<script>
+    var ingredients = [];
+    {
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="{% static 'recipes/js/edit_script.js' %}"></script>
+
 <link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
 
 
@@ -34,7 +42,7 @@
             </tr>
         {% for ingredient in recipe.ingredient_set.all %}
             <tr>
-                <td>{{ingredient}}</td>
+                <td><a href="{% url 'menu:ingredient_info' ingredient.id meal.menu.id %}">{{ingredient}}</a></td>
                 <td>{{ ingredient.quantity | mult:meal.menu.servings | div:ingredient.recipe.serving_size}}</td>
                 <td>{{ingredient.units}}</td>
             </tr>
@@ -43,12 +51,14 @@
         <h3>Directions</h3>
         {{recipe.directions}}
         {% endfor %}
+
     </div>
     <div style='float:right;'>
         Late Plates:
         <ul>
         {% for lateplate in meal.lateplate_set.all %}
-            <li>{{ lateplate }}</li>
+            <li id="lateplate_{{forloop.counter}}">{{ lateplate }} <label for="lateplate_{{forloop.counter}}" class="remove">
+                <a href="{% url 'menu:remove_lateplate' lateplate.id%}">&#x2717</a></label></li>
         {% endfor %}
         </ul>
         <form id="lateplate_form" action="{% url 'menu:add_lateplate' meal.id %}" method="post">
@@ -57,8 +67,8 @@
             <input id="submit" type="submit" value="Submit"/>
         </form>
     </div>
-
 </div>
+
 
 </body>
 </html>

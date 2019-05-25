@@ -12,6 +12,12 @@
 
 <h1> <a href="{% url 'recipes:index' %}"> {{ recipe }} </a> </h1>
 
+<h2>Directions</h2>
+{{ recipe.directions }}
+
+<h2>Serving Size</h2>
+{{ recipe.serving_size }}
+
 <ul>
 {% for ingredient in recipe.ingredient_set.all %}
     <li> {{ ingredient.ingredient_name }} : {{ingredient.quantity}} {{ingredient.units}} </li>
