@@ -6,4 +6,5 @@ urlpatterns = [
     url('recipes/', include('recipes.urls')),
     url('essen/', include('menu.urls')),
     url('admin/', admin.site.urls),
+    url('accounts/', include('django.contrib.auth.urls')),
 ]

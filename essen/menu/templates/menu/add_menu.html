@@ -1,53 +1,103 @@
+<!DOCTYPE html>
+
+
+{% extends 'essen/base.html' %}
 {% load static %}
 
+{% block script %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="{% static 'menu/js/add_menu.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
 
 
-<div>
-    <ul class = 'navbar'>
-        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-    </ul>
-</div>
+<!--<div class='day_menu' id = 'day_menu_' + menu_id>-->
+<!--    <div>-->
+<!--    <div class='day_assignment'>-->
+<!--        <label for='day_' + menu_id>Meals for:</label>-->
+<!--        <input list='days' id='day'_ + parseInt(menu_id) name='day_' + parseInt(menu_id)>-->
+<!--        <label for='day_' + parseInt(menu_id) class='remove'>&#x2717 </label>-->
+<!--    </div>-->
+<!--    Recipes:-->
+<!--    </div>-->
+<!--    <div class='recipe_div'>-->
+<!--        <input list='recipe_choices' id='item_' + parseInt(recipe_id) name='item_' + menu_id>-->
+<!--        <label for='item_' + parseInt(recipe_id) class="remove"> &#x2717 </label>-->
+<!--    </div>-->
+<!--    <div class='recipe_div'>-->
+<!--        <input list='recipe_choices' id='item_' + parseInt(recipe_id) name='item_' + menu_id>-->
+<!--        <label for='item_' + parseInt(recipe_id + 1) class="remove"> &#x2717 </label>-->
+<!--    </div>-->
+<!--    <div class='recipe_div'>-->
+<!--        <input list='recipe_choices' id='item_' + parseInt(recipe_id) name='item_' + menu_id>-->
+<!--        <label for='item_' + parseInt(recipe_id + 2) class="remove"> &#x2717 </label>-->
+<!--    </div>-->
+<!--    <select id="days">-->
+<!--        <option value="Sunday Brunch">Sunday Brunch</option>-->
+<!--        <option value="Sunday Dinner">Sunday Dinner</option>-->
+<!--        <option value="Monday Dinner">Monday Dinner</option>-->
+<!--        <option value="Tuesday Dinner">Tuesday Dinner</option>-->
+<!--        <option value="Wednesday Dinner">Wednesday Dinner</option>-->
+<!--        <option value="Thursday Dinner">Thursday Dinner</option>-->
+<!--    </select>-->
+<!--    <button type="button" id="add_button_` + parseInt(menu_id) + `" class="add_day_menu_button">Add Another Recipe</button>-->
+<!--</div>-->
 
 
-<form id="edit_form" action="{% url 'menu:submit_menu'%}" method="post" onsubmit="return validateForm()">
-{% csrf_token %}
-    <div>
-        <label for="start_date">Enter the Menu Start Date: </label>
-        <input type="date" id="start_date" name="start_date" oninput="validateDate()" value="">
-    </div>
-    <div>
-        <label for="serving_size">Serving Size:</label>
-        <input type="number" id="serving_size" name="notes" value="">
-    </div>
-    <div>
-        <label for="notes">Notes Displayed to Shopper:</label>
-        <input type="text" id="notes" name="notes" value="">
-    </div>
+{% endblock %}
 
-    <button type="button" id="add_day_menu" onclick="addDayMenu()">Add Meal</button>
-    <input id="submit" type="submit" value="Submit"/>
-</form>
+<body>
+
+{%block content%}
+{% if user.is_authenticated %}
+    {% if steward %}
+        <form class="form-horizontal" id="edit_form" action="{% url 'menu:submit_menu'%}" method="post" onsubmit="return validateForm()">
+        {% csrf_token %}
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="start_date">Enter the Menu Start Date: </label>
+                <div class="col-sm-2">
+                    <input class="form-control" type="date" id="start_date" name="start_date" oninput="validateDate()" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="start_date">Serving size: </label>
+                <div class="col-sm-2">
+                    <input class="form-control" type="number" id="serving_size" name="serving_size" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="start_date">Notes displayed to shopper: </label>
+                <div class="col-sm-5">
+                    <textarea class="form-control" id="notes" name="notes" required></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" type="button" id="add_day_menu" onclick="addDayMenu()">Add Meal</button>
+            <input class="btn btn-primary" id="submit" type="submit" value="Submit"/>
+        </form>
+
+        <datalist id="recipe_choices">
+        {% for recipe in recipe_choices %}
+            <option value='{{recipe}}'>
+        {% endfor %}
+        </datalist>
+
+    {% else %}
+        <h4>Only cookcrew stewards can make menus.</h4>
+    {% endif %}
+{% else %}
+    <h4><a href="{% url 'login'%}?next={{request.path}}">Login to make menus.</a></h4>
+{% endif %}
 
 
+<select id='day_selector' style="visibility: hidden;">
+        <option value='Sunday Brunch'>Sunday Brunch</option>
+        <option value='Sunday Dinner'>Sunday Dinner</option>
+        <option value='Monday Dinner'>Monday Dinner</option>
+        <option value='Tuesday Dinner'>Tuesday Dinner</option>
+        <option value='Wednesday Dinner'>Wednesday Dinner</option>
+        <option value='Thursday Dinner'>Thursday Dinner</option>
+</select>
 
-<datalist id="recipe_choices">
-{% for recipe in recipe_choices %}
-    <option value='{{recipe}}'>
-{% endfor %}
-</datalist>
-
-<datalist id="days">
-    <option value="Sunday Brunch">
-    <option value="Sunday Dinner">
-    <option value="Monday Dinner">
-    <option value="Tuesday Dinner">
-    <option value="Wednesday Dinner">
-    <option value="Thursday Dinner">
-</datalist>
-
+{% endblock %}
+</body>
 <!--<button type="button" onclick="addIngredient()">Add Ingredient</button>-->

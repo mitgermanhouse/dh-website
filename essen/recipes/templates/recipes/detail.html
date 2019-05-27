@@ -1,27 +1,66 @@
+{% extends 'essen/base.html' %}
+
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'recipes/css/style.css' %}">
 
-<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
-<div>
-    <ul class = 'navbar'>
-        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-    </ul>
-</div>
+{% block script %}
+<script>
+    function setScrolling(id) {
+        $(function() {
+            var $meal = $("#meal");
+            var $element = $("#" + id),
+                $window = $(window),
+                offset = $element.offset(),
+                topPadding = 15;
 
+            $window.scroll(function () {
+                console.log("sidebar" + $element.position().left);
+                console.log("meal" + $meal.position().left);
+                if ($element.position().left != $meal.position().left && $window.scrollTop() > offset.top) {
+                    $element.stop().animate({
+                        duration: 0,
+                        marginTop: $window.scrollTop() - offset.top + topPadding
+                    });
+                } else {
+                    $element.stop().animate({
+                        duration: 0,
+                        marginTop: 0
+                    });
+                }
+            });
+        });
+    };
+    setScrolling("functions");
+</script>
+<!--<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">-->
+{% endblock %}
 
-<h1> <a href="{% url 'recipes:index' %}"> {{ recipe }} </a> </h1>
+{% block content %}
+<div class="row">
+    <div class="col-sm-2">
+    </div>
+    <div class="col-sm-8" id="meal">
+        <div class="panel panel-default" id="{{recipe}}">
+            <div class="panel-heading"><h2>{{recipe}}</h2></div>
+            <div class="panel-body">
+                <h3>Ingredients</h3>
+                <table class="table">
+                {% for ingredient in recipe.ingredient_set.all %}
+                    <tr>
+                        <td>{{ingredient}}</td>
+                        <td>{{ ingredient.quantity}}</td>
+                        <td>{{ingredient.units}}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+                <h3>Directions</h3>
+                <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
+            </div>
+        </div>
+    </div>
 
-<h2>Directions</h2>
-{{ recipe.directions }}
+    <div class="col-sm-2" id="functions">
+        <a href="{% url 'recipes:edit' recipe.id %}"> Click Me to Edit! </a>
+    </div>
 
-<h2>Serving Size</h2>
-{{ recipe.serving_size }}
+{% endblock %}
 
-<ul>
-{% for ingredient in recipe.ingredient_set.all %}
-    <li> {{ ingredient.ingredient_name }} : {{ingredient.quantity}} {{ingredient.units}} </li>
-{% endfor %}
-</ul>
-
-<a href="{% url 'recipes:edit' recipe.id %}"> Click Me to Edit! </a>

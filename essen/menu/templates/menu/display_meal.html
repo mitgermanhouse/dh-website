@@ -1,74 +1,117 @@
 <!DOCTYPE html>
 
+{% extends 'essen/base.html' %}
+
 {% load menu_extras %}
 {% load static %}
 
-<script>
-    var ingredients = [];
-    {
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="{% static 'recipes/js/edit_script.js' %}"></script>
 
-<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
+{% block script %}
+<script>
+    function setScrolling(id) {
+        $(function() {
+            var $meal = $("#meal");
+            var $element = $("#" + id),
+                $window = $(window),
+                offset = $element.offset(),
+                topPadding = 15;
 
+            $window.scroll(function () {
+                console.log("sidebar" + $element.position().left);
+                console.log("meal" + $meal.position().left);
+                if ($element.position().left != $meal.position().left && $window.scrollTop() > offset.top) {
+                    $element.stop().animate({
+                        duration: 0,
+                        marginTop: $window.scrollTop() - offset.top + topPadding
+                    });
+                } else {
+                    $element.stop().animate({
+                        duration: 0,
+                        marginTop: 0
+                    });
+                }
+            });
+        });
+    };
+    setScrolling("sidebar");
+    setScrolling("lateplates");
+</script>
+<!--<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">-->
+{% endblock %}
 
 <body>
+{% block content %}
 
-<div>
-    <ul class = 'navbar'>
-        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-    </ul>
-</div>
-
-
-<div>
-    <h1> {{ meal }} </h1>
-    <h3> Serves: {{ meal.menu.servings }} </h3>
-</div>
-
-
-<div>
-    <div style='float:left;'>
-        {% for recipe in meal.recipes.all %}
-        <h2>{{recipe}}</h2>
-        <h3>Ingredients</h3>
-        <table>
-            <tr>
-                <th>Ingredient</th>
-                <th>Quantity</th>
-                <th>Unit</th>
-            </tr>
-        {% for ingredient in recipe.ingredient_set.all %}
-            <tr>
-                <td><a href="{% url 'menu:ingredient_info' ingredient.id meal.menu.id %}">{{ingredient}}</a></td>
-                <td>{{ ingredient.quantity | mult:meal.menu.servings | div:ingredient.recipe.serving_size}}</td>
-                <td>{{ingredient.units}}</td>
-            </tr>
-        {% endfor %}
-        </table>
-        <h3>Directions</h3>
-        {{recipe.directions}}
-        {% endfor %}
-
+<div style="text-align: center; margin-bottom: 10px">
+    <div>
+        <h1> {{ info.meal }} <br>
+        <small> Serves: {{ info.meal.menu.servings }} </small> </h1>
     </div>
-    <div style='float:right;'>
-        Late Plates:
-        <ul>
-        {% for lateplate in meal.lateplate_set.all %}
-            <li id="lateplate_{{forloop.counter}}">{{ lateplate }} <label for="lateplate_{{forloop.counter}}" class="remove">
-                <a href="{% url 'menu:remove_lateplate' lateplate.id%}">&#x2717</a></label></li>
+</div>
+
+<div class="row">
+    <div class="col-sm-2" id="sidebar">
+        <ul class="nav nav-pills nav-stacked">
+        {% for recipe in info.meal.recipes.all %}
+            <li><a href="#{{recipe}}">{{recipe}}</a></li>
         {% endfor %}
         </ul>
-        <form id="lateplate_form" action="{% url 'menu:add_lateplate' meal.id %}" method="post">
-        {% csrf_token %}
-            <input type="text" id="name" name="name">
-            <input id="submit" type="submit" value="Submit"/>
-        </form>
+    </div>
+    <div class="col-sm-8" id="meal">
+        {% for recipe in info.meal.recipes.all %}
+            <div class="panel panel-default" id="{{recipe}}">
+                <div class="panel-heading"><h2>{{recipe}}</h2></div>
+                <div class="panel-body">
+                    <h3>Ingredients</h3>
+                    <table class="table">
+                    {% for ingredient in recipe.ingredient_set.all %}
+                        <tr>
+<!--                            <a href="{% url 'menu:ingredient_info' ingredient.id info.meal.menu.id %}">-->
+                            <td>{{ingredient}}</td>
+                            <td>{{ ingredient.quantity | mult:info.meal.menu.servings | div:ingredient.recipe.serving_size}}</td>
+                            <td>{{ingredient.units}}</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                    <h3>Directions</h3>
+                    <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="col-sm-2" id="lateplates">
+        <h4>Late Plates</h4>
+        <ul style="list-style-type: none; padding-left: 0">
+        {% for lateplate in info.meal.lateplate_set.all %}
+            <li id="lateplate_{{forloop.counter}}">{{ lateplate }}
+                {% if user.is_authenticated%}
+                <label for="lateplate_{{forloop.counter}}" class="remove">
+                <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </a></label>{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+        {% if user.is_authenticated %}
+            <form id="lateplate_form" action="{% url 'menu:add_lateplate' info.meal.id user.id%}" method="post">
+                {% csrf_token %}
+                <select class="btn" list="name_choices" type="text" id="name" name="name" >
+                    {% for user in info.users %}
+                    <option value='{{user}}'>{{user}}</option>
+                    {% endfor %}
+                </select>
+                <input class="btn btn-primary btn-xs" id="submit" type="submit" value="Submit"/>
+            </form>
+        {% else %}
+            <a href="{% url 'login'%}?next={{request.path}}">Login to edit lateplates.</a>
+        {% endif %}
+
     </div>
 </div>
 
-
+{% endblock %}
 </body>
 </html>

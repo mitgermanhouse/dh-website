@@ -1,43 +1,92 @@
+{% extends 'essen/base.html' %}
+
 {% load static %}
 {% load menu_extras %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
-<div>
-    <ul class = 'navbar'>
-        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-    </ul>
-</div>
+{% block script %}
+<script>
+    function setScrolling(id) {
+        $(function() {
+            var $meal = $("#menus");
+            var $element = $("#" + id),
+                $window = $(window),
+                offset = $element.offset(),
+                topPadding = 15;
 
-<a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a>
-<a href="{% url 'menu:index' %}">This Week</a>
-<a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
+            $window.scroll(function () {
+                console.log("sidebar" + $element.position().left);
+                console.log("meal" + $meal.position().left);
+                if ($element.position().left != $meal.position().left && $window.scrollTop() > offset.top) {
+                    $element.stop().animate({
+                        duration: 0,
+                        marginTop: $window.scrollTop() - offset.top + topPadding
+                    });
+                } else {
+                    $element.stop().animate({
+                        duration: 0,
+                        marginTop: 0
+                    });
+                }
+            });
+        });
+    };
+    setScrolling("sidebar");
+</script>
+<!--<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">-->
+{% endblock %}
 
-<h1> {{ menu }} </h1>
 
-<ul>
-{% for meal in menu.meal_set.all %}
-    <li>
-        <h2> <a href="{% url 'menu:display_meal' meal.id %}" >{{ meal }}</a> </h2>
-        <ul>
-        {% for recipe in meal.recipes.all %}
-            <li> {{ recipe }} </li>
-        {% endfor %}
-        </ul>
-    </li>
-{% endfor %}
-</ul>
+<body>
+{% block content %}
 
-<div>
-    <a href="{% url 'menu:add_menu' %}"> Add Menus </a>
-</div>
+    <div style="text-align: center; margin-bottom: 10px">
+        <h1> {{ menu }} </h1>
+        <a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a> |
+        <a href="{% url 'menu:index' %}">This Week</a> |
+        <a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
+    </div>
 
-<div>
-    <a href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
-</div>
+    <div class="row">
+        <div class="col-sm-2" id="sidebar">
+            <ul class="nav nav-pills nav-stacked">
+            {% for meal in menu.meal_set.all %}
+                <li><a href="{% url 'menu:display_meal' meal.id %}">{{meal}}</a></li>
+            {% endfor %}
+            </ul>
+        </div>
 
-<div>
-{% if menu != None %}
-    <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
-{% endif %}
-</div>
+        <div class="col-sm-8">
+            {% for meal in menu.meal_set.all %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3> <a href="{% url 'menu:display_meal' meal.id %}" >{{ meal }}</a> </h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                    {% for recipe in meal.recipes.all %}
+                        <li> {{ recipe }} </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-sm-2">
+            <div>
+                <a href="{% url 'menu:add_menu' %}"> Add Menus </a>
+            </div>
+
+            <div>
+                <a href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
+            </div>
+
+            <div>
+            {% if menu != None %}
+                <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+</body>

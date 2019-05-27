@@ -56,7 +56,7 @@ ROOT_URLCONF = 'essen.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,6 +101,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Redirect to home URL after login (Default redirects to /accounts/profile/)
+LOGIN_REDIRECT_URL = '/essen'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -122,3 +124,5 @@ USE_TZ = True
 STATIC_ROOT = ""
 
 STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
