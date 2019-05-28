@@ -24,34 +24,3 @@ function setActive() {
     active_btn.setAttribute("class", "btn btn-primary active")
 }
 
-// function filter() {
-//
-//     var bar = document.getElementById("searchbar");
-//     var contents = bar.value.toLowerCase();
-//     if (contents != "") {
-//         for (var recipe in recipeIng) {
-//             ingList = recipeIng[recipe];
-//
-//             var containsIng = false;
-//             for (var i = 0; i < ingList.length; i++) {
-//                 if (ingList[i].toLowerCase().includes(contents)) {
-//                     containsIng = true;
-//                     console.log("hi!");
-//                     break;
-//                 }
-//             }
-//
-//             if (recipe.toLowerCase().includes(contents) || containsIng) {
-//                 document.getElementById(recipe).style.display = "block";
-//             } else {
-//                 document.getElementById(recipe).style.display = "none";
-//             }
-//
-//         }
-//     }
-// }
-
-
-
-
-

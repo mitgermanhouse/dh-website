@@ -5,17 +5,7 @@
 
 {% block script %}
 {% autoescape off %}
-<!--<script>-->
-<!--    var recipeIng = {};-->
-<!--    {% for recipe in recipe_list %}-->
-<!--        var ings = [];-->
-<!--        {% for ing in recipe.ingredient_set.all %}-->
-<!--            ings.push("{{ing}}");-->
-<!--        {% endfor %}-->
-<!--        recipeIng["{{recipe.recipe_name}}"] = ings;-->
-<!--    {% endfor %}-->
-<!--    console.log(recipeIng);-->
-<!--</script>-->
+
 {% endautoescape %}
 <script src="{% static 'recipes/js/searchbar.js' %}" charset="UTF-8"></script>
 {% endblock %}
