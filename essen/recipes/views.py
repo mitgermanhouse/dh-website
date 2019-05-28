@@ -9,15 +9,33 @@ from django.urls import reverse
 
 # Create your views here.
 
-
-class IndexView(generic.ListView):
-    template_name = 'recipes/index.html'
-    model = Recipe
-
-
 class DetailView(generic.DetailView):
     model = Recipe
     template_name = 'recipes/detail.html'
+
+def view_recipes(request):
+    d = dict(request.GET.iterlists())
+    print(d)
+    search_key = d.get("searchbar", [""])[0]
+    query_key = d.get("query", ["recipe_search"])[0]
+
+    if 'searchbar' in d:
+        if query_key == 'recipe_search':
+            recipes = Recipe.objects.all().filter(recipe_name__contains=search_key)
+        elif search_key == "":
+            recipes = Recipe.objects.all()
+        else:
+            recipes = []
+            for recipe in Recipe.objects.all():
+                for ing in recipe.ingredient_set.all():
+                    if ing.ingredient_name.find(search_key) > -1:
+                        recipes.append(recipe)
+                        break
+    else:
+        recipes = Recipe.objects.all()
+
+    return render(request, "recipes/index.html", {"recipe_list": recipes, "searchbar": search_key, "query":query_key})
+
 
 
 class EditView(generic.DetailView):

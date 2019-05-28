@@ -5,9 +5,8 @@
 {% load menu_extras %}
 {% load static %}
 
-<script src="{% static 'recipes/js/edit_script.js' %}"></script>
-
 {% block script %}
+<script src="{% static 'recipes/js/edit_script.js' %}"></script>
 <script>
     function setScrolling(id) {
         $(function() {
@@ -64,7 +63,7 @@
                 <div class="panel-heading"><h2>{{recipe}}</h2></div>
                 <div class="panel-body">
                     <h3>Ingredients</h3>
-                    <table class="table">
+                    <table class="table table-striped">
                     {% for ingredient in recipe.ingredient_set.all %}
                         <tr>
 <!--                            <a href="{% url 'menu:ingredient_info' ingredient.id info.meal.menu.id %}">-->
@@ -83,32 +82,40 @@
     </div>
 
     <div class="col-sm-2" id="lateplates">
-        <h4>Late Plates</h4>
-        <ul style="list-style-type: none; padding-left: 0">
-        {% for lateplate in info.meal.lateplate_set.all %}
-            <li id="lateplate_{{forloop.counter}}">{{ lateplate }}
-                {% if user.is_authenticated%}
-                <label for="lateplate_{{forloop.counter}}" class="remove">
-                <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </a></label>{% endif %}
-            </li>
-        {% endfor %}
-        </ul>
-        {% if user.is_authenticated %}
-            <form id="lateplate_form" action="{% url 'menu:add_lateplate' info.meal.id user.id%}" method="post">
-                {% csrf_token %}
-                <select class="btn" list="name_choices" type="text" id="name" name="name" >
-                    {% for user in info.users %}
-                    <option value='{{user}}'>{{user}}</option>
-                    {% endfor %}
-                </select>
-                <input class="btn btn-primary btn-xs" id="submit" type="submit" value="Submit"/>
-            </form>
-        {% else %}
-            <a href="{% url 'login'%}?next={{request.path}}">Login to edit lateplates.</a>
-        {% endif %}
+        <ul class="nav nav-pills nav-stacked">
+            <li style="padding-left: 10px; padding-bottom: 10px;">
+                <h4>Late Plates</h4>
+                <ul style="list-style-type: none; padding-left: 0">
+                {% for lateplate in info.meal.lateplate_set.all %}
+                    <li id="lateplate_{{forloop.counter}}">{{ lateplate }}
+                        {% if user.is_authenticated%}
+                        <label for="lateplate_{{forloop.counter}}" class="remove">
+                        <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </a></label>{% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+                {% if user.is_authenticated %}
+                    <form id="lateplate_form" action="{% url 'menu:add_lateplate' info.meal.id user.id%}" method="post">
+                        {% csrf_token %}
+                        <select style="margin-left: -5px;" class="btn" list="name_choices" type="text" id="name" name="name" >
+                            {% for user in info.users %}
+                            <option value='{{user}}'>{{user}}</option>
+                            {% endfor %}
+                        </select>
+                        <input class="btn btn-primary btn-xs" id="submit" type="submit" value="Add"/>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login'%}?next={{request.path}}">Login to edit lateplates.</a>
+                {% endif %}
 
+            </li>
+
+            <li>
+                <a href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.date|date:'m-d-y'}}">Check future ingredients.</a>
+            </li>
+        </ul>
     </div>
 </div>
 

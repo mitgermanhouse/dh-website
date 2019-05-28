@@ -11,6 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
+from datetime import datetime, timedelta
 
 # Create your views here.
 
@@ -163,22 +164,44 @@ def submit_auto_lateplates(request):
 
 def shopper(request, pk):
     template_name = 'menu/shopper.html'
-    context_object_name = 'ingredient_dict'
+    context_object_name = 'ingredients'
 
     menu = get_object_or_404(Menu, pk=pk)
+    d = dict(request.GET.iterlists())
+
+    after_filter = False
+    after_date = (datetime.now() - timedelta(days=8)).date()
+    if "filter_date" in d:
+        # try:
+        print(d)
+
+        print(datetime.strptime(d["after"][0], "%m-%d-%y").date())
+        after_date = datetime.strptime(d["after"][0], "%m-%d-%y").date()
+        print("successful parsing")
+
+        after_filter = d["filter_date"][0]
+        print("successful parsing")
+        # except:
+        #     pass
 
     all_ingredients = {}
 
     for meal in menu.meal_set.all():
-        for recipe in meal.recipes.all():
-            scale_factor = menu.servings/recipe.serving_size
-            for ingredient in recipe.ingredient_set.all():
-                if ingredient not in all_ingredients:
-                    all_ingredients[ingredient] = ingredient.quantity * scale_factor
-                else:
-                    all_ingredients[ingredient] += ingredient.quantity * scale_factor
+        if meal.date > after_date:
+            for recipe in meal.recipes.all():
+                scale_factor = float(menu.servings)/recipe.serving_size
+                for ingredient in recipe.ingredient_set.all():
+                    ing_type = (ingredient.ingredient_name.lower(), ingredient.units.lower())
+                    if ing_type not in all_ingredients:
+                        all_ingredients[ing_type] = float(ingredient.quantity) * scale_factor
+                    else:
+                        all_ingredients[ing_type] += float(ingredient.quantity) * scale_factor
 
-    return render(request, template_name, {context_object_name: all_ingredients})
+    ing_list = [{"ing": key[0], "quantity": value, "unit": key[1]} for key, value in all_ingredients.items()]
+    ing_list.sort(key=lambda x: x["ing"])
+
+    return render(request, template_name, {context_object_name: ing_list, "filter_date": after_filter,
+                                           "after_date": after_date.strftime("%b %d, %Y")})
 
 
 def ingredient_info(request, ing, menu):

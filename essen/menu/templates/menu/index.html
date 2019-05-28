@@ -73,19 +73,22 @@
         </div>
 
         <div class="col-sm-2">
-            <div>
-                <a href="{% url 'menu:add_menu' %}"> Add Menus </a>
-            </div>
+            <ul class="nav nav-pills nav-stacked">
 
-            <div>
-                <a href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
-            </div>
+                <li>
+                    <a href="{% url 'menu:add_menu' %}"> Add Menus </a>
+                </li>
 
-            <div>
-            {% if menu != None %}
-                <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
-            {% endif %}
-            </div>
+                <li>
+                    <a href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
+                </li>
+
+                <li>
+                {% if menu != None %}
+                    <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
+                {% endif %}
+                </li>
+            </ul>
         </div>
     </div>
 {% endblock %}

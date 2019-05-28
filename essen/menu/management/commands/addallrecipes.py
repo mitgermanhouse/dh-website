@@ -26,7 +26,7 @@ class Command(BaseCommand):
         directions = soup.find('div', attrs={'class': 'code'}).getText()
 
         title = soup.find('h1').getText()
-        print(directions)
+        # print(directions)
         return {"title": self.replace_space(title), "serving_size": serving_size, "ingredients": all_ingredients,
                 "directions": directions}
 

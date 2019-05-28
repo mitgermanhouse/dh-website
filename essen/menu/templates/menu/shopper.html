@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 
-<html lang="en">
-<body>
+{% extends 'essen/base.html' %}
 
 {% load static %}
 {% load menu_extras %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
-<div>
-    <ul class = 'navbar'>
-        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-    </ul>
+{% block content %}
+
+<div class="text-center">
+{% if filter_date %}
+    <h2>Required ingredients after {{after_date}}</h2>
+{% else %}
+    <h1>Shopping List</h1>
+{% endif %}
 </div>
 
-<h1>Shopping List</h1>
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+        <table class="table table-striped">
+        {% for item in ingredients %}
+            <tr>
+                <td>{{item.ing}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.unit}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
 
-<ul>
-{% for key, item in ingredient_dict.items %}
-    <li>{{ key }} : {{item}}</li>
-{% endfor %}
+{% endblock %}
 
-</ul>
-
-
-</body>
 </html>

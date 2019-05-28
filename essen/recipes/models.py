@@ -14,7 +14,7 @@ class Recipe(models.Model):
         return self.recipe_name
 
 
-
+@python_2_unicode_compatible
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True)
     ingredient_name = models.CharField(max_length=100, null=True)
