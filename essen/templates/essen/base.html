@@ -1,4 +1,5 @@
 {% load static %}
+{% load profile_helpers %}
 
 <html lang="en">
 <head>
@@ -21,11 +22,19 @@
     <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">German House</a>
+            <a href="{% url 'home:home' %}"class="navbar-brand" href="#">German House</a>
         </div>
         <ul class="nav navbar-nav">
             <li><a href="{% url 'menu:index'%}"> Menu </a></li>
             <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'home:edit_profile' %}">{{user|member_or_none}}</a></li>
+            <li><a href="{% url 'logout' %}?next={{request.path}}">Logout</a></li>
+            {% else %}
+            <li><a href="{% url 'login'%}?next={{request.path}}"> Login </a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>

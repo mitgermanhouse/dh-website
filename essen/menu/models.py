@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from datetime import datetime, timedelta
 from django.utils.encoding import python_2_unicode_compatible
 from recipes.models import Recipe
 
@@ -48,3 +47,11 @@ class AutoLatePlate(models.Model):
 
     def __str__(self):
         return self.username + " " + self.days
+
+# @python_2_unicode_compatible
+class MealRating(models.Model):
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    username = models.TextField()
+    rating = models.IntegerField(null=True)
+    comment = models.TextField(null=True)
+

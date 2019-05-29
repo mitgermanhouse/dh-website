@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+{% extends 'essen/base.html' %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<div class="row">
+    <div class="row">
+        <div class="col-sm-2">
+        </div>
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+                <div class="panel panel-heading">
+                    <div class="text-center">
+                        <h3> {{member.user.get_full_name}}'s Profile
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="panel panel-body">
+                    <form action="{% url 'home:submit_profile' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+                                    <label for="class_year">Class Year</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" type="number" min="2000" name="class_year" value="{{member.class_year}}"
+                                   id="class_year" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+                                    <label for="major">Major</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" type="text" name="major" id="major" value="{{member.major}}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+                                    <label for="bio">About yourself</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name="bio" id="bio" required>{{member.bio}}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+                                    <label for="pic">Profile Image</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <span class="btn btn-default btn-file">
+                                    <input type="file" name="pic" id="pic" accept="image/*" required>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-10">
+                                <input style="margin-top:10px;" class="btn btn-primary" type="submit"
+                                       value="Save">
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--    <div class="row">-->
+<!--        <div class="col-sm-2"></div>-->
+<!--        <div class="col-sm-8">-->
+<!--            <h6>-->
+<!--                <small>-->
+<!--                    <div style="text-align: right;">-->
+<!--                        Only one review, per meal, per user is allowed. Subsequent reviews of the same meal-->
+<!--                        by the same user overwrite previous ones.-->
+<!--                    </div>-->
+<!--                </small>-->
+<!--            </h6>-->
+<!--        </div>-->
+<!--    </div>-->
+</div>
+{% else %}
+<h2>You must log in to edit your profile.</h2>
+{% endif %}
+
+{% endblock %}
+
+

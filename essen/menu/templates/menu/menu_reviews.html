@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+{% extends 'essen/base.html' %}
+
+
+{% block content %}
+
+{% if steward %}
+<div class="col-sm-2">
+
+</div>
+
+<div class="col-sm-8">
+    {% for meal in all_meals %}
+        <div class="panel panel-default">
+            <div class="panel panel-heading">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h3>{{meal.meal}}</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <h3 style="text-align: right;"> {{meal.overall_rating}}</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <tr>
+                            {% for recipe in meal.meal.recipes.all %}
+                                <td>{{recipe}}</td>
+                            {% endfor %}
+                        </tr>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="panel panel-body">
+                <h3>Comments</h3>
+                    <table class="table table-striped">
+                        {% for comment in meal.comments %}
+                        <tr>
+                            <td>{{comment.username}}</td>
+                            <td>{{comment.comment}}</td>
+                            <td>{{comment.rating}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% else %}
+<h4>Only the cookcrew steward can view menu reviews.</h4>
+{% endif %}
+
+{% endblock %}

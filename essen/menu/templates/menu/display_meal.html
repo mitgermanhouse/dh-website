@@ -113,8 +113,14 @@
             </li>
 
             <li>
-                <a href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.date|date:'m-d-y'}}">Check future ingredients.</a>
+                <a href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.date|date:'m-d-y'}}">Check future ingredients</a>
             </li>
+
+            {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'menu:rate_meal' info.meal.id %}">Rate this meal</a>
+            </li>
+            {% endif %}
         </ul>
     </div>
 </div>

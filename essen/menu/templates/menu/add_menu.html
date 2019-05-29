@@ -9,40 +9,6 @@
 <script src="{% static 'menu/js/add_menu.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
 
-
-<!--<div class='day_menu' id = 'day_menu_' + menu_id>-->
-<!--    <div>-->
-<!--    <div class='day_assignment'>-->
-<!--        <label for='day_' + menu_id>Meals for:</label>-->
-<!--        <input list='days' id='day'_ + parseInt(menu_id) name='day_' + parseInt(menu_id)>-->
-<!--        <label for='day_' + parseInt(menu_id) class='remove'>&#x2717 </label>-->
-<!--    </div>-->
-<!--    Recipes:-->
-<!--    </div>-->
-<!--    <div class='recipe_div'>-->
-<!--        <input list='recipe_choices' id='item_' + parseInt(recipe_id) name='item_' + menu_id>-->
-<!--        <label for='item_' + parseInt(recipe_id) class="remove"> &#x2717 </label>-->
-<!--    </div>-->
-<!--    <div class='recipe_div'>-->
-<!--        <input list='recipe_choices' id='item_' + parseInt(recipe_id) name='item_' + menu_id>-->
-<!--        <label for='item_' + parseInt(recipe_id + 1) class="remove"> &#x2717 </label>-->
-<!--    </div>-->
-<!--    <div class='recipe_div'>-->
-<!--        <input list='recipe_choices' id='item_' + parseInt(recipe_id) name='item_' + menu_id>-->
-<!--        <label for='item_' + parseInt(recipe_id + 2) class="remove"> &#x2717 </label>-->
-<!--    </div>-->
-<!--    <select id="days">-->
-<!--        <option value="Sunday Brunch">Sunday Brunch</option>-->
-<!--        <option value="Sunday Dinner">Sunday Dinner</option>-->
-<!--        <option value="Monday Dinner">Monday Dinner</option>-->
-<!--        <option value="Tuesday Dinner">Tuesday Dinner</option>-->
-<!--        <option value="Wednesday Dinner">Wednesday Dinner</option>-->
-<!--        <option value="Thursday Dinner">Thursday Dinner</option>-->
-<!--    </select>-->
-<!--    <button type="button" id="add_button_` + parseInt(menu_id) + `" class="add_day_menu_button">Add Another Recipe</button>-->
-<!--</div>-->
-
-
 {% endblock %}
 
 <body>
@@ -65,7 +31,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="start_date">Notes displayed to shopper: </label>
+                <label class="control-label col-sm-2" for="start_date">Notes displayed on shopping list: </label>
                 <div class="col-sm-5">
                     <textarea class="form-control" id="notes" name="notes" required></textarea>
                 </div>

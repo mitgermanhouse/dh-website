@@ -6,7 +6,7 @@ from django.views import generic
 from datetime import datetime, timedelta
 import sys
 from recipes.models import Recipe, Ingredient
-from menu.models import Menu, Meal, LatePlate, AutoLatePlate
+from menu.models import Menu, Meal, LatePlate, AutoLatePlate, MealRating
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -50,7 +50,9 @@ def add_menu(request):
 
 
 def submit_menu(request):
-    print(request.POST)
+    if not (request.user.is_authenticated and check_if_steward(request.user)):
+        return HttpResponseRedirect(reverse('menu:index'))
+
     days_to_num = {"Sunday Brunch": 0, "Sunday Dinner": 0, "Monday Dinner": 1, "Tuesday Dinner": 2,
                    "Wednesday Dinner": 3, "Thursday Dinner": 4}
 
@@ -59,9 +61,9 @@ def submit_menu(request):
 
     Menu.objects.filter(start_date=start_date).delete()
 
-    menu = Menu(start_date = start_date)
-                # servings = request.POST.get("serving_size"),
-                # notes = request.POST.get("notes"))
+    menu = Menu(start_date = start_date,
+                servings = request.POST.get("serving_size"),
+                notes = request.POST.get("notes"))
     menu.save()
 
 
@@ -79,7 +81,7 @@ def submit_menu(request):
             # add automatic lateplates
             for user in AutoLatePlate.objects.all():
                 if str(request.POST.get(key)) in str(user.days):
-                    l = LatePlate(meal=meal, name=user.username)
+                    l = LatePlate(meal=meal, name=user.get_full_name())
                     l.save()
 
             # add recipes
@@ -89,6 +91,9 @@ def submit_menu(request):
 
     return HttpResponseRedirect(reverse('menu:index'))
 
+class DetailView(generic.DetailView):
+    model = Meal
+    template_name = "menu/rate_meal.html"
 
 def view_meal(request, pk):
     template_name = 'menu/display_meal.html'
@@ -96,7 +101,7 @@ def view_meal(request, pk):
 
     meal = get_object_or_404(Meal, pk=pk)
 
-    info = {"meal" : meal, "users" : User.objects.all()}
+    info = {"meal" : meal, "users" : [u.get_full_name for u in User.objects.all()]}
 
     return render(request, template_name, {context_object_name: info})
 
@@ -139,25 +144,22 @@ def auto_lateplates(request):
 
     return render(request, template_name, {"days" : requested_days})
 
-    model = AutoLatePlate
-    template_name = 'menu/auto_lateplates.html'
-
-
 def submit_auto_lateplates(request):
-    d = dict(request.POST.iterlists())
-    # delete the previous lateplate registrys
-    AutoLatePlate.objects.filter(username=request.user.username).delete()
-    print(d)
-    # add the new one
-    if "date" in d.keys():
-        days = ""
-        for day in d.get("date"):
-            if days != "":
-                days += ";"
-            days += day
-            print(day)
-        auto = AutoLatePlate(username=request.user.username, days=days)
-        auto.save()
+    if request.user.is_authenticated:
+        d = dict(request.POST.iterlists())
+        # delete the previous lateplate registrys
+        AutoLatePlate.objects.filter(username=request.user.username).delete()
+        print(d)
+        # add the new one
+        if "date" in d.keys():
+            days = ""
+            for day in d.get("date"):
+                if days != "":
+                    days += ";"
+                days += day
+                print(day)
+            auto = AutoLatePlate(username=request.user.username, days=days)
+            auto.save()
 
     return HttpResponseRedirect(reverse('menu:index'))
 
@@ -201,7 +203,7 @@ def shopper(request, pk):
     ing_list.sort(key=lambda x: x["ing"])
 
     return render(request, template_name, {context_object_name: ing_list, "filter_date": after_filter,
-                                           "after_date": after_date.strftime("%b %d, %Y")})
+                                           "after_date": after_date.strftime("%b %d, %Y"), "notes":menu.notes})
 
 
 def ingredient_info(request, ing, menu):
@@ -223,6 +225,51 @@ def ingredient_info(request, ing, menu):
 
     return render(request, template_name, {context_object_name: ingredient_uses})
 
+
+def submit_rating(request, pk):
+    if request.user.is_authenticated:
+        d = dict(request.GET.iterlists())
+        meal = get_object_or_404(Meal, pk=pk)
+
+        print("rating", d)
+        # rating = d[]
+
+        if 'rate' in d:
+            previous_rating = MealRating.objects.filter(username=request.user.username).filter(meal=meal)
+            previous_rating.delete()
+
+            rating = MealRating(meal=meal, username=request.user.username, rating=d['rate'][0], comment=d['comment-box'][0])
+            rating.save()
+
+        # MealRating(meal=meal, username=request.user.username, rating=)
+
+    return HttpResponseRedirect(reverse('menu:index'))
+
+
+def see_reviews(request):
+    final_list = []
+    steward = False
+    if request.user.is_authenticated and check_if_steward(request.user):
+        steward = True
+        d = {}
+        for review in MealRating.objects.all():
+            if review.meal in d:
+                d[review.meal].append((review.rating, review.comment, review.username))
+            else:
+                d[review.meal] = [(review.rating, review.comment, review.username)]
+
+        print(d)
+
+        final_list = []
+        for key, item in d.items():
+            overall_rating = float(sum([x[0] for x in item]))/len(item)
+            comment_list = []
+            for entry in item:
+                comment_list.append({"username":entry[2], "comment":entry[1], "rating":entry[0]})
+            final_list.append({"meal":key, "overall_rating":overall_rating, "comments":comment_list})
+        final_list.sort(key=lambda entry: entry["meal"].date, reverse=True)
+
+    return render(request, template_name="menu/menu_reviews.html", context={"all_meals": final_list, "steward":steward})
 
 def check_if_steward(user):
     return user.groups.all().filter(name="stewards").count() > 0

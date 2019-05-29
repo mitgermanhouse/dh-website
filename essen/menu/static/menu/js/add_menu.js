@@ -16,6 +16,7 @@ function addItem(caller) {
     var new_element = document.createElement("input");
     new_element.setAttribute("list", "recipe_choices");
     new_element.setAttribute("class", "form-control");
+    new_element.required = true;
     new_element.name = "item_" + num;
     new_element.id = "item_" + recipe_id;
 
@@ -78,11 +79,6 @@ function addDayMenu() {
     container.setAttribute("class", "panel panel-default");
     $("#edit_form").append(container);
 
-    // populate the meal form
-    // var container = document.createElement("div");
-    // container.setAttribute("class", "panel panel-default");
-    // $(container).appendTo(meal_div);
-
     // heading
     var choose_day = document.createElement("div");
     choose_day.setAttribute("id", "choose_day");
@@ -102,7 +98,7 @@ function addDayMenu() {
     body.setAttribute("id", "body_" + meal_id);
     body.setAttribute("class", "panel-body form-group");
     var addButton = $('<button>', {class: "add_day_menu_button btn btn-primary",
-        id: 'add_button_' + meal_id, text: "Add another recipe", onclick: "addItem()"});
+        id: 'add_button_' + meal_id, text: "Add another recipe", onclick: "addItem()", type:"button"});
     addButton.appendTo(body);
     container.appendChild(body);
 

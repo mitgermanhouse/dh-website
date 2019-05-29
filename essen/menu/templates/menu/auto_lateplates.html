@@ -9,7 +9,7 @@
     {% if user.is_authenticated %}
         <link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
         <script src="{% static 'menu/js/autolateplate.js' %}"></script>
-        <h2>Register for Automatic Lateplates</h2>
+        <h2>{{user.get_full_name}}'s Automatic Lateplates</h2>
 
         <div>
             Any changes will go into effect starting with <strong>next</strong> week's menu.

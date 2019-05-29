@@ -43,7 +43,7 @@
             <div class="panel-heading"><h2>{{recipe}}</h2></div>
             <div class="panel-body">
                 <h3>Ingredients</h3>
-                <table class="table">
+                <table class="table table-striped">
                 {% for ingredient in recipe.ingredient_set.all %}
                     <tr>
                         <td>{{ingredient}}</td>
