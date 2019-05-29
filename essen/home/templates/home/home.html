@@ -28,7 +28,7 @@
                         <img width="100%" src="{% static 'home/img/brassrats.jpg'%}">
                     </div>
                     <div class="col-sm-6" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/apples2.jpg'%}">
+                        <img width="100%" src="{% static 'home/img/applepicking2.jpg'%}">
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
             <div class="col-sm-3">
                 <div class="row">
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/people.jpg'%}">
+                        <img width="100%" src="{% static 'home/img/dhfreshmen.jpg'%}">
                     </div>
                     <div class="col-sm-12" style="padding:5px">
                         <img width="100%" src="{% static 'home/img/apples.jpg'%}">
@@ -68,17 +68,13 @@
             <h1>Members</h1>
             <table class="table">
                 {% for member in members %}
+                hi
                 <tr>
                     <td class="col-sm-4"><img style="max-width:50%;" src="{{member.image.url}}"></td>
                     <td class="col-sm-2">{{member}} <br> {{member.class_year}} <br> {{member.major}} </td>
                     <td class="col-sm-6">{{member.bio}}</td>
                 </tr>
                 {% endfor %}
-                <tr>
-                    <td class="col-sm-4"><img style="max-width:50%;" src="https://hips.hearstapps.com/ghk.h-cdn.co/assets/17/41/shih-tzu.jpg"></td>
-                    <td class="col-sm-2">{{member}} <br> {{member.class_year}} <br> {{member.major}} </td>
-                    <td class="col-sm-6">{{member.bio}}</td>
-                </tr>
             </table>
 
         </div>

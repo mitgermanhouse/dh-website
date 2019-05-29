@@ -7,6 +7,10 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 import os
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import sys
 
 # Create your views here.
 
@@ -40,7 +44,8 @@ def submit_profile(request):
 
         p = dict(request.FILES.iterlists())
         d = dict(request.POST.iterlists())
-        image = p["pic"][0]
+        img = p["pic"][0]
+
         class_year = d["class_year"][0]
         bio = d["bio"][0]
         major = d["major"][0]
@@ -53,7 +58,21 @@ def submit_profile(request):
 
         member.bio = bio
         member.class_year = class_year
-        member.image = image
+        member.image = img
+
+        # resize the image so loading time is not ridiculously long
+        output = BytesIO()
+        im = Image.open(member.image)
+        basewidth = 300
+        width, height = im.size
+        wpercent = (basewidth / float(width))
+        hsize = int((float(height) * float(wpercent)))
+        im = im.resize((basewidth, hsize), Image.ANTIALIAS)
+        im.save(output, format='JPEG', quality=100)
+        output.seek(0)
+        member.image = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % member.image.name.split('.')[0], 'image/jpeg',
+                                        sys.getsizeof(output), None)
+
         member.major = major
         member.save()
 
