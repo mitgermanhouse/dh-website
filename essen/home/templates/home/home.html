@@ -69,7 +69,7 @@
             <table class="table">
                 {% for member in members %}
                 <tr>
-                    <td class="col-sm-4"><img style="max-width:50%;" src="https://hips.hearstapps.com/ghk.h-cdn.co/assets/17/41/shih-tzu.jpg"></td>
+                    <td class="col-sm-4"><img style="max-width:50%;" src="{{member.image.url}}"></td>
                     <td class="col-sm-2">{{member}} <br> {{member.class_year}} <br> {{member.major}} </td>
                     <td class="col-sm-6">{{member.bio}}</td>
                 </tr>
