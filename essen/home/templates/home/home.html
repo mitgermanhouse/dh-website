@@ -68,10 +68,9 @@
             <h1>Members</h1>
             <table class="table">
                 {% for member in members %}
-                hi
                 <tr>
-                    <td class="col-sm-4"><img style="max-width:50%;" src="{{member.image.url}}"></td>
-                    <td class="col-sm-2">{{member}} <br> {{member.class_year}} <br> {{member.major}} </td>
+                    <td class="col-sm-4"><img style="max-width:60%;" src="{{member.image.url}}"></td>
+                    <td class="col-sm-2"><h4>{{member}}</h4> <br> {{member.class_year}} <br> {{member.major}} </td>
                     <td class="col-sm-6">{{member.bio}}</td>
                 </tr>
                 {% endfor %}

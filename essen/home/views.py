@@ -63,7 +63,7 @@ def submit_profile(request):
         # resize the image so loading time is not ridiculously long
         output = BytesIO()
         im = Image.open(member.image)
-        basewidth = 300
+        basewidth = 150
         width, height = im.size
         wpercent = (basewidth / float(width))
         hsize = int((float(height) * float(wpercent)))
