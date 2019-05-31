@@ -66,7 +66,7 @@ def submit_profile(request):
         # resize the image so loading time is not ridiculously long
         output = BytesIO()
         im = Image.open(member.image)
-        basewidth = 150
+        basewidth = 200
         width, height = im.size
         wpercent = (basewidth / float(width))
         hsize = int((float(height) * float(wpercent)))
@@ -79,7 +79,7 @@ def submit_profile(request):
         member.major = major
         member.save()
 
-    return HttpResponseRedirect(reverse('home:home') + "#" + request.user.username())
+    return HttpResponseRedirect(reverse('home:home') + "#" + request.user.username)
 
 def check_if_profile_edit_access(user):
     # users under profile ban will not be allowed to edit their profiles (for trolling prevention)
