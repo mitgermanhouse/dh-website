@@ -26,6 +26,7 @@
 
                 <div class="panel panel-body">
                     <form action="{% url 'menu:submit_rating' meal.id %}">
+                        {% csrf_token %}
                         <div class="row">
                             <div class="col-sm-2">
                                 <div style="margin: 15px; text-align: right">

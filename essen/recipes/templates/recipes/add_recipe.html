@@ -1,42 +1,108 @@
+{% extends 'essen/base.html' %}
 
 {% load static %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="{% static 'recipes/js/edit_script.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'recipes/css/style.css' %}">
+{% block content %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">
-<div>
-    <ul class = 'navbar'>
-        <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-        <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-    </ul>
+<script src="{% static 'recipes/js/edit_script.js' %}"></script>
+
+<div class="row">
+    <div class="row">
+        <div class="col-sm-2">
+        </div>
+        <div class="col-sm-8">
+            <div class="panel panel-default">
+
+                <div class="panel panel-body">
+                    <form class="form-control-group" id="edit_form" action="{% url 'recipes:submit_recipe' %}"
+                          method="post" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+                                    <label for="recipe_name">Name:</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="text" id="recipe_name" name="recipe_name"
+                                       value="{{ recipe.recipe_name }}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+
+                                    <label for='serving_size'>Serving Size:</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <input min="1" class="form-control" type="number" id="serving_size"
+                                       name="serving_size"
+                                       value="{{ recipe.serving_size }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div style="margin: 15px; text-align: right">
+
+                                    <label for='directions'>Directions:</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <textarea rows="15" class="form-control" type="text" id="directions" name="directions"
+                                          value="{{ recipe.directions }}" required>{{ recipe.directions }}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="text-center" id="submit_div" style="margin-top:20px;">
+                            <button class="btn btn-default" type="button" onclick="addIngredient()">Add Ingredient</button>
+                        </div>
+                        <div style="margin-top:10px;" id="ingredient_list">
+
+                            <div id="div_1" class="ing_div">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div style="margin: 15px; text-align: right">
+                                            <label for='ingredient_1'>Ingredient:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input class="form-control" type="text" id="ingredient_1"
+                                               name="ingredient" required>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div style="margin: 15px; text-align: right">
+                                            <label for='quantity_1'>Quantity:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input class="form-control" type="number" id="quantity_1"
+                                               name="quantity" required>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <div style="margin: 15px; text-align: right">
+                                            <label for='units_1'>Unit:</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input class="form-control" type="text" id="units_1"
+                                               name="units" required>
+                                    </div>
+                                    <div class="col-sm-1">
+                                        <label for="div_1" class="remove"> &#x2717 </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center" id="submit_div">
+                            <input class="btn btn-primary" id="submit" type="submit" value="Submit Recipe"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<form id="edit_form" action="{% url 'recipes:submit_recipe'%}" method="post" onsubmit="return validateForm()">
-{% csrf_token %}
-    <div>
-        <label for='recipe_name'>Name:</label>
-        <input type="text" id="recipe_name" name="recipe_name">
-        <label for='serving_size'>Serving Size:</label>
-        <input type="number" id="serving_size" name="serving_size">
-    </div>
-
-    <div>
-        <label for='directions'>Directions:</label>
-        <input type="text" id="directions" name="directions">
-    </div>
-
-    <div id="div_1" class="ing_div">
-        <label for='Ingredient_0'>Ingredient:</label>
-        <input type="text" id="Ingredient_0" name="Ingredient">
-        <label for='Quantity_0'>Quantity:</label>
-        <input type="number" id="Quantity_0" name="Quantity">
-        <label for='Unit_0'>Unit:</label>
-        <input type="text" id="Unit_0" name="Unit">
-        <label for="div_1" class="remove"> &#x2717 </label>
-    </div>
-    <input id="submit" type="submit" value="Submit"/>
-</form>
-
-<button type="button" onclick="addIngredient()">Add Ingredient</button>
+{% endblock %}

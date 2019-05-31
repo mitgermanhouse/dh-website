@@ -1,3 +1,5 @@
+var numIngredients;
+
 function validateForm() {
   var inputs = document.forms["edit_form"].getElementsByTagName("input");
   var i;
@@ -10,36 +12,42 @@ function validateForm() {
 }
 
 function addIngredient() {
-    var div_len = $('.ing_div').length + 1
-
-    var form = document.getElementById("edit_form");
-
-    var div = document.createElement("div");
-    div.setAttribute('class', 'ing_div')
-    div.setAttribute('id', 'div_' + div_len)
-    var ids = ["Ingredient", "Quantity", "Unit"];
-    var i;
-    for (i = 0; i < 3; i++) {
-        var new_element = document.createElement("input");
-        new_element.name = ids[i];
-        new_element.id = ids[i] + "_" + div_len;
-
-        var new_label = document.createElement("label");
-        new_label.setAttribute('for', ids[i] + "_" + div_len);
-        new_label.innerHTML = capitalizeFirstLetter(" " + ids[i] + ":" + " ");
-
-        div.appendChild(new_label);
-        div.appendChild(new_element);
-    }
-    var div_label = document.createElement("label");
-    div_label.setAttribute('for', 'div_'+div_len);
-    div_label.innerHTML = ' &#x2717 ';
-    div_label.setAttribute('class', 'remove');
-    div.appendChild(div_label);
-
-    var submit_button = document.getElementById("submit");
-
-    form.insertBefore(div, submit_button);
+    numIngredients++;
+    var html= `<div id="div_` + numIngredients.toString() + `" class="ing_div">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div style="margin: 15px; text-align: right">
+                                <label for='ingredient_` + numIngredients.toString() + `'>Ingredient:</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="form-control" type="text" id="ingredient_` + numIngredients.toString() + `"
+                                   name="ingredient" required>
+                        </div>
+                        <div class="col-sm-2">
+                            <div style="margin: 15px; text-align: right">
+                                <label for='quantity_` + numIngredients.toString() + `'>Quantity:</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="form-control" type="number" id="quantity_` + numIngredients.toString() + `"
+                                   name="quantity" required>
+                        </div>
+                        <div class="col-sm-1">
+                            <div style="margin: 15px; text-align: right">
+                                <label for='units_` + numIngredients.toString() + `'>Unit:</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="form-control" type="text" id="units_` + numIngredients.toString() + `"
+                                   name="units" required>
+                        </div>
+                        <div class="col-sm-1">
+                            <label for="div_` + numIngredients.toString() + `" class="remove"> &#x2717 </label>
+                        </div>
+                    </div>
+                </div>`;
+    $(html).appendTo(document.getElementById("ingredient_list"));
 }
 
 function capitalizeFirstLetter(string) {
@@ -48,6 +56,8 @@ function capitalizeFirstLetter(string) {
 
 
 $(document).ready(function() {
+    numIngredients = $('.ing_div').length;
+
     $(document).on('click', '.remove', function(event) {
         target = event.target.htmlFor.split("_");
         if (target[0] == 'div') {
@@ -60,7 +70,6 @@ $(document).ready(function() {
             var ing = document.getElementById("div_" + num);
             ing.parentNode.removeChild(ing);
         }
-
     });
 });
 

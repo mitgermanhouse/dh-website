@@ -16,7 +16,8 @@
     <div class="col-sm-1"></div>
     <div class="col-sm-10">
         <div class="text-center">
-            <h1>Welcome to German House!</h1>
+            <h1 style="border-bottom: 1px solid slategrey">Welcome to German House!</h1>
+            <h1><small><a href="#about">About</a> | <a href="#members">Members</a> | <a href="#i3">i3 Videos</a></small></h1>
         </div>
         <div class="row">
             <div class="col-sm-6">
@@ -61,36 +62,63 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="about">
     <div class="col-sm-1"></div>
     <div class="col-sm-10">
         <div class="text-center">
-            <h1>Members</h1>
-            <table class="table">
-                {% for member in members %}
-                <tr>
-                    <td class="col-sm-4"><img style="max-width:60%;" src="{{member.image.url}}"></td>
-                    <td class="col-sm-2"><h4>{{member}}</h4> <br> {{member.class_year}} <br> {{member.major}} </td>
-                    <td class="col-sm-6">{{member.bio}}</td>
-                </tr>
-                {% endfor %}
-            </table>
-
+            <h1 style="border-bottom: 1px solid slategrey">About Us</h1>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <h3>Culture</h3>
+                yah-di-yah-di yah something about culture
+            </div>
+            <div class="col-sm-4">
+                <h3>Cookcrew</h3>
+                how we won the pink panther ripp
+            </div>
+            <div class="col-sm-4">
+                <h3>Living</h3>
+                doubles and singles, blah blah blah
+            </div>
         </div>
     </div>
 </div>
 
-<!--<div class="row">-->
-<!--    <div class="col-sm-1"></div>-->
-<!--    <div class="col-sm-10">-->
-<!--        <div class="text-center">-->
-<!--            <h1>Welcome to German House!</h1>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="row" id="members">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-10">
+        <div class="text-center">
+            <h1 style="border-bottom: 1px solid slategrey">Members</h1>
+        </div>
+        <table class="table">
+            {% for member in members %}
+            <tr id="{{member.user.username}}">
+                <div class="col-sm-4"><img style="max-width:60%;" src="{{member.image.url}}"></div>
+                <div class="col-sm-2"><h4 style="margin-bottom: 0px;">{{member}}</h4> <br> {{member.class_year}} <br> {{member.major}} </div>
+                <div class="col-sm-6">{{member.bio}}</div>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 
-
-
+<div class="row" id="i3">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-10">
+        <div class="text-center">
+            <h1 style="border-bottom: 1px solid slategrey">i3 Videos</h1>
+            <table class="table">
+                <h3>2018</h3>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+                <h3>2015</h3>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0" allowfullscreen=""></iframe>
+                <h3>2014</h3>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0" allowfullscreen=""></iframe>
+            </table>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 </html>

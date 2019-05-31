@@ -58,9 +58,21 @@
         </div>
     </div>
 
+
     <div class="col-sm-2" id="functions">
-        <a href="{% url 'recipes:edit' recipe.id %}"> Click Me to Edit! </a>
+        {% if steward %}
+        <ul class="nav nav-pills nav-stacked">
+            <li>
+                <a href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
+            </li>
+
+            <li>
+                <a href="{% url 'recipes:delete' recipe.id %}">Delete Recipe</a>
+            </li>
+        </ul>
+        {% endif %}
     </div>
+
 
 {% endblock %}
 

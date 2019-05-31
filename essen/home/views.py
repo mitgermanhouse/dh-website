@@ -31,15 +31,15 @@ def edit_profile(request):
         member = None
         if len(member_list) == 0:
             member = Member(user=user)
-            member.save()
+            # member.save()
         else:
             member = member_list.first()
-        d = {context_object_name: member}
+        d = {context_object_name: member, "edit_access":check_if_profile_edit_access(user)}
 
     return render(request, template_name, d)
 
 def submit_profile(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and check_if_profile_edit_access(request.user):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         p = dict(request.FILES.iterlists())
@@ -51,10 +51,13 @@ def submit_profile(request):
         major = d["major"][0]
 
         # get the member entry
-        member = Member.objects.filter(user=request.user).first()
-        # delete old image
-        # if str(member.image) != "":
-            # os.remove(os.path.join(BASE_DIR, "media", str(member.image)))
+        member_list = Member.objects.filter(user=request.user)
+        member = None
+        if len(member_list) == 0:
+            member = Member(user=request.user)
+            # member.save()
+        else:
+            member = member_list.first()
 
         member.bio = bio
         member.class_year = class_year
@@ -76,9 +79,11 @@ def submit_profile(request):
         member.major = major
         member.save()
 
-    return HttpResponseRedirect(reverse('home:edit_profile'))
+    return HttpResponseRedirect(reverse('home:home') + "#" + request.user.username())
 
-
+def check_if_profile_edit_access(user):
+    # users under profile ban will not be allowed to edit their profiles (for trolling prevention)
+    return user.groups.all().filter(name="profile_ban").count() == 0
 
 
 

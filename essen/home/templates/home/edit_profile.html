@@ -5,6 +5,7 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+{% if edit_access %}
 <div class="row">
     <div class="row">
         <div class="col-sm-2">
@@ -95,7 +96,10 @@
 <!--    </div>-->
 </div>
 {% else %}
-<h2>You must log in to edit your profile.</h2>
+<h4>Due to profile trolling, you are not allowed to edit your profile. For desired changes, contact your webmaster.</h4>
+{% endif %}
+{% else %}
+<h4>You must log in to edit your profile.</h4>
 {% endif %}
 
 {% endblock %}

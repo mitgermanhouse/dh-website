@@ -26,6 +26,7 @@
         </div>
         <div class="col-sm-8">
             <form action="{% url 'recipes:index' %}">
+                {% csrf_token %}
                 <input value="{{searchbar}}" id="searchbar" name="searchbar" class="form-control" type="text" placeholder="Search recipe names, ingredients" aria-label="Search">
                 <input id="query" name="query" style="display:none;" value="{{query}}">
                 <input type="submit" style="display:none;">
@@ -46,10 +47,11 @@
         </div>
     </div>
 
-
     <div class="col-sm-2">
         <ul class="nav nav-pills nav-stacked">
+            {% if user.is_authenticated %}
             <li><a href="{% url 'recipes:add_recipe' %}">Add Recipes!</a></li>
+            {% endif %}
         </ul>
     </div>
 </div>

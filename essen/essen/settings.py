@@ -125,7 +125,7 @@ USE_TZ = True
 MEDIA_ROOT = "/afs/athena.mit.edu/user/k/d/kderek/web_scripts/media/"
 
 MEDIA_URL = "http://kderek.scripts.mit.edu/media/"
-
+#
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
