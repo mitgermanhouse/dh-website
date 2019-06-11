@@ -67,6 +67,7 @@
     <div class="col-sm-10">
         <div class="text-center">
             <h1 style="border-bottom: 1px solid slategrey">About Us</h1>
+            We are a cultural community of 28 in New House, an MIT residence located on West Campus about a 10 minute walk from main classes.
         </div>
         <div class="row">
             <div class="col-sm-4">
@@ -91,15 +92,15 @@
         <div class="text-center">
             <h1 style="border-bottom: 1px solid slategrey">Members</h1>
         </div>
-        <table class="table">
+        <div class="container">
             {% for member in members %}
-            <tr id="{{member.user.username}}">
+            <div class="row" id="{{member.user.username}}">
                 <div class="col-sm-4"><img style="max-width:60%;" src="{{member.image.url}}"></div>
                 <div class="col-sm-2"><h4 style="margin-bottom: 0px;">{{member}}</h4> <br> {{member.class_year}} <br> {{member.major}} </div>
                 <div class="col-sm-6">{{member.bio}}</div>
-            </tr>
+            </div>
             {% endfor %}
-        </table>
+        </div>
     </div>
 </div>
 

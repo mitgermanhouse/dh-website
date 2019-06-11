@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 import os
-from PIL import Image
+from PIL import Image, ExifTags
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
@@ -63,9 +63,28 @@ def submit_profile(request):
         member.class_year = class_year
         member.image = img
 
-        # resize the image so loading time is not ridiculously long
         output = BytesIO()
         im = Image.open(member.image)
+
+        # some images come out rotated incorrectly due to EXIF data
+        # solution from: https://stackoverflow.com/questions/13872331/rotating-an-image-with-orientation-specified-in-exif-using-python-without-pil-in
+        try:
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation] == 'Orientation':
+                    break
+            exif = dict(im._getexif().items())
+
+            if exif[orientation] == 3:
+                im = im.rotate(180, expand=True)
+            elif exif[orientation] == 6:
+                im = im.rotate(270, expand=True)
+            elif exif[orientation] == 8:
+                im = im.rotate(90, expand=True)
+        except (AttributeError, KeyError, IndexError):
+            # cases: image don't have getexif
+            pass
+
+        # resize the image so loading time is not ridiculously long
         basewidth = 200
         width, height = im.size
         wpercent = (basewidth / float(width))
