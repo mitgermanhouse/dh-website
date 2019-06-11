@@ -23,13 +23,13 @@
             <div class="col-sm-6">
                 <div class="row">
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/camping.png'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/camping.png'%}">
                     </div>
                     <div class="col-sm-6" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/brassrats.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/brassrats.jpg'%}">
                     </div>
                     <div class="col-sm-6" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/applepicking2.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/applepicking2.jpg'%}">
                     </div>
                 </div>
             </div>
@@ -37,13 +37,13 @@
             <div class="col-sm-3">
                 <div class="row">
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/cookcrew.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/cookcrew.jpg'%}">
                     </div>
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/skating.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/skating.jpg'%}">
                     </div>
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/dh.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/dh.jpg'%}">
                     </div>
                 </div>
             </div>
@@ -51,10 +51,10 @@
             <div class="col-sm-3">
                 <div class="row">
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/dhfreshmen.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/dhfreshmen.jpg'%}">
                     </div>
                     <div class="col-sm-12" style="padding:5px">
-                        <img width="100%" src="{% static 'home/img/apples.jpg'%}">
+                        <img class="img-rounded" width="100%" src="{% static 'home/img/apples.jpg'%}">
                     </div>
                 </div>
             </div>
@@ -94,10 +94,16 @@
         </div>
         <div class="container">
             {% for member in members %}
-            <div class="row" id="{{member.user.username}}">
-                <div class="col-sm-4"><img style="max-width:60%;" src="{{member.image.url}}"></div>
-                <div class="col-sm-2"><h4 style="margin-bottom: 0px;">{{member}}</h4> <br> {{member.class_year}} <br> {{member.major}} </div>
-                <div class="col-sm-6">{{member.bio}}</div>
+            <div class="text-center">
+                <div class="row" id="{{member.user.username}}" style="padding-top:10px;">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2"><img class="img-responsive img-rounded" src="{{member.image.url}}"></div>
+                    <div class="col-sm-2"><h4 style="margin-bottom: 0px;">{{member}}</h4> <br> {{member.class_year}}
+                        <br> {{member.major}}
+                    </div>
+                    <div class="col-sm-4">{{member.bio}}</div>
+                    <div class="col-sm-2"></div>
+                </div>
             </div>
             {% endfor %}
         </div>
