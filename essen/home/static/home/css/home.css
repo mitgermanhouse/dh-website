@@ -1,6 +1,20 @@
 
-/*tr {*/
-/*   line-height: 50px;*/
-/*   min-height: 50px;*/
-/*   height: 50px;*/
-/*}*/
+.imgtext {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    visibility: hidden;
+    opacity: 0;
+    color: #337ab7;
+}
+
+.imgwrap:hover .img-rounded {
+    opacity:.2;
+}
+
+.imgwrap:hover .imgtext {
+    visibility: visible;
+    opacity: 1;
+}

@@ -17,47 +17,62 @@
     <div class="col-sm-10">
         <div class="text-center">
             <h1 style="border-bottom: 1px solid slategrey">Welcome to German House!</h1>
-            <h1><small><a href="#about">About</a> | <a href="#members">Members</a> | <a href="#i3">i3 Videos</a></small></h1>
+            <h1>
+                <small><a href="#about">About</a> | <a href="#members">Members</a> | <a href="#i3">i3 Videos</a></small>
+            </h1>
         </div>
         <div class="row">
             <div class="col-sm-6">
                 <div class="row">
-                    <div class="col-sm-12" style="padding:5px">
+                    <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/camping.png'%}">
+                        <p class="imgtext">Every semester, we have a DH outing! This time, we went Walden Pond (yes, the
+                            Thoreau Walden Pond!)</p>
                     </div>
-                    <div class="col-sm-6" style="padding:5px">
+                    <div class="col-sm-6 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/brassrats.jpg'%}">
+                        <p class="imgtext">DH at 2018 Ring Delivery</p>
                     </div>
-                    <div class="col-sm-6" style="padding:5px">
+                    <div class="col-sm-6 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/applepicking2.jpg'%}">
+                        <p class="imgtext">MIT wide trip to apple picking, ft. DH</p>
                     </div>
                 </div>
             </div>
 
             <div class="col-sm-3">
                 <div class="row">
-                    <div class="col-sm-12" style="padding:5px">
+                    <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/cookcrew.jpg'%}">
+                        <p class="imgtext">We celebrate Oktoberfest by cooking traditional foods so we can feast and
+                            invite friends!</p>
                     </div>
-                    <div class="col-sm-12" style="padding:5px">
+                    <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/skating.jpg'%}">
+                        <p class="imgtext">Halloween ice skating at an event called Spooky Skate!</p>
                     </div>
-                    <div class="col-sm-12" style="padding:5px">
+                    <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/dh.jpg'%}">
+                        <p class="imgtext">A reg-day trip to The Friendly Toast, yum!</p>
                     </div>
                 </div>
             </div>
 
             <div class="col-sm-3">
                 <div class="row">
-                    <div class="col-sm-12" style="padding:5px">
+                    <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/dhfreshmen.jpg'%}">
+                        <p class="imgtext">Our wonderful 2022s!</p>
                     </div>
-                    <div class="col-sm-12" style="padding:5px">
+                    <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/apples.jpg'%}">
+                        <p class="imgtext">No firemen had to be called to get us down from these apple trees!</p>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="col-sm-12">
+            <p class="text" style="text-align:center; color:grey"><em>Hover over the pictures to see what's happening!</em></p>
         </div>
     </div>
 </div>
@@ -67,20 +82,32 @@
     <div class="col-sm-10">
         <div class="text-center">
             <h1 style="border-bottom: 1px solid slategrey">About Us</h1>
-            We are a cultural community of 28 in New House, an MIT residence located on West Campus about a 10 minute walk from main classes.
         </div>
         <div class="row">
             <div class="col-sm-4">
                 <h3>Culture</h3>
-                yah-di-yah-di yah something about culture
+                In German House, you'll live with 28 students in an independent community inside New House. We eat
+                together, play music together, speak German with poor accents together, and fight through psets
+                together. We're into playing games with each other, from smash, to jackbox games, codenames, and more.
+                One of the great things about German House is that the community is small enough to know everyone, but
+                large enough that there is always someone in the lounge to hang out with.
             </div>
             <div class="col-sm-4">
                 <h3>Cookcrew</h3>
-                how we won the pink panther ripp
+                German House keeps you well-fed with home-cooked meals. You will become a member of a cook crew of 4 or
+                5 people, and cook for everyone once a week in the best kitchen of any dorm here at MIT. The rest of the
+                week, you will benefit from the culinary skills of other members. On any given night, our meal could
+                include quinoa salads, fried rice, honey-glazed baked chicken, oreo truffles, and sometimes even the
+                occasional surprise created from any extra ingredients left over from the week. You can check out our
+                recipes <a href="{% url 'recipes:index' %}">here!</a>
             </div>
             <div class="col-sm-4">
                 <h3>Living</h3>
-                doubles and singles, blah blah blah
+                German House members come from all over the world. People here grew up speaking English, German,
+                Chinese, Swahili, Korean and more. Several of us speak a fluent German, and others have taken German
+                classes in high school and MIT. Our common interest in the culture ties us all together -- some people
+                spend entire summers working in Germany; while some travel to Germany over IAP. Others simply want to
+                practice the occasional German on duolingo, or even just watch German movies once in a while.
             </div>
         </div>
     </div>
@@ -95,16 +122,24 @@
         <div class="container">
             {% for member in members %}
             <div class="text-center">
-                <div class="row" id="{{member.user.username}}" style="padding-top:10px;">
-                    <div class="col-sm-1"></div>
-                    <div class="col-sm-3"><span class="pull-right"><img class="img-responsive img-rounded" src="{{member.image.url}}"></span></div>
-                    <div class="col-sm-2"><h4 style="margin-bottom: 0px;">{{member}}</h4> <br> {{member.class_year}}
-                        <br> {{member.major}}
+                <div style="display:flex;align-items:center;">
+
+                    <div class="row" id="{{member.user.username}}" style="padding-top:10px;">
+                        <div class="col-sm-1 col-xs-0"></div>
+
+                        <div class="col-sm-3 col-xs-12"><span class=""><img class="img-responsive img-rounded"
+                                                                            src="{{member.image.url}}"></span></div>
+                        <div class="col-sm-2 col-xs-12"><h4 style="margin-bottom: 0px;">
+                            {{member}}</h4> <br> {{member.class_year}}
+                            <br> {{member.major}}
+                        </div>
+                        <div class="col-sm-4 col-xs-12">{{member.bio}}</div>
+                        <div class="col-sm-1 col-xs-0"></div>
                     </div>
-                    <div class="col-sm-4">{{member.bio}}</div>
-                    <div class="col-sm-1"></div>
+
                 </div>
             </div>
+
             {% endfor %}
         </div>
     </div>
@@ -117,11 +152,14 @@
             <h1 style="border-bottom: 1px solid slategrey">i3 Videos</h1>
             <table class="table">
                 <h3>2018</h3>
-                <iframe width="640" height="360" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0"
+                        allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
                 <h3>2015</h3>
-                <iframe width="640" height="360" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0" allowfullscreen=""></iframe>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0"
+                        allowfullscreen=""></iframe>
                 <h3>2014</h3>
-                <iframe width="640" height="360" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0" allowfullscreen=""></iframe>
+                <iframe width="640" height="360" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0"
+                        allowfullscreen=""></iframe>
             </table>
         </div>
     </div>

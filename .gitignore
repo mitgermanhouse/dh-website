@@ -1,5 +1,5 @@
-
+**/media/home/images/*
 *.pyc
-
+**essen/essen/settings.py
 .DS_Store
 
