@@ -18,13 +18,13 @@
         <div class="col-sm-1">
 
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <div class="btn-group">
                 <button onpress="btnpress()" id="recipe_search" type="button" class="btn btn-primary">Recipes</button>
                 <button id="ingredient_search" type="button" class="btn btn-primary">Ingredients</button>
             </div>
         </div>
-        <div class="col-sm-8">
+        <div class="col-sm-7">
             <form action="{% url 'recipes:index' %}">
                 {% csrf_token %}
                 <input value="{{searchbar}}" id="searchbar" name="searchbar" class="form-control" type="text" placeholder="Search recipe names, ingredients" aria-label="Search">

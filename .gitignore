@@ -2,4 +2,5 @@
 *.pyc
 **essen/essen/settings.py
 .DS_Store
+**essen/db.sqlite3
 

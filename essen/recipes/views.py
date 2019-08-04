@@ -57,11 +57,11 @@ def submit_recipe(request):
         d = dict(request.POST.iterlists())
         r = Recipe(recipe_name=d['recipe_name'][0], directions=d['directions'][0], serving_size=int(d['serving_size'][0]))
         r.save()
-
+        print(d)
         if 'ingredient' in d:
-            for i in range(len(d['Ingredient'])):
-                Ingredient(recipe=r, ingredient_name=d['Ingredient'][i], units=d['Unit'][i],
-                               quantity=float(d['Quantity'][i])).save()
+            for i in range(len(d['ingredient'])):
+                Ingredient(recipe=r, ingredient_name=d['ingredient'][i], units=d['units'][i],
+                               quantity=float(d['quantity'][i])).save()
 
     return HttpResponseRedirect(reverse('recipes:detail', args=[r.id]))
 
