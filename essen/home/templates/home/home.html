@@ -12,6 +12,7 @@
 <html>
 {% block content %}
 
+<div class="container-fluid">
 <div class="row">
     <div class="col-sm-1"></div>
     <div class="col-sm-10">
@@ -22,25 +23,25 @@
             </h1>
         </div>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-6 col-xs-12">
                 <div class="row">
-                    <div class="col-sm-12 imgwrap" style="padding:5px">
+                    <div class="col-sm-12 col-xs-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/camping.png'%}">
                         <p class="imgtext">Every semester, we have a DH outing! This time, we went Walden Pond (yes, the
                             Thoreau Walden Pond!)</p>
                     </div>
-                    <div class="col-sm-6 imgwrap" style="padding:5px">
+                    <div class="col-sm-6 col-xs-6 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/brassrats.jpg'%}">
-                        <p class="imgtext">DH at 2018 Ring Delivery</p>
+                        <p class="imgtext"a>DH at 2018 Ring Delivery</p>
                     </div>
-                    <div class="col-sm-6 imgwrap" style="padding:5px">
+                    <div class="col-sm-6 col-xs-6 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/applepicking2.jpg'%}">
                         <p class="imgtext">MIT wide trip to apple picking, ft. DH</p>
                     </div>
                 </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-3 col-xs-6">
                 <div class="row">
                     <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/cookcrew.jpg'%}">
@@ -58,7 +59,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-3 col-xs-6">
                 <div class="row">
                     <div class="col-sm-12 imgwrap" style="padding:5px">
                         <img class="img-rounded" width="100%" src="{% static 'home/img/dhfreshmen.jpg'%}">
@@ -75,6 +76,7 @@
             <p class="text" style="text-align:center; color:grey"><em>Hover over the pictures to see what's happening!</em></p>
         </div>
     </div>
+</div>
 </div>
 
 <div class="row" id="about">
@@ -113,6 +115,7 @@
     </div>
 </div>
 
+<div class="container">
 <div class="row" id="members">
     <div class="col-sm-1"></div>
     <div class="col-sm-10">
@@ -123,10 +126,7 @@
             {% for member in members %}
             <div class="text-center">
                 <div style="display:flex;align-items:center;">
-
                     <div class="row" id="{{member.user.username}}" style="padding-top:10px;">
-                        <div class="col-sm-1 col-xs-0"></div>
-
                         <div class="col-sm-3 col-xs-12"><span class=""><img class="img-responsive img-rounded"
                                                                             src="{{member.image.url}}"></span></div>
                         <div class="col-sm-2 col-xs-12"><h4 style="margin-bottom: 0px;">
@@ -134,7 +134,6 @@
                             <br> {{member.major}}
                         </div>
                         <div class="col-sm-4 col-xs-12">{{member.bio}}</div>
-                        <div class="col-sm-1 col-xs-0"></div>
                     </div>
 
                 </div>
@@ -144,23 +143,31 @@
         </div>
     </div>
 </div>
+</div>
 
 <div class="row" id="i3">
     <div class="col-sm-1"></div>
     <div class="col-sm-10">
         <div class="text-center">
             <h1 style="border-bottom: 1px solid slategrey">i3 Videos</h1>
-            <table class="table">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
                 <h3>2018</h3>
-                <iframe width="640" height="360" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0"
-                        allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+                <div class="video-cont">
+                    <iframe class="video" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0"
+                            allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+                </div>
                 <h3>2015</h3>
-                <iframe width="640" height="360" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0"
-                        allowfullscreen=""></iframe>
+                <div class="video-cont">
+                    <iframe class="video" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0"
+                            allowfullscreen=""></iframe>
+                </div>
                 <h3>2014</h3>
-                <iframe width="640" height="360" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0"
-                        allowfullscreen=""></iframe>
-            </table>
+                <div class="video-cont">
+                    <iframe class="video" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0"
+                            allowfullscreen=""></iframe>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -40,7 +40,11 @@
 {% block content %}
 
     <div style="text-align: center; margin-bottom: 10px">
-        <h1> {{ menu }} </h1>
+        {% if menu %}
+            <h1> {{ menu }} </h1>
+        {% else %}
+            <h1>No menu for this week</h1>
+        {% endif %}
         <a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a> |
         <a href="{% url 'menu:index' %}">This Week</a> |
         <a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
