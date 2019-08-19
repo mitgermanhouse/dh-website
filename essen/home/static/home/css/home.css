@@ -1,4 +1,12 @@
 
+#col {
+  column-count: 3;
+}
+
+.cols {
+    break-inside: avoid-column;
+}
+
 .imgtext {
     position:absolute;
     top: 50%;
