@@ -18,7 +18,7 @@ def home(request):
     template_name = "home/home.html"
     context_object_name = "members"
 
-    return render(request, template_name, {context_object_name: Member.objects.all()})
+    return render(request, template_name, {context_object_name: Member.objects.all().order_by('class_year', '-user')})
 
 def edit_profile(request):
     template_name = "home/edit_profile.html"

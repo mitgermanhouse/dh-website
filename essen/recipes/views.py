@@ -26,14 +26,14 @@ def view_recipes(request):
 
     if 'searchbar' in d:
         if query_key == 'recipe_search':
-            recipes = Recipe.objects.all().filter(recipe_name__contains=search_key)
+            recipes = Recipe.objects.all().filter(recipe_name__icontains=search_key)
         elif search_key == "":
             recipes = Recipe.objects.all()
         else:
             recipes = []
             for recipe in Recipe.objects.all():
                 for ing in recipe.ingredient_set.all():
-                    if ing.ingredient_name.find(search_key) > -1:
+                    if ing.ingredient_name.lower().find(search_key.lower()) > -1:
                         recipes.append(recipe)
                         break
     else:
