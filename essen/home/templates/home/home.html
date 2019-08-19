@@ -4,8 +4,8 @@
 {% load static %}
 
 {% block script %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}">
-<script src="{% static 'home/js/home.js' %}"></script>
+<link rel="stylesheet" href="{% static 'home/css/home.css' ?reload%}">
+<script src="{% static 'home/js/home.js' ?reload%}"></script>
 
 {% endblock %}
 
@@ -87,7 +87,7 @@
         </div>
         <div class="row">
             <div class="col-sm-4">
-                <h3>Culture</h3>
+                <h3>Living</h3>
                 In German House, you'll live with 28 students in an independent community inside New House. We eat
                 together, play music together, speak German with poor accents together, and fight through psets
                 together. We're into playing games with each other, from smash, to jackbox games, codenames, and more.
@@ -104,7 +104,7 @@
                 recipes <a href="{% url 'recipes:index' %}">here!</a>
             </div>
             <div class="col-sm-4">
-                <h3>Living</h3>
+                <h3>Culture</h3>
                 German House members come from all over the world. People here grew up speaking English, German,
                 Chinese, Swahili, Korean and more. Several of us speak a fluent German, and others have taken German
                 classes in high school and MIT. Our common interest in the culture ties us all together -- some people
