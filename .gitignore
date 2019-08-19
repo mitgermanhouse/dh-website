@@ -1,6 +1,6 @@
 **/media/home/images/*
 *.pyc
-**essen/essen/settings.py
+**settings.py
 .DS_Store
-**essen/db.sqlite3
+**db.sqlite3
 
