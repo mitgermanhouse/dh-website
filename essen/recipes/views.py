@@ -6,6 +6,7 @@ from django.views import generic
 from recipes.models import Recipe, Ingredient
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.db.models.functions import Lower
 
 # Create your views here.
 
@@ -26,9 +27,9 @@ def view_recipes(request):
 
     if 'searchbar' in d:
         if query_key == 'recipe_search':
-            recipes = Recipe.objects.all().filter(recipe_name__icontains=search_key)
+            recipes = Recipe.objects.all().filter(recipe_name__icontains=search_key).order_by(Lower('recipe_name'))
         elif search_key == "":
-            recipes = Recipe.objects.all()
+            recipes = Recipe.objects.all().order_by(Lower('recipe_name'))
         else:
             recipes = []
             for recipe in Recipe.objects.all():
@@ -36,8 +37,9 @@ def view_recipes(request):
                     if ing.ingredient_name.lower().find(search_key.lower()) > -1:
                         recipes.append(recipe)
                         break
+            recipes.sort(key=lambda r: r.recipe_name.lower())
     else:
-        recipes = Recipe.objects.all()
+        recipes = Recipe.objects.all().order_by(Lower('recipe_name'))
 
     return render(request, "recipes/index.html", {"recipe_list": recipes, "searchbar": search_key, "query":query_key})
 
