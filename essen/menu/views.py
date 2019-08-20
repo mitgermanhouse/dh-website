@@ -79,9 +79,9 @@ def submit_menu(request):
             meal.save()
 
             # add automatic lateplates
-            for user in AutoLatePlate.objects.all():
-                if str(request.POST.get(key)) in str(user.days):
-                    l = LatePlate(meal=meal, name=user.get_full_name())
+            for auto_plate in AutoLatePlate.objects.all():
+                if str(request.POST.get(key)) in str(auto_plate.days):
+                    l = LatePlate(meal=meal, name=auto_plate.username)
                     l.save()
 
             # add recipes
