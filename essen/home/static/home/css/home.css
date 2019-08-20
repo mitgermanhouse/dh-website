@@ -1,6 +1,6 @@
 
 #col {
-  column-count: 3;
+  columns: 20em;
 }
 
 .cols {
