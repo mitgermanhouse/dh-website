@@ -167,6 +167,8 @@ def submit_auto_lateplates(request):
 def shopper(request, pk):
     template_name = 'menu/shopper.html'
     context_object_name = 'ingredients'
+    map = {"Sunday Brunch": 0, "Sunday Dinner": 1, "Monday Dinner": 2, "Tuesday Dinner": 3,
+                   "Wednesday Dinner": 4, "Thursday Dinner": 5}
 
     menu = get_object_or_404(Menu, pk=pk)
     d = dict(request.GET.iterlists())
@@ -174,22 +176,13 @@ def shopper(request, pk):
     after_filter = False
     after_date = (datetime.now() - timedelta(days=8)).date()
     if "filter_date" in d:
-        # try:
-        print(d)
-
-        print(datetime.strptime(d["after"][0], "%m-%d-%y").date())
-        after_date = datetime.strptime(d["after"][0], "%m-%d-%y").date()
-        print("successful parsing")
-
+        after_date = map[d["after"][0]]
         after_filter = d["filter_date"][0]
-        print("successful parsing")
-        # except:
-        #     pass
 
     all_ingredients = {}
 
     for meal in menu.meal_set.all():
-        if meal.date > after_date:
+        if map[meal.meal_name] > after_date:
             for recipe in meal.recipes.all():
                 scale_factor = float(menu.servings)/recipe.serving_size
                 for ingredient in recipe.ingredient_set.all():
@@ -203,7 +196,7 @@ def shopper(request, pk):
     ing_list.sort(key=lambda x: x["ing"])
 
     return render(request, template_name, {context_object_name: ing_list, "filter_date": after_filter,
-                                           "after_date": after_date.strftime("%b %d, %Y"), "notes":menu.notes})
+                                           "after_date": d["after"][0], "notes":menu.notes})
 
 
 def ingredient_info(request, ing, menu):
