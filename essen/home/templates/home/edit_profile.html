@@ -6,6 +6,7 @@
 
 {% if user.is_authenticated %}
 {% if edit_access %}
+<div class="container">
 <div class="row">
     <div class="row">
         <div class="col-sm-2">
@@ -81,19 +82,7 @@
             </div>
         </div>
     </div>
-<!--    <div class="row">-->
-<!--        <div class="col-sm-2"></div>-->
-<!--        <div class="col-sm-8">-->
-<!--            <h6>-->
-<!--                <small>-->
-<!--                    <div style="text-align: right;">-->
-<!--                        Only one review, per meal, per user is allowed. Subsequent reviews of the same meal-->
-<!--                        by the same user overwrite previous ones.-->
-<!--                    </div>-->
-<!--                </small>-->
-<!--            </h6>-->
-<!--        </div>-->
-<!--    </div>-->
+</div>
 </div>
 {% else %}
 <h4>Due to profile trolling, you are not allowed to edit your profile. For desired changes, contact your webmaster.</h4>

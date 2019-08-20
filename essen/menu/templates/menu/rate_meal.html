@@ -11,12 +11,12 @@
 {% if user.is_authenticated %}
 
 <!--graciously modified from https://codepen.io/anon/pen/XwBvoq-->
-
+<div class="container">
 <div class="row">
     <div class="row">
-        <div class="col-sm-2">
+        <div class="col-sm-1">
         </div>
-        <div class="col-sm-8">
+        <div class="col-sm-10">
             <div class="panel panel-default">
                 <div class="panel panel-heading">
                     <div class="text-center">
@@ -80,8 +80,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-8">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
             <h6><small>
                 <div style="text-align: right;">
                 Only one review, per meal, per user is allowed. Subsequent reviews of the same meal
@@ -91,7 +91,7 @@
         </div>
     </div>
 </div>
-
+</div>
 
 {% else %}
 <h2>You must log in to view this page</h2>
