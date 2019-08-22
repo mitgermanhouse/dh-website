@@ -178,6 +178,8 @@ def shopper(request, pk):
     if "filter_date" in d:
         after_date = map[d["after"][0]]
         after_filter = d["filter_date"][0]
+    else:
+        after_date = -1 # accept all recipes for shopping list
 
     all_ingredients = {}
 
