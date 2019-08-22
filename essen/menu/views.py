@@ -197,8 +197,11 @@ def shopper(request, pk):
     ing_list = [{"ing": key[0], "quantity": value, "unit": key[1]} for key, value in all_ingredients.items()]
     ing_list.sort(key=lambda x: x["ing"])
 
-    return render(request, template_name, {context_object_name: ing_list, "filter_date": after_filter,
-                                           "after_date": d["after"][0], "notes":menu.notes})
+    context_dict = {context_object_name: ing_list, "notes":menu.notes}
+    if after_filter:
+        context_dict["filter_date"] = after_filter
+        context_dict["after"] = d["after"][0]
+    return render(request, template_name, )
 
 
 def ingredient_info(request, ing, menu):
