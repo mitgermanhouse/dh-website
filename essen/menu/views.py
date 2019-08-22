@@ -201,7 +201,7 @@ def shopper(request, pk):
     if after_filter:
         context_dict["filter_date"] = after_filter
         context_dict["after"] = d["after"][0]
-    return render(request, template_name, )
+    return render(request, template_name, context_dict)
 
 
 def ingredient_info(request, ing, menu):
