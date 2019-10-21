@@ -60,7 +60,7 @@ def getLatePlateText(user):
     auto_plate = AutoLatePlate.objects.filter(username=user.username).first()
     dietary = ""
     emoji_mapping = {"Vegetarian": "&#x1F33F", "Lactose Free": "&#x1f95b", "Nut Free": "&#x1F95C",
-                     "No Pork": "&#x1F437", "No Red Meat": "&#x1f969"}
+                     "No Pork": "&#x1F437", "No Red Meat": "&#x1f969", "No Seafood": "&#x1f41f"}
     if len(auto_plate.dietary) > 0:
         for restriction in auto_plate.dietary.split(";"):
             if dietary == "":
@@ -159,7 +159,7 @@ def auto_lateplates(request):
     dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4}
     restrictions = [{"restriction" : "Vegetarian", "state" : False}, {"restriction" : "Lactose Free", "state" : False},
                     {"restriction": "Nut Free", "state": False}, {"restriction": "No Pork", "state": False},
-                    {"restriction": "No Red Meat", "state": False}]
+                    {"restriction": "No Red Meat", "state": False}, {"restriction": "No Seafood", "state": False}]
     lateplate = AutoLatePlate.objects.filter(username=request.user.username).first()
 
     if lateplate != None:
