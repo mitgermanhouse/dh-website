@@ -29,7 +29,6 @@ def index(request, date='None'):
     menu = Menu.objects.filter(start_date__year=y,
                                 start_date__month=m,
                                 start_date__day=d).first()
-    sorted_meals = menu.meal_set.order_by('date').all()
     date = date.encode('utf-8')
     if date != 'None':
         target_date = datetime.strptime(date, '%m/%d/%Y')
@@ -37,8 +36,9 @@ def index(request, date='None'):
         menu = Menu.objects.filter(start_date__year=y,
                                    start_date__month=m,
                                    start_date__day=d).first()
+    sorted_meals = {}
+    if menu != None:
         sorted_meals = menu.meal_set.order_by('date').all()
-
 
     return render(request, template_name, {context_object_name: menu, 'target_date': target_date, 'sorted_meals' : sorted_meals})
 
@@ -61,10 +61,11 @@ def getLatePlateText(user):
     dietary = ""
     emoji_mapping = {"Vegetarian": "&#x1F33F", "Lactose Free": "&#x1f95b", "Nut Free": "&#x1F95C",
                      "No Pork": "&#x1F437", "No Red Meat": "&#x1f969"}
-    for restriction in auto_plate.dietary.split(";"):
-        if dietary == "":
-            dietary += " "
-        dietary += emoji_mapping[restriction]
+    if len(auto_plate.dietary) > 0:
+        for restriction in auto_plate.dietary.split(";"):
+            if dietary == "":
+                dietary += " "
+            dietary += emoji_mapping[restriction]
 
     return user.get_full_name() + dietary
 
@@ -188,12 +189,12 @@ def submit_auto_lateplates(request):
                     days += ";"
                 days += day
                 print(day)
+
         if "dietary" in d.keys():
             for restriction in d.get("dietary"):
                 if dietary != "":
                     dietary += ";"
                 dietary += restriction
-        print(dietary)
         auto = AutoLatePlate(username=request.user.username, days=days, dietary=dietary)
         auto.save()
 
