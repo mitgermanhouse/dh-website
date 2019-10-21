@@ -30,7 +30,7 @@ function addIngredient() {
                             </div>
                         </div>
                         <div class="col-sm-2">
-                            <input class="form-control" type="number" id="quantity_` + numIngredients.toString() + `"
+                            <input class="form-control" type="number" step=".01" id="quantity_` + numIngredients.toString() + `"
                                    name="quantity" required>
                         </div>
                         <div class="col-sm-1">

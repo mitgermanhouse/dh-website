@@ -22,6 +22,16 @@
               <label><input type="checkbox" name="date" value="{{day.day}}" {% if day.state %} checked {% endif %}>{{day.day}}</label>
             </div>
             {% endfor %}
+
+            <h3>Add Dietary Restrictions:</h3>
+            {% for restriction in d_restrictions %}
+            <div class="checkbox">
+              <label>
+                  <input type="checkbox" name="dietary" value="{{restriction.restriction}}"
+                            {% if restriction.state %} checked {% endif %}>{{restriction.restriction}}
+              </label>
+            </div>
+            {% endfor %}
             <input class="btn btn-primary" id="submit" type="submit" value="Save"/>
         </form>
     {% else %}

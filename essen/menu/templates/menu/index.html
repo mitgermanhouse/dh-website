@@ -35,33 +35,32 @@
 <!--<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">-->
 {% endblock %}
 
-
 <body>
 {% block content %}
 
-    <div style="text-align: center; margin-bottom: 10px">
-        {% if menu %}
-            <h1> {{ menu }} </h1>
-        {% else %}
-            <h1>No menu for this week</h1>
-        {% endif %}
-        <a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a> |
-        <a href="{% url 'menu:index' %}">This Week</a> |
-        <a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
-    </div>
+<div style="text-align: center; margin-bottom: 10px">
+    {% if menu %}
+        <h1> {{ menu }} </h1>
+    {% else %}
+        <h1>No menu for this week</h1>
+    {% endif %}
+    <a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a> |
+    <a href="{% url 'menu:index' %}">This Week</a> |
+    <a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
+</div>
 
 <div class="container">
     <div class="row">
         <div class="col-sm-2" id="sidebar">
             <ul class="nav nav-pills nav-stacked">
-            {% for meal in menu.meal_set.all %}
-                <li><a href="{% url 'menu:display_meal' meal.id %}">{{meal}}</a></li>
+            {% for meal in sorted_meals %}
+                <li><a href="{% url 'menu:display_meal' meal.id %}">{{ meal }}</a></li>
             {% endfor %}
             </ul>
         </div>
 
         <div class="col-sm-8">
-            {% for meal in menu.meal_set.all %}
+            {% for meal in sorted_meals %}
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3> <a href="{% url 'menu:display_meal' meal.id %}" >{{ meal }}</a> </h3>

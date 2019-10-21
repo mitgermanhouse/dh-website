@@ -41,7 +41,7 @@
 
 <body>
 {% block content %}
-
+</ul>
 <div style="text-align: center; margin-bottom: 10px">
     <div>
         <h1> {{ info.meal }} <br>
@@ -88,7 +88,7 @@
                 <h4>Late Plates</h4>
                 <ul style="list-style-type: none; padding-left: 0">
                 {% for lateplate in info.meal.lateplate_set.all %}
-                    <li id="lateplate_{{forloop.counter}}">{{ lateplate }}
+                    <li id="lateplate_{{forloop.counter}}">{{ lateplate|safe }}
                         {% if user.is_authenticated%}
                         <label for="lateplate_{{forloop.counter}}" class="remove">
                         <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">

@@ -33,10 +33,11 @@ def view_recipes(request):
         else:
             recipes = []
             for recipe in Recipe.objects.all():
-                for ing in recipe.ingredient_set.all():
-                    if ing.ingredient_name.lower().find(search_key.lower()) > -1:
-                        recipes.append(recipe)
-                        break
+                if recipe.recipe_name != "EZ Curry (Elainez)":
+                    for ing in recipe.ingredient_set.all():
+                        if ing.ingredient_name.lower().find(search_key.lower()) > -1:
+                            recipes.append(recipe)
+                            break
             recipes.sort(key=lambda r: r.recipe_name.lower())
     else:
         recipes = Recipe.objects.all().order_by(Lower('recipe_name'))

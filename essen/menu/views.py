@@ -29,6 +29,7 @@ def index(request, date='None'):
     menu = Menu.objects.filter(start_date__year=y,
                                 start_date__month=m,
                                 start_date__day=d).first()
+    sorted_meals = menu.meal_set.order_by('date').all()
     date = date.encode('utf-8')
     if date != 'None':
         target_date = datetime.strptime(date, '%m/%d/%Y')
@@ -36,9 +37,10 @@ def index(request, date='None'):
         menu = Menu.objects.filter(start_date__year=y,
                                    start_date__month=m,
                                    start_date__day=d).first()
+        sorted_meals = menu.meal_set.order_by('date').all()
 
 
-    return render(request, template_name, {context_object_name: menu, 'target_date': target_date})
+    return render(request, template_name, {context_object_name: menu, 'target_date': target_date, 'sorted_meals' : sorted_meals})
 
 def add_menu(request):
     template_name = "menu/add_menu.html"
@@ -48,6 +50,23 @@ def add_menu(request):
 
     return render(request, template_name, {context_object_name: recipe_choices, 'steward': check_if_steward(request.user)})
 
+
+def getLatePlateText(user):
+    '''
+    Gets the text to be displayed for a specific user's lateplate based on their
+    dietary restrictions and full name
+    :return: string w/ html codes
+    '''
+    auto_plate = AutoLatePlate.objects.filter(username=user.username).first()
+    dietary = ""
+    emoji_mapping = {"Vegetarian": "&#x1F33F", "Lactose Free": "&#x1f95b", "Nut Free": "&#x1F95C",
+                     "No Pork": "&#x1F437", "No Red Meat": "&#x1f969"}
+    for restriction in auto_plate.dietary.split(";"):
+        if dietary == "":
+            dietary += " "
+        dietary += emoji_mapping[restriction]
+
+    return user.get_full_name() + dietary
 
 def submit_menu(request):
     if not (request.user.is_authenticated and check_if_steward(request.user)):
@@ -81,7 +100,9 @@ def submit_menu(request):
             # add automatic lateplates
             for auto_plate in AutoLatePlate.objects.all():
                 if str(request.POST.get(key)) in str(auto_plate.days):
-                    l = LatePlate(meal=meal, name=auto_plate.username)
+                    user = User.objects.filter(username=auto_plate.username).first()
+                    l = LatePlate(meal=meal,
+                                  name=getLatePlateText(user))
                     l.save()
 
             # add recipes
@@ -111,7 +132,7 @@ def add_lateplate(request, meal_pk, user_pk):
     user = get_object_or_404(User, pk=user_pk)
 
     if user.is_authenticated:
-        l = LatePlate(name=request.POST.get("name"), meal=meal)
+        l = LatePlate(name=getLatePlateText(user), meal=meal)
         l.save()
 
     return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_pk]))
@@ -134,32 +155,47 @@ def auto_lateplates(request):
     requested_days = [{"day": "Sunday Brunch", "state": False}, {"day": "Sunday Dinner", "state": False}, {"day": "Monday Dinner", "state": False},
                       {"day": "Tuesday Dinner", "state": False},  {"day": "Wednesday Dinner", "state": False}, {"day": "Thursday Dinner", "state": False},]
 
+    dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4}
+    restrictions = [{"restriction" : "Vegetarian", "state" : False}, {"restriction" : "Lactose Free", "state" : False},
+                    {"restriction": "Nut Free", "state": False}, {"restriction": "No Pork", "state": False},
+                    {"restriction": "No Red Meat", "state": False}]
     lateplate = AutoLatePlate.objects.filter(username=request.user.username).first()
 
     if lateplate != None:
-        print(lateplate.days)
-        for day in lateplate.days.split(";"):
-            print("day, " ,day)
-            requested_days[map[day]] = {"day": day, "state": True}
+        if len(lateplate.days) > 0:
+            for day in lateplate.days.split(";"):
+                print("this is a day", day)
+                requested_days[map[day]] = {"day": day, "state": True}
 
-    return render(request, template_name, {"days" : requested_days})
+        if len(lateplate.dietary) > 0:
+            for restriction in lateplate.dietary.split(";"):
+                restrictions[dietary_map[restriction]] = {"restriction": restriction, "state": True}
+
+    return render(request, template_name, {"days" : requested_days, "d_restrictions": restrictions})
 
 def submit_auto_lateplates(request):
     if request.user.is_authenticated:
         d = dict(request.POST.iterlists())
+        print(d)
         # delete the previous lateplate registrys
         AutoLatePlate.objects.filter(username=request.user.username).delete()
-        print(d)
         # add the new one
+        days = ""
+        dietary = ""
         if "date" in d.keys():
-            days = ""
             for day in d.get("date"):
                 if days != "":
                     days += ";"
                 days += day
                 print(day)
-            auto = AutoLatePlate(username=request.user.username, days=days)
-            auto.save()
+        if "dietary" in d.keys():
+            for restriction in d.get("dietary"):
+                if dietary != "":
+                    dietary += ";"
+                dietary += restriction
+        print(dietary)
+        auto = AutoLatePlate(username=request.user.username, days=days, dietary=dietary)
+        auto.save()
 
     return HttpResponseRedirect(reverse('menu:index'))
 

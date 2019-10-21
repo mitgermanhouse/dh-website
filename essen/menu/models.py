@@ -35,6 +35,7 @@ class Meal(models.Model):
 class LatePlate(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, null=True)
     name = models.TextField(null=True)
+    dietary = models.TextField(null=True)
 
     def __str__(self):
         return self.name
@@ -43,7 +44,8 @@ class LatePlate(models.Model):
 @python_2_unicode_compatible
 class AutoLatePlate(models.Model):
     username = models.TextField()
-    days = models.TextField()
+    days = models.TextField(default="")
+    dietary = models.TextField(default="")
 
     def __str__(self):
         return self.username + " " + self.days
