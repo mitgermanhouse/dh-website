@@ -19,16 +19,16 @@
         <div class="col-sm-1">
 
         </div>
-        <div class="col-sm-3">
-            <div class="btn-group">
-                <button onpress="btnpress()" id="recipe_search" type="button" class="btn btn-primary">Recipes</button>
-                <button id="ingredient_search" type="button" class="btn btn-primary">Ingredients</button>
-            </div>
-        </div>
-        <div class="col-sm-7">
+        <!--<div class="col-sm-3">-->
+            <!--<div class="btn-group">-->
+                <!--<button onpress="btnpress()" id="recipe_search" type="button" class="btn btn-primary">Recipes</button>-->
+                <!--<button id="ingredient_search" type="button" class="btn btn-primary">Ingredients</button>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="col-sm-12">
             <form action="{% url 'recipes:index' %}">
                 {% csrf_token %}
-                <input value="{{searchbar}}" id="searchbar" name="searchbar" class="form-control" type="text" placeholder="Search recipe names, ingredients" aria-label="Search">
+                <input value="{{searchbar}}" id="searchbar" name="searchbar" class="form-control" type="text" placeholder="Recipe name..." aria-label="Search">
                 <input id="query" name="query" style="display:none;" value="{{query}}">
                 <input type="submit" style="display:none;">
             </form>
