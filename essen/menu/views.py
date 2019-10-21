@@ -156,7 +156,7 @@ def auto_lateplates(request):
     requested_days = [{"day": "Sunday Brunch", "state": False}, {"day": "Sunday Dinner", "state": False}, {"day": "Monday Dinner", "state": False},
                       {"day": "Tuesday Dinner", "state": False},  {"day": "Wednesday Dinner", "state": False}, {"day": "Thursday Dinner", "state": False},]
 
-    dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4}
+    dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4, "No Seafood": 5}
     restrictions = [{"restriction" : "Vegetarian", "state" : False}, {"restriction" : "Lactose Free", "state" : False},
                     {"restriction": "Nut Free", "state": False}, {"restriction": "No Pork", "state": False},
                     {"restriction": "No Red Meat", "state": False}, {"restriction": "No Seafood", "state": False}]
