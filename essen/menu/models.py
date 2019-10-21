@@ -35,7 +35,6 @@ class Meal(models.Model):
 class LatePlate(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, null=True)
     name = models.TextField(null=True)
-    dietary = models.TextField(null=True)
 
     def __str__(self):
         return self.name

@@ -49,7 +49,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container" style="width:auto;">
 <div class="row">
     <div class="col-sm-2" id="sidebar">
         <ul class="nav nav-pills nav-stacked">
@@ -88,29 +88,38 @@
                 <h4>Late Plates</h4>
                 <ul style="list-style-type: none; padding-left: 0">
                 {% for lateplate in info.meal.lateplate_set.all %}
-                    <li id="lateplate_{{forloop.counter}}">{{ lateplate|safe }}
+                    <li style="padding-bottom:2px;" id="lateplate_{{forloop.counter}}">{{ lateplate|safe }}
                         {% if user.is_authenticated%}
-                        <label for="lateplate_{{forloop.counter}}" class="remove">
-                        <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                        </a></label>{% endif %}
+                            <label for="lateplate_{{forloop.counter}}" class="remove" style="display:none;">
+                                <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </a>
+                            </label>
+                        {% endif %}
                     </li>
                 {% endfor %}
                 </ul>
+
                 {% if user.is_authenticated %}
-                    <form id="lateplate_form" action="{% url 'menu:add_lateplate' info.meal.id user.id%}" method="post">
-                        {% csrf_token %}
-                        <select style="margin-left: -5px;" class="btn" list="name_choices" type="text" id="name" name="name" >
-                            {% for user in info.users %}
-                            <option value='{{user}}'>{{user}}</option>
-                            {% endfor %}
-                        </select>
-                        <input class="btn btn-primary btn-xs" id="submit" type="submit" value="Add"/>
-                    </form>
+                    <div style="border-radius:5px; background-color:#cccbca">
+                        <div style="padding-left:4px;padding-right:4px;padding-bottom:3px;padding-top:5px;">
+                            <form id="lateplate_form" action="{% url 'menu:add_lateplate' info.meal.id user.id%}" method="post">
+                                {% csrf_token %}
+                                <select style="width:60%;" class="btn" list="name_choices" type="text" id="name" name="name" >
+                                    {% for user in info.users %}
+                                    <option value='{{user.username}}'>{{user.get_full_name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <input style="width:35%"; class="btn btn-primary btn-xs" id="submit" type="submit" value="Add"/>
+                            </form>
+                        </div>
+                        <div style="padding-left:4px;padding-right:4px;padding-bottom:5px;">
+                            <button style="width:100%;" class="btn btn-danger btn-xs" onclick="showRemove()">Remove Lateplates</button>
+                        </div>
+                    </div>
                 {% else %}
                     <a href="{% url 'login'%}?next={{request.path}}">Login to edit lateplates.</a>
                 {% endif %}
-
             </li>
 
             <li>

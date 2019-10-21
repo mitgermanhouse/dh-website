@@ -73,3 +73,12 @@ $(document).ready(function() {
     });
 });
 
+function showRemove() {
+    var arrayOfElements=document.getElementsByClassName('remove');
+    var lengthOfArray=arrayOfElements.length;
+
+    for (var i=0; i<lengthOfArray;i++){
+        arrayOfElements[i].style.display='inline';
+    }
+}
+

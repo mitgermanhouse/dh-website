@@ -60,8 +60,9 @@ def getLatePlateText(user):
     auto_plate = AutoLatePlate.objects.filter(username=user.username).first()
     dietary = ""
     emoji_mapping = {"Vegetarian": "&#x1F33F", "Lactose Free": "&#x1f95b", "Nut Free": "&#x1F95C",
-                     "No Pork": "&#x1F437", "No Red Meat": "&#x1f969", "No Seafood": "&#x1f41f"}
-    if len(auto_plate.dietary) > 0:
+                     "No Pork": "&#x1F437", "No Red Meat": "&#x1f969", "No Seafood": "&#x1f41f",
+                     "No Raw Apple": "&#x1F34E", "No Coconut": "&#x1F965"}
+    if auto_plate != None and len(auto_plate.dietary) > 0:
         for restriction in auto_plate.dietary.split(";"):
             if dietary == "":
                 dietary += " "
@@ -122,22 +123,24 @@ def view_meal(request, pk):
     context_object_name = 'info'
 
     meal = get_object_or_404(Meal, pk=pk)
-
-    info = {"meal" : meal, "users" : [u.get_full_name for u in User.objects.all()]}
+    info = {"meal" : meal, "users" : User.objects.exclude(username="admin").order_by('first_name')}
 
     return render(request, template_name, {context_object_name: info})
 
 
 def add_lateplate(request, meal_pk, user_pk):
     meal = get_object_or_404(Meal, pk=meal_pk)
-    user = get_object_or_404(User, pk=user_pk)
+
+    username = request.POST.get("name")
+    print(request.POST)
+    print(username)
+    user = User.objects.filter(username=username).first()
 
     if user.is_authenticated:
         l = LatePlate(name=getLatePlateText(user), meal=meal)
         l.save()
 
     return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_pk]))
-
 
 def remove_lateplate(request, lateplate_pk, user_pk):
     lateplate = get_object_or_404(LatePlate, pk=lateplate_pk)
@@ -156,10 +159,12 @@ def auto_lateplates(request):
     requested_days = [{"day": "Sunday Brunch", "state": False}, {"day": "Sunday Dinner", "state": False}, {"day": "Monday Dinner", "state": False},
                       {"day": "Tuesday Dinner", "state": False},  {"day": "Wednesday Dinner", "state": False}, {"day": "Thursday Dinner", "state": False},]
 
-    dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4, "No Seafood": 5}
+    dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4, "No Seafood": 5,
+                   "No Raw Apple": 6, "No Coconut": 7}
     restrictions = [{"restriction" : "Vegetarian", "state" : False}, {"restriction" : "Lactose Free", "state" : False},
                     {"restriction": "Nut Free", "state": False}, {"restriction": "No Pork", "state": False},
-                    {"restriction": "No Red Meat", "state": False}, {"restriction": "No Seafood", "state": False}]
+                    {"restriction": "No Red Meat", "state": False}, {"restriction": "No Seafood", "state": False},
+                    {"restriction": "No Raw Apple", "state": False}, {"restriction": "No Coconut", "state": False}]
     lateplate = AutoLatePlate.objects.filter(username=request.user.username).first()
 
     if lateplate != None:
