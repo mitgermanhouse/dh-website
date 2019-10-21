@@ -54,7 +54,7 @@
         <div class="col-sm-2" id="sidebar">
             <ul class="nav nav-pills nav-stacked">
             {% for meal in sorted_meals %}
-                <li><a href="{% url 'menu:display_meal' meal.id %}">{{ meal }}</a></li>
+                <li><a {% if meal.today %} style="color:maroon;" {% endif %} href="{% url 'menu:display_meal' meal.meal.id %}">{{ meal.meal }}</a></li>
             {% endfor %}
             </ul>
         </div>
@@ -63,11 +63,15 @@
             {% for meal in sorted_meals %}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3> <a href="{% url 'menu:display_meal' meal.id %}" >{{ meal }}</a> </h3>
+                    <h3>
+                        <a {% if meal.today %} style="color:maroon;" {% endif %}
+                           href="{% url 'menu:display_meal' meal.meal.id %}" >{{ meal.meal }}
+                        </a>
+                    </h3>
                 </div>
                 <div class="panel-body">
                     <ul>
-                    {% for recipe in meal.recipes.all %}
+                    {% for recipe in meal.meal.recipes.all %}
                         <li> {{ recipe }} </li>
                     {% endfor %}
                     </ul>

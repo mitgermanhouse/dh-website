@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
-
+from pytz import timezone
 # Create your views here.
 
 
@@ -36,11 +36,16 @@ def index(request, date='None'):
         menu = Menu.objects.filter(start_date__year=y,
                                    start_date__month=m,
                                    start_date__day=d).first()
-    sorted_meals = {}
+    sorted_meals = []
     if menu != None:
-        sorted_meals = menu.meal_set.order_by('date').all()
-
-    return render(request, template_name, {context_object_name: menu, 'target_date': target_date, 'sorted_meals' : sorted_meals})
+        for meal in menu.meal_set.order_by('date').all():
+            if meal.date == (datetime.utcnow() - timedelta(hours=4)).date():
+                sorted_meals.append({"today": True, "meal": meal})
+            else:
+                sorted_meals.append({"today": False, "meal": meal})
+    print(sorted_meals)
+    return render(request, template_name, {context_object_name: menu, 'target_date': target_date,
+                                           'sorted_meals' : sorted_meals})
 
 def add_menu(request):
     template_name = "menu/add_menu.html"
