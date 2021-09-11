@@ -66,7 +66,8 @@ def getLatePlateText(user):
     dietary = ""
     emoji_mapping = {"Vegetarian": "&#x1F33F", "Lactose Free": "&#x1f95b", "Nut Free": "&#x1F95C",
                      "No Pork": "&#x1F437", "No Red Meat": "&#x1f969", "No Seafood": "&#x1f41f",
-                     "No Raw Apple": "&#x1F34E", "No Coconut": "&#x1F965"}
+                     "No Raw Apple": "&#x1F34E", "No Coconut": "&#x1F965", "No Raw Carrots": "&#x1F955", 
+                     "Gluten Free": "&#x1F35E", "No Mushroom": "&#x1F344"}
     if auto_plate != None and len(auto_plate.dietary) > 0:
         for restriction in auto_plate.dietary.split(";"):
             if dietary == "":
@@ -165,11 +166,14 @@ def auto_lateplates(request):
                       {"day": "Tuesday Dinner", "state": False},  {"day": "Wednesday Dinner", "state": False}, {"day": "Thursday Dinner", "state": False},]
 
     dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4, "No Seafood": 5,
-                   "No Raw Apple": 6, "No Coconut": 7}
+                   "No Raw Apple": 6, "No Coconut": 7, "No Raw Carrots": 8, "Gluten Free": 9, "No Mushroom": 9}
     restrictions = [{"restriction" : "Vegetarian", "state" : False}, {"restriction" : "Lactose Free", "state" : False},
                     {"restriction": "Nut Free", "state": False}, {"restriction": "No Pork", "state": False},
                     {"restriction": "No Red Meat", "state": False}, {"restriction": "No Seafood", "state": False},
-                    {"restriction": "No Raw Apple", "state": False}, {"restriction": "No Coconut", "state": False}]
+                    {"restriction": "No Raw Apple", "state": False}, {"restriction": "No Coconut", "state": False}, 
+                    {"restriction": "No Raw Carrots", "state": False}, {"restriction": "Gluten Free", "state": False}, 
+                    {"restriction": "No Mushroom", "state": False}]
+
     lateplate = AutoLatePlate.objects.filter(username=request.user.username).first()
 
     if lateplate != None:
