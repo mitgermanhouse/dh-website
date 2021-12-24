@@ -20,30 +20,8 @@ def detail(request, pk):
                                                   "steward": steward})
 
 def view_recipes(request):
-    d = dict(request.GET.lists())
-    print(d)
-    search_key = d.get("searchbar", [""])[0]
-    query_key = d.get("query", ["recipe_search"])[0]
-
-    if 'searchbar' in d:
-        if query_key == 'recipe_search':
-            recipes = Recipe.objects.all().filter(recipe_name__icontains=search_key).order_by(Lower('recipe_name'))
-        elif search_key == "":
-            recipes = Recipe.objects.all().order_by(Lower('recipe_name'))
-        else:
-            recipes = []
-            for recipe in Recipe.objects.all():
-                if recipe.recipe_name != "EZ Curry (Elainez)":
-                    for ing in recipe.ingredient_set.all():
-                        if ing.ingredient_name.lower().find(search_key.lower()) > -1:
-                            recipes.append(recipe)
-                            break
-            recipes.sort(key=lambda r: r.recipe_name.lower())
-    else:
-        recipes = Recipe.objects.all().order_by(Lower('recipe_name'))
-
-    return render(request, "recipes/index.html", {"recipe_list": recipes, "searchbar": search_key, "query":query_key})
-
+    recipes = Recipe.objects.all().order_by(Lower('recipe_name'))
+    return render(request, "recipes/index.html", {"recipe_list": recipes})
 
 
 class EditView(generic.DetailView):
