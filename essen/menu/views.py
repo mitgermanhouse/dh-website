@@ -29,7 +29,7 @@ def index(request, date='None'):
     menu = Menu.objects.filter(start_date__year=y,
                                 start_date__month=m,
                                 start_date__day=d).first()
-    date = date.encode('utf-8')
+
     if date != 'None':
         target_date = datetime.strptime(date, '%m/%d/%Y')
         y, m, d = target_date.year, target_date.month, target_date.day
@@ -82,7 +82,7 @@ def submit_menu(request):
     days_to_num = {"Sunday Brunch": 0, "Sunday Dinner": 0, "Monday Dinner": 1, "Tuesday Dinner": 2,
                    "Wednesday Dinner": 3, "Thursday Dinner": 4}
 
-    d = dict(request.POST.iterlists())
+    d = dict(request.POST.lists())
     start_date = datetime.strptime(request.POST.get('start_date'), "%Y-%m-%d").date()
 
     Menu.objects.filter(start_date=start_date).delete()
@@ -186,7 +186,7 @@ def auto_lateplates(request):
 
 def submit_auto_lateplates(request):
     if request.user.is_authenticated:
-        d = dict(request.POST.iterlists())
+        d = dict(request.POST.lists())
         print(d)
         # delete the previous lateplate registrys
         AutoLatePlate.objects.filter(username=request.user.username).delete()
@@ -218,7 +218,7 @@ def shopper(request, pk):
                    "Wednesday Dinner": 4, "Thursday Dinner": 5}
 
     menu = get_object_or_404(Menu, pk=pk)
-    d = dict(request.GET.iterlists())
+    d = dict(request.GET.lists())
 
     after_filter = False
     after_date = (datetime.now() - timedelta(days=8)).date()
@@ -273,7 +273,7 @@ def ingredient_info(request, ing, menu):
 
 def submit_rating(request, pk):
     if request.user.is_authenticated:
-        d = dict(request.GET.iterlists())
+        d = dict(request.GET.lists())
         meal = get_object_or_404(Meal, pk=pk)
 
         print("rating", d)

@@ -20,7 +20,7 @@ def detail(request, pk):
                                                   "steward": steward})
 
 def view_recipes(request):
-    d = dict(request.GET.iterlists())
+    d = dict(request.GET.lists())
     print(d)
     search_key = d.get("searchbar", [""])[0]
     query_key = d.get("query", ["recipe_search"])[0]
@@ -57,7 +57,7 @@ def add_recipe(request):
 
 def submit_recipe(request):
     if request.user.is_authenticated:
-        d = dict(request.POST.iterlists())
+        d = dict(request.POST.lists())
         r = Recipe(recipe_name=d['recipe_name'][0], directions=d['directions'][0], serving_size=int(d['serving_size'][0]))
         r.save()
         print(d)
@@ -74,7 +74,7 @@ def submit_edit(request, recipe_id):
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         for ingredient in recipe.ingredient_set.all():
             ingredient.delete()
-        d = dict(request.POST.iterlists())
+        d = dict(request.POST.lists())
 
         recipe.serving_size = d['serving_size'][0]
         recipe.recipe_name = d['recipe_name'][0]

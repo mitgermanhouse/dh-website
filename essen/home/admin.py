@@ -6,5 +6,7 @@ from django.contrib import admin
 # Register your models here.
 
 from home.models import Member
+from menu.models import AutoLatePlate
 
 admin.site.register(Member)
+admin.site.register(AutoLatePlate)

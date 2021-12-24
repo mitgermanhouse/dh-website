@@ -33,8 +33,8 @@ def submit_profile(request):
     if request.user.is_authenticated:
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-        p = dict(request.FILES.iterlists())
-        d = dict(request.POST.iterlists())
+        p = dict(request.FILES.lists())
+        d = dict(request.POST.lists())
         image = p["pic"][0]
         class_year = d["class_year"][0]
         bio = d["bio"][0]

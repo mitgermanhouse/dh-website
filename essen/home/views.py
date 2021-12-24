@@ -42,8 +42,8 @@ def submit_profile(request):
     if request.user.is_authenticated and check_if_profile_edit_access(request.user):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-        p = dict(request.FILES.iterlists())
-        d = dict(request.POST.iterlists())
+        p = dict(request.FILES.lists())
+        d = dict(request.POST.lists())
         img = p["pic"][0]
 
         class_year = d["class_year"][0]
