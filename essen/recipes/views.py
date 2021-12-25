@@ -4,9 +4,13 @@ from __future__ import unicode_literals
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from recipes.models import Recipe, Ingredient
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden
 from django.urls import reverse
 from django.db.models.functions import Lower
+from django.views.decorators.csrf import csrf_exempt
+
+import logging
+logger = logging.getLogger("recipes/views")
 
 # Create your views here.
 
@@ -67,11 +71,22 @@ def submit_edit(request, recipe_id):
     return HttpResponseRedirect(reverse('recipes:detail', args=[recipe_id]))
 
 def delete(request, recipe_id):
-    if request.user.is_authenticated and check_if_steward(request.user):
-        recipe = get_object_or_404(Recipe, pk=recipe_id)
-        recipe.delete()
+    # To prevent accidentally deleting a recipe, for the request to be of type DELETE.
+    if request.method != 'DELETE':
+        return HttpResponseBadRequest('400 Bad Request: This method only allows DELETE requests.')
 
-    return HttpResponseRedirect(reverse('recipes:index'))
+    # Check if user is authenticated properly
+    if not request.user.is_authenticated:
+        return HttpResponse('401 Unauthorized', status=401)
+    if not check_if_steward(request.user):
+        return HttpResponseForbidden('401 Unauthorized: User is not steward.', status=401)
+
+    # Delete Recipe
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    recipe.delete()
+    logger.info(f'Did delete recipe "{recipe}" with ID {recipe_id}.')
+
+    return HttpResponse(status=200)
 
 
 def check_if_steward(user):
