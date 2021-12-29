@@ -2,8 +2,9 @@ from recipes.units import units
 from recipes.models import Recipe, Ingredient
 
 class RecipeWrapper:
-	def __init__(self, recipe: Recipe):
+	def __init__(self, recipe: Recipe, meal = None):
 		self._recipe = recipe
+		self.meal = meal
 
 		self.id = self._recipe.id
 		self.name = self._recipe.recipe_name
@@ -11,9 +12,12 @@ class RecipeWrapper:
 		self.serving_size = self._recipe.serving_size
 
 		self.ingredients = [
-			IngredientWrapper(ingredient) 
+			IngredientWrapper(ingredient, self) 
 			for ingredient in self._recipe.ingredient_set.all()
 		]
+
+		if self.meal is not None:
+			self.scale_to(self.meal.menu.servings)
 
 	def scale_to(self, servings: int):
 		scalar = servings / self.serving_size
@@ -23,8 +27,9 @@ class RecipeWrapper:
 
 
 class IngredientWrapper:
-	def __init__(self, ingredient: Ingredient):
+	def __init__(self, ingredient: Ingredient, recipe: RecipeWrapper):
 		self._ingredient = ingredient
+		self.recipe = recipe
 
 		self.id = self._ingredient.id
 		self.name = self._ingredient.ingredient_name
@@ -44,14 +49,18 @@ class IngredientWrapper:
 		self.simplified_q = units.simplify(self.quantity, units.units)
 
 	@property
+	def quantity_str(self):
+		return self.magnitude_str + " " + self.unit_str
+
+	@property
+	def magnitude_str(self):
+		return f"{round(self.simplified_q.m, 2):.3g}"
+
+	@property
 	def unit_str(self):
 		if self.quantity.u == units.dimensionless:
 			return self._ingredient.units
 
 		return f"{self.simplified_q.u:~}"
-
-	@property
-	def quantity_str(self):
-		return f"{round(self.simplified_q.m, 2):g}"
 
 	

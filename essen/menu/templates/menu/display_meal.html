@@ -54,7 +54,7 @@
     <div class="col-sm-2" id="sidebar">
         <ul class="nav nav-pills nav-stacked">
         {% for recipe in info.meal.recipes %}
-            <li><a href="#{{recipe}}">{{recipe.name}}</a></li>
+            <li><a href="#recipe_{{recipe.id}}">{{recipe.name}}</a></li>
         {% endfor %}
         </ul>
     </div>

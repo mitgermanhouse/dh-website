@@ -1,6 +1,9 @@
 from dataclasses import dataclass, field
+from typing import Optional
 from pint.quantity import Quantity
+import re
 
+from essen.helper import reify
 from recipes.units import units
 from recipes.units.wrappers import RecipeWrapper, IngredientWrapper
 from menu.models import Meal, Menu
@@ -14,29 +17,28 @@ class MenuWrapper:
 		self.servings = self._menu.servings
 		self.notes = self._menu.notes
 
-		self.meals = [
-			MealWrapper(meal)
-			for meal in self._menu.meal_set.all()
-		]
+	@reify
+	def meals(self):
+		return [MealWrapper(meal, self) for meal in self._menu.meal_set.all()]
+
 
 class MealWrapper:
-	def __init__(self, meal: Meal):
+	def __init__(self, meal: Meal, menu: Optional[MenuWrapper] = None):
 		self._meal = meal
+		
+		if menu is not None:
+			self.menu = menu
+		else:
+			self.menu = MenuWrapper(self._meal.menu)
 
 		self.id = self._meal.id
-		self.menu = self._meal.menu
 		self.date = self._meal.date
 		self.name = self._meal.meal_name
 		self.lateplates = self._meal.lateplate_set.all()
 
-		self.recipes = [
-			RecipeWrapper(recipe)
-			for recipe in self._meal.recipes.all()
-		]
-
-		# Properly scale recipe
-		for recipe in self.recipes:
-			recipe.scale_to(self.menu.servings)
+	@reify
+	def recipes(self):
+		return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.all()]
 
 @dataclass
 class CombinedIngredients:
@@ -44,18 +46,14 @@ class CombinedIngredients:
 	ingredients: list[IngredientWrapper] = field(default_factory=list)
 
 	def __post_init__(self):
-		self._quantities = None
-
-	def matches(self, ingredient: IngredientWrapper):
-		if self.name.lower() == ingredient.name.lower():
-			return True
+		self.invalidate()
 
 	def add(self, ingredient: IngredientWrapper):
 		self.ingredients.append(ingredient)
-		self.invalidate_quantities()
+		self.invalidate()
 
-	def invalidate_quantities(self):
-		'''Invalidates the computed quantities property.'''
+	def invalidate(self):
+		'''Invalidates all computed properties.'''
 		self._quantities = None
 
 	@property
@@ -78,21 +76,30 @@ class CombinedIngredients:
 	@property
 	def quantities_str(self):
 		return ", ".join([
-			f"{round(q.m, 2):g} {q.u:~}" for q in self.quantities
+			f"{round(q, 2):.3g~}" for q in self.quantities
 		])
 
-def combine_ingredients(meals: list[MealWrapper]) -> list[IngredientWrapper]:
+__paren_regex = re.compile(r"\(.*\)")
+def combine_ingredients(meals: list[MealWrapper]) -> list[CombinedIngredients]:
 	all_ingredients = {}
+
+	def ingr_key(ingredient: IngredientWrapper) -> str:
+		key = ingredient.name.lower()
+		key = re.sub(__paren_regex, '', key)
+		key = key.split(',')[0]
+		key = key.strip()
+
+		return key
 
 	for meal in meals:
 		for recipe in meal.recipes:
 			for ingredient in recipe.ingredients:
-				ingredient_key = ingredient.name.lower()
+				ingredient_key = ingr_key(ingredient)
 
 				if ingredient_key in all_ingredients:
 					all_ingredients[ingredient_key].add(ingredient)
 				else:
-					all_ingredients[ingredient_key] = CombinedIngredients(ingredient.name, [ingredient])
+					all_ingredients[ingredient_key] = CombinedIngredients(ingredient_key, [ingredient])
 
 	combined_ingredients = list(all_ingredients.values())
 	combined_ingredients.sort(key = lambda i: i.name.lower())

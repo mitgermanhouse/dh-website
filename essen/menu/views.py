@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import sys
 from recipes.models import Recipe, Ingredient
 from menu.models import Menu, Meal, LatePlate, AutoLatePlate, MealRating
-from menu.units.wrappers import MenuWrapper
+from menu.units.wrappers import MenuWrapper, combine_ingredients
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -225,7 +225,6 @@ def submit_auto_lateplates(request):
 
 def shopper(request, pk):
     template_name = 'menu/shopper.html'
-    context_object_name = 'ingredients'
     name_map = {"Sunday Brunch": 0, "Sunday Dinner": 1, "Monday Dinner": 2, "Tuesday Dinner": 3,
                    "Wednesday Dinner": 4, "Thursday Dinner": 5}
 
@@ -235,7 +234,7 @@ def shopper(request, pk):
     after_filter = False
     after_date = (datetime.now() - timedelta(days=8)).date()
     if "filter_date" in d:
-        after_date = map[d["after"][0]]
+        after_date = name_map[d["after"][0]]
         after_filter = d["filter_date"][0]
     else:
         after_date = -1 # accept all recipes for shopping list
@@ -243,37 +242,15 @@ def shopper(request, pk):
     all_ingredients = {}
 
 
-    # wrapped_menu = MenuWrapper(menu)
-    # filtered_meals = [meal for meal in wrapped_menu.meals if name_map[meal.name] > after_date]
-    # combined_ingredients = combine_ingredients(filtered_meals)
+    wrapped_menu = MenuWrapper(menu)
+    filtered_meals = [meal for meal in wrapped_menu.meals if name_map[meal.name] > after_date]
+    combined_ingredients = combine_ingredients(filtered_meals)
 
-    # for c_ingr in combined_ingredients:
-    #     print(f'{c_ingr.name} {c_ingr.quantities}  --  {c_ingr.ingredients}')
+    context_dict = {
+        'ingredients': combined_ingredients,
+        'menu': wrapped_menu
+    }
 
-    # ing_list = [{"ing": c_ingr.name, "quantity": c_ingr.quantities_str, "unit": ""} for c_ingr in combined_ingredients]
-
-    # context_dict = {context_object_name: ing_list, "notes":menu.notes}
-    # if after_filter:
-    #     context_dict["filter_date"] = after_filter
-    #     context_dict["after"] = d["after"][0]
-    # return render(request, template_name, context_dict)
-
-
-    for meal in menu.meal_set.all():
-        if name_map[meal.meal_name] > after_date:
-            for recipe in meal.recipes.all():
-                scale_factor = float(menu.servings)/recipe.serving_size
-                for ingredient in recipe.ingredient_set.all():
-                    ing_type = (ingredient.ingredient_name.lower(), ingredient.units.lower())
-                    if ing_type not in all_ingredients:
-                        all_ingredients[ing_type] = float(ingredient.quantity) * scale_factor
-                    else:
-                        all_ingredients[ing_type] += float(ingredient.quantity) * scale_factor
-
-    ing_list = [{"ing": key[0], "quantity": value, "unit": key[1]} for key, value in all_ingredients.items()]
-    ing_list.sort(key=lambda x: x["ing"])
-
-    context_dict = {context_object_name: ing_list, "notes":menu.notes}
     if after_filter:
         context_dict["filter_date"] = after_filter
         context_dict["after"] = d["after"][0]

@@ -1,4 +1,4 @@
-<div class="panel panel-default" id="{{recipe}}">
+<div class="panel panel-default" id="recipe_{{recipe.id}}">
     <div class="panel-heading">
     	<h2>{{recipe.name}}</h2>
     	{% if show_serves %}
@@ -7,17 +7,17 @@
     </div>
     <div class="panel-body">
         <h3>Ingredients</h3>
-        <table class="table table-striped">
+        <table class="table table-striped recipe-table">
             <colgroup>
                 <col style="width: auto">
-                <col style="width: fit-content">
-                <col style="width: 12%">
+                <col style="width: fit-content;">
+                <col style="width: 8%;">
             </colgroup>
         {% for ingredient in recipe.ingredients %}
             <tr>
                 <td>{{ingredient.name}}</td>
-                <td class="text-right">{{ingredient.quantity_str}}</td>
-                <td class="text-left" style="white-space: nowrap;">{{ingredient.unit_str}}</td>
+                <td class="magnitude">{{ingredient.magnitude_str}}</td>
+                <td class="unit" style="white-space: nowrap;">{{ingredient.unit_str}}</td>
             </tr>
         {% endfor %}
         </table>

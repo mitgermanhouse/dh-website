@@ -123,6 +123,16 @@ def simplify(quantity: Quantity, units: list[Unit]) -> Quantity:
 # 			return self._unit_str
 # 		return f"{self._simplified_q.u:~}"
 
+# Extend Quantity type
+#  This is a hack and should be fixed at some point in the future
+def magnitude_str(self):
+	return f"{round(self.m, 2):.3g}"
+
+def unit_str(self):
+	return f"{self.u:~}"
+
+Quantity.magnitude_str = property(magnitude_str)
+Quantity.unit_str = property(unit_str)
 
 if __name__ == '__main__':
 	pass
