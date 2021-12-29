@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from recipes.models import Recipe, Ingredient
+from recipes.units.wrappers import RecipeWrapper
+
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden
 from django.urls import reverse
 from django.db.models.functions import Lower
@@ -20,8 +22,11 @@ def detail(request, pk):
     if request.user.is_authenticated and check_if_steward(request.user):
         steward = True
 
-    return render(request, template_name, {"recipe": get_object_or_404(Recipe, pk=pk),
-                                                  "steward": steward})
+    recipe = get_object_or_404(Recipe, pk=pk)
+    wrapped_recipe = RecipeWrapper(recipe)
+
+    return render(request, template_name, {"recipe": wrapped_recipe,
+                                           "steward": steward})
 
 def view_recipes(request):
     recipes = Recipe.objects.all().order_by(Lower('recipe_name'))

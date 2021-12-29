@@ -44,7 +44,7 @@
 </ul>
 <div style="text-align: center; margin-bottom: 10px">
     <div>
-        <h1> {{ info.meal }} <br>
+        <h1> {{ info.meal.name }} <br>
         <small> Serves: {{ info.meal.menu.servings }} </small> </h1>
     </div>
 </div>
@@ -53,33 +53,15 @@
 <div class="row">
     <div class="col-sm-2" id="sidebar">
         <ul class="nav nav-pills nav-stacked">
-        {% for recipe in info.meal.recipes.all %}
-            <li><a href="#{{recipe}}">{{recipe}}</a></li>
+        {% for recipe in info.meal.recipes %}
+            <li><a href="#{{recipe}}">{{recipe.name}}</a></li>
         {% endfor %}
         </ul>
     </div>
     <div class="col-sm-8" id="meal">
-        {% for recipe in info.meal.recipes.all %}
-            <div class="panel panel-default" id="{{recipe}}">
-                <div class="panel-heading"><h2>{{recipe}}</h2></div>
-                <div class="panel-body">
-                    <h3>Ingredients</h3>
-                    <table class="table table-striped">
-                    {% for ingredient in recipe.ingredient_set.all %}
-                        <tr>
-<!--                            <a href="{% url 'menu:ingredient_info' ingredient.id info.meal.menu.id %}">-->
-                            <td>{{ingredient}}</td>
-                            <td>{{ ingredient.quantity | mult:info.meal.menu.servings | div:ingredient.recipe.serving_size}}</td>
-                            <td>{{ingredient.units}}</td>
-                        </tr>
-                    {% endfor %}
-                    </table>
-                    <h3>Directions</h3>
-                    <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
-                </div>
-            </div>
+        {% for recipe in info.meal.recipes %}
+            {% include 'components/recipe.html' %}
         {% endfor %}
-
     </div>
 
     <div class="col-sm-2" id="lateplates">
@@ -87,9 +69,9 @@
             <li style="padding-left: 10px; padding-bottom: 10px;">
                 <h4>Late Plates</h4>
                 <ul style="list-style-type: none; padding-left: 0">
-                {% for lateplate in info.meal.lateplate_set.all %}
+                {% for lateplate in info.meal.lateplates %}
                     <li style="padding-bottom:2px;" id="lateplate_{{forloop.counter}}">{{ lateplate|safe }}
-                        {% if user.is_authenticated%}
+                        {% if user.is_authenticated %}
                             <label for="lateplate_{{forloop.counter}}" class="remove" style="display:none;">
                                 <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
                                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -123,7 +105,7 @@
             </li>
 
             <li>
-                <a href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.meal_name}}">Check future ingredients</a>
+                <a href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.name}}">Check future ingredients</a>
             </li>
 
             {% if user.is_authenticated %}

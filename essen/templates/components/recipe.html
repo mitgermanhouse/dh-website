@@ -1,0 +1,27 @@
+<div class="panel panel-default" id="{{recipe}}">
+    <div class="panel-heading">
+    	<h2>{{recipe.name}}</h2>
+    	{% if show_serves %}
+    	<p>Serves {{recipe.serving_size}}</p>
+    	{% endif %}
+    </div>
+    <div class="panel-body">
+        <h3>Ingredients</h3>
+        <table class="table table-striped">
+            <colgroup>
+                <col style="width: auto">
+                <col style="width: fit-content">
+                <col style="width: 12%">
+            </colgroup>
+        {% for ingredient in recipe.ingredients %}
+            <tr>
+                <td>{{ingredient.name}}</td>
+                <td class="text-right">{{ingredient.quantity_str}}</td>
+                <td class="text-left" style="white-space: nowrap;">{{ingredient.unit_str}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <h3>Directions</h3>
+        <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
+    </div>
+</div>

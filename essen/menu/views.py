@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import sys
 from recipes.models import Recipe, Ingredient
 from menu.models import Menu, Meal, LatePlate, AutoLatePlate, MealRating
+from menu.units.wrappers import MenuWrapper
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -129,7 +130,14 @@ def view_meal(request, pk):
     context_object_name = 'info'
 
     meal = get_object_or_404(Meal, pk=pk)
-    info = {"meal" : meal, "users" : User.objects.exclude(username="admin").order_by('first_name')}
+
+    from menu.units.wrappers import MealWrapper
+    wrapped_meal = MealWrapper(meal)
+
+    info = {
+        "meal": wrapped_meal, 
+        "users": User.objects.exclude(username="admin").order_by('first_name')
+    }
 
     return render(request, template_name, {context_object_name: info})
 
@@ -218,7 +226,7 @@ def submit_auto_lateplates(request):
 def shopper(request, pk):
     template_name = 'menu/shopper.html'
     context_object_name = 'ingredients'
-    map = {"Sunday Brunch": 0, "Sunday Dinner": 1, "Monday Dinner": 2, "Tuesday Dinner": 3,
+    name_map = {"Sunday Brunch": 0, "Sunday Dinner": 1, "Monday Dinner": 2, "Tuesday Dinner": 3,
                    "Wednesday Dinner": 4, "Thursday Dinner": 5}
 
     menu = get_object_or_404(Menu, pk=pk)
@@ -234,8 +242,25 @@ def shopper(request, pk):
 
     all_ingredients = {}
 
+
+    # wrapped_menu = MenuWrapper(menu)
+    # filtered_meals = [meal for meal in wrapped_menu.meals if name_map[meal.name] > after_date]
+    # combined_ingredients = combine_ingredients(filtered_meals)
+
+    # for c_ingr in combined_ingredients:
+    #     print(f'{c_ingr.name} {c_ingr.quantities}  --  {c_ingr.ingredients}')
+
+    # ing_list = [{"ing": c_ingr.name, "quantity": c_ingr.quantities_str, "unit": ""} for c_ingr in combined_ingredients]
+
+    # context_dict = {context_object_name: ing_list, "notes":menu.notes}
+    # if after_filter:
+    #     context_dict["filter_date"] = after_filter
+    #     context_dict["after"] = d["after"][0]
+    # return render(request, template_name, context_dict)
+
+
     for meal in menu.meal_set.all():
-        if map[meal.meal_name] > after_date:
+        if name_map[meal.meal_name] > after_date:
             for recipe in meal.recipes.all():
                 scale_factor = float(menu.servings)/recipe.serving_size
                 for ingredient in recipe.ingredient_set.all():

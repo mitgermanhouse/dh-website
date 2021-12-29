@@ -76,44 +76,31 @@
 
 {% block content %}
 <div class="container">
-<div class="row">
-    <div class="col-sm-1">
-    </div>
-    <div class="col-sm-10" id="meal">
-        <div class="panel panel-default" id="{{recipe}}">
-            <div class="panel-heading"><h2>{{recipe}}</h2> <p>Serves {{recipe.serving_size}}</p></div>
-            <div class="panel-body">
-                <h3>Ingredients</h3>
-                <table class="table table-striped">
-                {% for ingredient in recipe.ingredient_set.all %}
-                    <tr>
-                        <td>{{ingredient}}</td>
-                        <td>{{ ingredient.quantity}}</td>
-                        <td>{{ingredient.units}}</td>
-                    </tr>
-                {% endfor %}
-                </table>
-                <h3>Directions</h3>
-                <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
-            </div>
+    <div class="row">
+        <!-- Left column -->
+        <div class="col-sm-1">
+        </div>
+        
+        <!-- Center column -->
+        <div class="col-sm-10" id="meal">
+            {% include 'components/recipe.html' with show_serves='True' %}
+        </div>
+
+        <!-- Right column -->
+        <div class="col-sm-1" id="functions">
+            {% if steward %}
+            <ul class="nav nav-pills nav-stacked">
+                <li>
+                    <a href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
+                </li>
+
+                <li>
+                    <a onclick="deleteRecipe()">Delete Recipe</a>
+                </li>
+            </ul>
+            {% endif %}
         </div>
     </div>
-
-
-    <div class="col-sm-1" id="functions">
-        {% if steward %}
-        <ul class="nav nav-pills nav-stacked">
-            <li>
-                <a href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
-            </li>
-
-            <li>
-                <a onclick="deleteRecipe()">Delete Recipe</a>
-            </li>
-        </ul>
-        {% endif %}
-    </div>
-</div>
 </div>
 {% endblock %}
 
