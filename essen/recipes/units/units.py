@@ -1,7 +1,7 @@
 import os
 import sys
 import math
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 import pint
 from pint import Quantity
@@ -18,7 +18,7 @@ Q_ = ureg.Quantity
 dimensionless = ureg.parse_units("dimensionless")
 
 # Helper Functions
-def load_unit_group(group_name: str) -> list[Unit]:
+def load_unit_group(group_name: str) -> List[Unit]:
 	group = ureg.get_group(group_name)
 	units = [ureg.parse_units(unit_name) for unit_name in group.members]
 
@@ -37,7 +37,10 @@ def load_unit_group(group_name: str) -> list[Unit]:
 
 def dh_unit_parser(unit_str: str) -> Optional[Unit]:
 	# Remove plural '(s)'. Pint interprets this as  * seconds
-	unit_str = unit_str.lower().removesuffix('(s)')
+	unit_str = unit_str.lower()
+
+	if unit_str.endswith('(s)'):
+		unit_str = unit_str[:-3]
 
 	try:
 		return ureg.parse_units(unit_str)
@@ -50,7 +53,7 @@ def dh_unit_parser(unit_str: str) -> Optional[Unit]:
 		print(e)
 		return dimensionless
 
-def expand(quantity: Quantity, units: list[Unit]) -> list[Quantity]:
+def expand(quantity: Quantity, units: List[Unit]) -> List[Quantity]:
 	if quantity.dimensionless:
 		return quantity
 
@@ -79,7 +82,7 @@ def expand(quantity: Quantity, units: list[Unit]) -> list[Quantity]:
 
 	return ans
 
-def simplify(quantity: Quantity, units: list[Unit]) -> Quantity:
+def simplify(quantity: Quantity, units: List[Unit]) -> Quantity:
 	if quantity.dimensionless:
 		return quantity
 

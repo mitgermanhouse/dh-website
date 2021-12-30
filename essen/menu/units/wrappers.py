@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import List, Optional
 from pint.quantity import Quantity
 import re
 
@@ -43,7 +43,7 @@ class MealWrapper:
 @dataclass
 class CombinedIngredients:
 	name: str
-	ingredients: list[IngredientWrapper] = field(default_factory=list)
+	ingredients: List[IngredientWrapper] = field(default_factory=list)
 
 	def __post_init__(self):
 		self.invalidate()
@@ -57,7 +57,7 @@ class CombinedIngredients:
 		self._quantities = None
 
 	@property
-	def quantities(self) -> list[Quantity]:
+	def quantities(self) -> List[Quantity]:
 		if self._quantities is not None:
 			return self._quantities
 
@@ -80,7 +80,7 @@ class CombinedIngredients:
 		])
 
 __paren_regex = re.compile(r"\(.*\)")
-def combine_ingredients(meals: list[MealWrapper]) -> list[CombinedIngredients]:
+def combine_ingredients(meals: List[MealWrapper]) -> List[CombinedIngredients]:
 	all_ingredients = {}
 
 	def ingr_key(ingredient: IngredientWrapper) -> str:
