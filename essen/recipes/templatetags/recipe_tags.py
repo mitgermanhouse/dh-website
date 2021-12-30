@@ -1,10 +1,22 @@
 from django import template
+import json
+from typing import Union
+
+from recipes.units import units
+from recipes.units.wrappers import IngredientWrapper
 
 register = template.Library()
-from datetime import datetime, timedelta
 
-import html
+@register.simple_tag
+def data_quantities_str(**kwargs):
+    if "ingredient" in kwargs:
+        quantity = kwargs["ingredient"].quantity
+    elif "quantity" in kwargs:
+        quantity = kwargs["quantity"]
+    else:
+        raise ValueError("Invalid kwargs for data_quantities_str tag.")
 
-@register.filter(is_safe = True)
-def decode(var):
-    return html.unescape(var)
+    quantities = [quantity.to(u) for u in units.all_dh_units if quantity.check(u)]
+    quantities = [q for q in quantities if q.m >= 0.1 and q.m <= 100]
+    
+    return json.dumps([[q.magnitude_str, q.unit_str] for q in quantities])

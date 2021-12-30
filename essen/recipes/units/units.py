@@ -22,6 +22,17 @@ def load_unit_group(group_name: str) -> list[Unit]:
 	group = ureg.get_group(group_name)
 	units = [ureg.parse_units(unit_name) for unit_name in group.members]
 
+	# Group units according to their dimensionality
+	units_dict = {}
+	for unit in units:
+		if unit.dimensionality not in units_dict:
+			units_dict[unit.dimensionality] = [unit]
+		else:
+			units_dict[unit.dimensionality].append(unit)
+
+	# Sort units by their conversion factor
+	units = [u for sl in [sorted(v) for k, v in units_dict.items()] for u in sl]
+
 	return units
 
 def dh_unit_parser(unit_str: str) -> Optional[Unit]:
@@ -139,3 +150,6 @@ if __name__ == '__main__':
 
 # TODO: Refactor	
 units = load_unit_group('DH_US_cups')
+all_dh_units = load_unit_group('DH_All')
+
+print(all_dh_units)

@@ -4,6 +4,7 @@
 
 {% load static %}
 {% load menu_extras %}
+{% load recipe_tags %}
 
 {% block script %}
 <style type="text/css">
@@ -12,7 +13,7 @@
     }
 
     .table tr.striped {
-        background-color:#f9f9f9
+        background-color: #f9f9f9;
     }
 
     .table > tbody > tr.ghost > td {
@@ -29,13 +30,12 @@
     .sub-table > tbody > tr > td:first-child { padding-left: 20px; }
 
     .sub-table > tbody > tr > td:nth-child(2) { width: 30%; }
-    .sub-table > tbody > tr > td:nth-child(3) { width: 8%; text-align: right; padding-right: 4px; }
-    .sub-table > tbody > tr > td:nth-child(4) { width: 12%; text-align: left; padding-left: 4px; }
+    .sub-table > tbody > tr > td.magnitude { width: 8%; text-align: right; padding-right: 4px; }
+    .sub-table > tbody > tr > td.unit { width: 12%; text-align: left; padding-left: 4px; }
 
     .quantity-table { width: 100%; }
     .quantity-table td.magnitude { width: 40%; text-align: right; padding-right: 4px; }
     .quantity-table td.unit { width: 60%; text-align: left; padding-left: 4px; }
-
 </style>
 
 <script type="text/javascript">
@@ -43,6 +43,34 @@
     $(function() {
         $('#ingredients [data-toggle="collapse"]').click(function() {
             $('#ingredients .collapse.in').collapse('hide');
+        });
+    });
+
+    // Change units when user clicks on the unit or magnitude cell.
+    $(function() {
+        $("tr.quantity > td.unit, tr.quantity > td.magnitude").click(function() {
+            let row = $(this).parent();
+            let currentIndex = row.data("index");
+            let quantities = row.data("quantities") ;
+            
+            if (quantities.length == 0) return;
+            if (currentIndex === undefined) {
+                // Set the initial index
+                if (quantities.length > 1) {
+                    let initialUnit = $(".unit", row).text();
+                    if (quantities[0][1] == initialUnit) {
+                        currentIndex = 0;
+                    } else {
+                        currentIndex = -1;
+                    }
+                }
+            }
+
+            let newIndex = (currentIndex + 1) % quantities.length;
+            row.data("index", newIndex);
+
+            $(".magnitude", row).text(quantities[newIndex][0]);
+            $(".unit", row).text(quantities[newIndex][1]);
         });
     });
 </script>
@@ -70,18 +98,14 @@
                 </colgroup>
 
             {% for c_ingredient in ingredients %}
-                {% if forloop.counter|divisibleby:2 %}
-                <tr data-toggle="collapse" data-target="#collapse_{{forloop.counter}}">
-                {% else %}
-                <tr class="striped" data-toggle="collapse" data-target="#collapse_{{forloop.counter}}">
-                {% endif %}
-                    <td>{{ c_ingredient.name }}</td>
+                {% if forloop.counter|divisibleby:2 %}<tr>{% else %}<tr class="striped">{% endif %}
+                    <td data-toggle="collapse" data-target="#collapse_{{forloop.counter}}">{{ c_ingredient.name }}</td>
                     <td>
                         <table class="quantity-table"> 
                         {% for q in c_ingredient.quantities %}
-                            <tr>
-                                <td class="magnitude">{{ q.magnitude_str }}</td>
-                                <td class="unit">{{ q.unit_str }}</td>
+                            <tr class="quantity" data-quantities='{% data_quantities_str quantity=q %}'>
+                                <td class="magnitude noselect">{{ q.magnitude_str }}</td>
+                                <td class="unit noselect">{{ q.unit_str }}</td>
                             </tr>
                         {% endfor %}
                         </table>
@@ -92,11 +116,11 @@
                         <div id="collapse_{{forloop.counter}}" class="collapse">
                             <table class="table sub-table">
                             {% for ingredient in c_ingredient.ingredients %}
-                                <tr>
+                                <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
                                     <td><a href="{% url 'menu:display_meal' ingredient.recipe.meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
                                     <td>{{ ingredient.name }}</td>
-                                    <td>{{ ingredient.magnitude_str }}</td>
-                                    <td>{{ ingredient.unit_str }}</td>
+                                    <td class="magnitude noselect">{{ ingredient.magnitude_str }}</td>
+                                    <td class="unit noselect">{{ ingredient.unit_str }}</td>
                                 </tr>
                             {% endfor %}
                             </table>

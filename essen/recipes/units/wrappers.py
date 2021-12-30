@@ -1,5 +1,6 @@
 from recipes.units import units
 from recipes.models import Recipe, Ingredient
+import json
 
 class RecipeWrapper:
 	def __init__(self, recipe: Recipe, meal = None):
