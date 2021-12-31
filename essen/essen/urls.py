@@ -9,4 +9,5 @@ urlpatterns = [
     url('admin/', admin.site.urls),
     url('accounts/', include('django.contrib.auth.urls')),
     url('home/', include('home.urls')),
+    url('mit/', include('mit.urls')),
 ]

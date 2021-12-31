@@ -11,20 +11,21 @@
 {% block content %}
 
 <div class="container">
-<div class="row">
+  <div class="row">
+    <div class="col-sm-12">
 
-{% if form.errors %}
-  <p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+    {% if form.errors %}
+      <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
 
-{% if next %}
-  {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-  {% else %}
-    <p>Please login to see this page.</p>
-  {% endif %}
-{% endif %}
+    {% if next %}
+      {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
+      {% else %}
+      <p>Please login to see this page.</p>
+      {% endif %}
+    {% endif %}
 
       <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
@@ -46,12 +47,14 @@
         <input type="hidden" name="next" value="{{ next }}" />
       </form>
 
+      <br>
+      <p><a href="{% url 'mit:auth' %}?next={{ next }}">Login using MIT Certificate</a></p>
+      
+      <br> {# Assumes you setup the password_reset view in your URLconf #}
+      <p><a href="{% url 'password_reset' %}">Reset Password</a></p>
 
-
-{# Assumes you setup the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Reset Password</a></p>
-
-</div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
