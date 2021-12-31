@@ -1,6 +1,17 @@
 {% extends 'essen/base.html' %}
 
+{% block script %}
+<style type="text/css">
+  .table-login > tbody > tr > td {
+    padding: 8px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
+
+<div class="container">
+<div class="row">
 
 {% if form.errors %}
   <p>Your username and password didn't match. Please try again.</p>
@@ -17,16 +28,16 @@
 
       <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        <table>
+        <table class="table-login">
         <div class="form-group">
           <tr>
-            <td>{{ form.username.label_tag }}</td>
+            <td style="padding-left: 0px">{{ form.username.label_tag }}</td>
             <td>{{ form.username }}</td>
           </tr>
         </div>
 
         <tr>
-          <td>{{ form.password.label_tag }}</td>
+          <td style="padding-left: 0px">{{ form.password.label_tag }}</td>
           <td>{{ form.password }}</td>
         </tr>
         </table>
@@ -39,5 +50,8 @@
 
 {# Assumes you setup the password_reset view in your URLconf #}
 <p><a href="{% url 'password_reset' %}">Reset Password</a></p>
+
+</div>
+</div>
 
 {% endblock %}
