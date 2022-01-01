@@ -7,7 +7,6 @@ from django.utils.encoding import python_2_unicode_compatible
 
 # Create your models here.
 
-@python_2_unicode_compatible
 class Member(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     class_year = models.IntegerField(null=True)

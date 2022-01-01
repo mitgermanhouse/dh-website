@@ -1,122 +1,85 @@
-<!DOCTYPE html>
-
 {% extends 'essen/base.html' %}
 
 {% load menu_extras %}
 {% load static %}
 
-{% block script %}
-<script src="{% static 'recipes/js/edit_script.js' %}"></script>
-<script>
-    function setScrolling(id) {
-        $(function() {
-            var $meal = $("#meal");
-            var $element = $("#" + id),
-                $window = $(window),
-                offset = $element.offset(),
-                topPadding = 15;
-
-            $window.scroll(function () {
-                console.log("sidebar" + $element.position().left);
-                console.log("meal" + $meal.position().left);
-                if ($element.position().left != $meal.position().left && $window.scrollTop() > offset.top) {
-                    $element.stop().animate({
-                        duration: 0,
-                        marginTop: $window.scrollTop() - offset.top + topPadding
-                    });
-                } else {
-                    $element.stop().animate({
-                        duration: 0,
-                        marginTop: 0
-                    });
-                }
-            });
-        });
-    };
-    setScrolling("sidebar");
-    setScrolling("lateplates");
-</script>
-<!--<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">-->
-{% endblock %}
-
-<body>
 {% block content %}
-</ul>
-<div style="text-align: center; margin-bottom: 10px">
-    <div>
-        <h1> {{ info.meal.name }} <br>
-        <small> Serves: {{ info.meal.menu.servings }} </small> </h1>
+<div class="container pt-5 pb-3">
+    <div class="row text-center">
+        <h1> {{ info.meal.name }} </h1>
+        <h4 class="text-muted"> Serves: {{ info.meal.menu.servings }} </h4>
     </div>
 </div>
 
-<div class="container" style="width:auto;">
-<div class="row">
-    <div class="col-sm-2" id="sidebar">
-        <ul class="nav nav-pills nav-stacked">
-        {% for recipe in info.meal.recipes %}
-            <li><a href="#recipe_{{recipe.id}}">{{recipe.name}}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="col-sm-8" id="meal">
-        {% for recipe in info.meal.recipes %}
-            {% include 'recipes/components/recipe.html' %}
-        {% endfor %}
-    </div>
+<div class="container-xxl pb-5">
+    <div class="row">
+        <!-- Recipes Sidebar -->
+        <div class="col-lg-2 my-4 my-lg-0 sticky-lg-top h-100" style="top: 24px;" id="sidebar">
+            <nav class="nav flex-column">
+            {% for recipe in info.meal.recipes %}
+                <a class="nav-link" href="#recipe_{{recipe.id}}">{{recipe.name}}</a>
+            {% endfor %}
+            </nav>
+        </div>
 
-    <div class="col-sm-2" id="lateplates">
-        <ul class="nav nav-pills nav-stacked">
-            <li style="padding-left: 10px; padding-bottom: 10px;">
-                <h4>Late Plates</h4>
-                <ul style="list-style-type: none; padding-left: 0">
-                {% for lateplate in info.meal.lateplates %}
-                    <li style="padding-bottom:2px;" id="lateplate_{{forloop.counter}}">{{ lateplate|safe }}
-                        {% if user.is_authenticated %}
-                            <label for="lateplate_{{forloop.counter}}" class="remove" style="display:none;">
-                                <a href="{% url 'menu:remove_lateplate' lateplate.id user.id%}">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                </a>
-                            </label>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-                </ul>
+        <!-- Meal -->
+        <div class="col-lg-8" id="meal">
+            <div class="row row-cols-1 g-3">
+            {% for recipe in info.meal.recipes %}
+                <div class="col">
+                    {% include 'recipes/components/recipe.html' %}
+                </div>
+            {% endfor %}
+            </div>
+        </div>
 
-                {% if user.is_authenticated %}
-                    <div style="border-radius:5px; background-color:#cccbca">
-                        <div style="padding-left:4px;padding-right:4px;padding-bottom:3px;padding-top:5px;">
-                            <form id="lateplate_form" action="{% url 'menu:add_lateplate' info.meal.id user.id%}" method="post">
-                                {% csrf_token %}
-                                <select style="width:60%;" class="btn" list="name_choices" type="text" id="name" name="name" >
-                                    {% for user in info.users %}
-                                    <option value='{{user.username}}'>{{user.get_full_name}}</option>
-                                    {% endfor %}
-                                </select>
-                                <input style="width:35%"; class="btn btn-primary btn-xs" id="submit" type="submit" value="Add"/>
-                            </form>
+        <!-- Late Plates -->
+        <div class="col-lg-2 my-4 my-lg-0 sticky-lg-top h-100" style="top: 24px;" id="lateplates">
+            <h4>Late Plates</h4>
+            
+            <ul class="list-unstyled">
+            {% for lateplate in info.meal.lateplates %}
+                <li id="lateplate_{{forloop.counter}}">
+                    {{ lateplate|safe }}
+                </li>
+            {% endfor %}
+            </ul>
+
+        {% if user.is_authenticated %}
+            <div class="row g-2">
+                <form id="lateplate_form" action="{% url 'menu:modify_lateplate' info.meal.id user.id%}" method="post">
+                    {% csrf_token %}
+                    <select class="form-select" type="text" name="name" >
+                        <option selected>Select User</option>
+                    {% for user in info.users %}
+                        <option value='{{user.username}}'>{{user.get_full_name}}</option>
+                    {% endfor %}
+                    </select>
+
+                    <div class="row row-cols-2 row-cols-lg-1 row-cols-xl-2 mt-1 g-1">
+                        <div class="col">
+                            <input class="btn btn-primary w-100" type="submit" name="action_add" value="Add"/>
                         </div>
-                        <div style="padding-left:4px;padding-right:4px;padding-bottom:5px;">
-                            <button style="width:100%;" class="btn btn-danger btn-xs" onclick="showRemove()">Remove Lateplates</button>
+                        <div class="col">
+                            <input class="btn btn-danger w-100" type="submit"  name="action_remove" value="Remove" />
                         </div>
                     </div>
-                {% else %}
-                    <a href="{% url 'login'%}?next={{request.path}}">Login to edit lateplates.</a>
-                {% endif %}
-            </li>
+                </form>
+            </div>
+        {% else %}
+            <a href="{% url 'login'%}?next={{request.path}}">Login to edit lateplates.</a>
+        {% endif %}
 
-            <li>
-                <a href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.name}}">Check future ingredients</a>
-            </li>
+            <hr style="margin-top: 24px;">
 
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{% url 'menu:shopper' info.meal.menu.id %}?filter_date=true&after={{info.meal.name}}">Check future ingredients</a>
             {% if user.is_authenticated %}
-            <li>
-                <a href="{% url 'menu:rate_meal' info.meal.id %}">Rate this meal</a>
-            </li>
+                <a class="nav-link" href="{% url 'menu:rate_meal' info.meal.id %}">Rate this meal</a>
             {% endif %}
-        </ul>
+            </nav>
+        </div>
+
     </div>
 </div>
-</div>
 {% endblock %}
-</body>
-</html>

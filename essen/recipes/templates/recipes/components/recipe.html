@@ -31,15 +31,16 @@
     });
 </script>
 
-<div class="panel panel-default" id="recipe_{{recipe.id}}">
-    <div class="panel-heading">
-    	<h2>{{recipe.name}}</h2>
+<div class="card" id="recipe_{{recipe.id}}">
+    <div class="card-header">
+    	<h2 class="my-2">{{recipe.name}}</h2>
     	{% if show_serves %}
-    	<p>Serves {{recipe.serving_size}}</p>
+    	<h5 class="mb-2 text-muted">Serves {{recipe.serving_size}}</h5>
     	{% endif %}
     </div>
-    <div class="panel-body">
-        <h3>Ingredients</h3>
+
+    <div class="card-body">
+        <h4 class="card-title">Ingredients</h4>
         <table class="table table-striped recipe-table">
             <colgroup>
                 <col style="width: auto">
@@ -54,7 +55,8 @@
             </tr>
         {% endfor %}
         </table>
-        <h3>Directions</h3>
-        <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
+
+        <h4 class="card-title mt-4">Directions</h4>
+        <p class="card-text" style="white-space: pre-wrap">{{ recipe.directions }}</p>
     </div>
 </div>

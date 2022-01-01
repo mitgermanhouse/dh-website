@@ -142,28 +142,27 @@ def view_meal(request, pk):
     return render(request, template_name, {context_object_name: info})
 
 
-def add_lateplate(request, meal_pk, user_pk):
+def modify_lateplate(request, meal_pk, user_pk):
     meal = get_object_or_404(Meal, pk=meal_pk)
-
     username = request.POST.get("name")
-    print(request.POST)
-    print(username)
     user = User.objects.filter(username=username).first()
 
-    if user.is_authenticated:
+    response = HttpResponseRedirect(reverse('menu:display_meal', args=[meal_pk]))
+
+    if user is None or not user.is_authenticated:
+        return response
+
+    if "action_add" in request.POST:
         l = LatePlate(name=getLatePlateText(user), meal=meal)
         l.save()
+        return response
 
-    return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_pk]))
+    if "action_remove" in request.POST:
+        for lp in LatePlate.objects.filter(meal=meal, name__contains=user.get_full_name()):
+            lp.delete()
+        return response
 
-def remove_lateplate(request, lateplate_pk, user_pk):
-    lateplate = get_object_or_404(LatePlate, pk=lateplate_pk)
-
-    if request.user.is_authenticated:
-        meal_id = lateplate.meal.id
-        lateplate.delete()
-
-    return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_id]))
+    return HttpResponseBadRequest()
 
 
 def auto_lateplates(request):
@@ -255,27 +254,7 @@ def shopper(request, pk):
         context_dict["filter_date"] = after_filter
         context_dict["after"] = d["after"][0]
     return render(request, template_name, context_dict)
-
-
-def ingredient_info(request, ing, menu):
-    template_name = 'menu/ingredient_info.html'
-    context_object_name = 'usages'
-
-    search = get_object_or_404(Ingredient, pk=str(ing))
-    menu = get_object_or_404(Menu, pk=str(menu))
-
-    ingredient_uses = []
-
-    for meal in menu.meal_set.all():
-        for recipe in meal.recipes.all():
-            scale_factor = menu.servings/recipe.serving_size
-            for ingredient in recipe.ingredient_set.all():
-
-                if ingredient.ingredient_name == search.ingredient_name and meal.date > datetime.now().date():
-                    ingredient_uses.append(str(ingredient.quantity * scale_factor) + " " + ingredient.units + " for " + meal.meal_name)
-
-    return render(request, template_name, {context_object_name: ingredient_uses})
-
+    
 
 def submit_rating(request, pk):
     if request.user.is_authenticated:
