@@ -4,34 +4,6 @@
 
 {% block script %}
 <script>
-    // Move sidebar on scroll
-    function setScrolling(id) {
-        $(function() {
-            var $meal = $("#meal");
-            var $element = $("#" + id),
-                $window = $(window),
-                offset = $element.offset(),
-                topPadding = 15;
-
-            $window.scroll(function () {
-                console.log("sidebar" + $element.position().left);
-                console.log("meal" + $meal.position().left);
-                if ($element.position().left != $meal.position().left && $window.scrollTop() > offset.top) {
-                    $element.stop().animate({
-                        duration: 0,
-                        marginTop: $window.scrollTop() - offset.top + topPadding
-                    });
-                } else {
-                    $element.stop().animate({
-                        duration: 0,
-                        marginTop: 0
-                    });
-                }
-            });
-        });
-    };
-    setScrolling("functions");
-
     function getCookie(name) {
         let cookieValue = null;
 
@@ -75,29 +47,23 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container-xxl py-5">
     <div class="row">
         <!-- Left column -->
-        <div class="col-sm-1">
-        </div>
+        <div class="col-lg-2"> </div>
         
         <!-- Center column -->
-        <div class="col-sm-10" id="meal">
+        <div class="col-lg-8" id="meal">
             {% include 'recipes/components/recipe.html' with show_serves='True' %}
         </div>
 
         <!-- Right column -->
-        <div class="col-sm-1" id="functions">
+        <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
             {% if steward %}
-            <ul class="nav nav-pills nav-stacked">
-                <li>
-                    <a href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
-                </li>
-
-                <li>
-                    <a onclick="deleteRecipe()">Delete Recipe</a>
-                </li>
-            </ul>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
+                <a class="nav-link" href="#" onclick="deleteRecipe()">Delete Recipe</a>
+            </nav>
             {% endif %}
         </div>
     </div>
