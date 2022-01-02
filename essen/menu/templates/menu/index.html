@@ -34,10 +34,10 @@
         <div class="col-lg-2"> </div>
 
         <div class="col-lg-8">
-            <div class="row row-cols-1 g-3">
+            <div class="row row-cols-1 g-4">
             {% for meal in sorted_meals %}
                 <div class="col">
-                    <div class="card">
+                    <div class="card shadow">
                         <div class="card-header">
                             <h3 class="my-2">
                                 <a {% if meal.today %} style="color:maroon;" {% endif %}

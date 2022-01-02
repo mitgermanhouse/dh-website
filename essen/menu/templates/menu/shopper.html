@@ -15,7 +15,7 @@
     }
 
     .table > tbody > tr.ghost > td {
-        border-top: 0;
+        border: 0;
         padding: 0;
         background-color: transparent;
     }
@@ -90,48 +90,49 @@
 
         <!-- Shopping List -->
         <div class="col-lg-8" id="ingredients">
-            <table class="table table-light" id="shopper">
-                <colgroup>
-                    <col style="width: 10rem">
-                    <col style="width: auto">
-                </colgroup>
+            <div class="card shadow overflow-hidden">
+                <table class="table table-light m-0" id="shopper">
+                    <colgroup>
+                        <col style="width: 10rem">
+                        <col style="width: auto">
+                    </colgroup>
 
-            {% for c_ingredient in ingredients %}
-                {% if forloop.counter|divisibleby:2 %}<tr>{% else %}<tr class="striped">{% endif %}
-                    <td class="px-0">
-                        <table class="table table-borderless m-0 quantity-table"> 
-                        {% for q in c_ingredient.quantities %}
-                            <tr class="quantity" data-quantities='{% data_quantities_str quantity=q %}'>
-                                <td class="magnitude noselect">{{ q.magnitude_str }}</td>
-                                <td class="unit noselect">{{ q.unit_str }}</td>
-                            </tr>
-                        {% endfor %}
-                        </table>
-                    </td>
-                    <td class="name" data-bs-toggle="collapse" data-bs-target="#collapse_{{forloop.counter}}">{{ c_ingredient.name }}</td>
-                </tr>
+                {% for c_ingredient in ingredients %}
+                    {% if forloop.counter|divisibleby:2 %}<tr>{% else %}<tr class="striped">{% endif %}
+                        <td class="px-0">
+                            <table class="table table-borderless m-0 quantity-table"> 
+                            {% for q in c_ingredient.quantities %}
+                                <tr class="quantity" data-quantities='{% data_quantities_str quantity=q %}'>
+                                    <td class="magnitude noselect">{{ q.magnitude_str }}</td>
+                                    <td class="unit noselect">{{ q.unit_str }}</td>
+                                </tr>
+                            {% endfor %}
+                            </table>
+                        </td>
+                        <td class="name" data-bs-toggle="collapse" data-bs-target="#collapse_{{forloop.counter}}">{{ c_ingredient.name }}</td>
+                    </tr>
 
-                <tr class="ghost">
-                    <td colspan="2">
-                        <div id="collapse_{{forloop.counter}}" class="collapse">
-                            <div class="py-2">
-                                <table class="table table-borderless mb-0 sub-table">
-                                {% for ingredient in c_ingredient.ingredients %}
-                                    <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
-                                        <td class="magnitude noselect">{{ ingredient.magnitude_str }}</td>
-                                        <td class="unit noselect">{{ ingredient.unit_str }}</td>
-                                        <td class="name">{{ ingredient.name }}</td>
-                                        <td class="recipe"><a href="{% url 'menu:display_meal' ingredient.recipe.meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
-                                    </tr>
-                                {% endfor %}
-                                </table>
+                    <tr class="ghost">
+                        <td colspan="2">
+                            <div id="collapse_{{forloop.counter}}" class="collapse">
+                                <div class="py-2 border-bottom">
+                                    <table class="table table-borderless mb-0 sub-table">
+                                    {% for ingredient in c_ingredient.ingredients %}
+                                        <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
+                                            <td class="magnitude noselect">{{ ingredient.magnitude_str }}</td>
+                                            <td class="unit noselect">{{ ingredient.unit_str }}</td>
+                                            <td class="name">{{ ingredient.name }}</td>
+                                            <td class="recipe"><a href="{% url 'menu:display_meal' ingredient.recipe.meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </table>
-
+                        </td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
         </div>
 
         <div class="col-lg-2"></div>
