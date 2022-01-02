@@ -1,5 +1,16 @@
-table.recipe-table td.magnitude { text-align: right; padding-right: 4px; }
-table.recipe-table td.unit { text-align: left; padding-left: 4px; white-space: nowrap; }
+.recipe-table > tbody > tr > td.magnitude { 
+  text-align: right;
+  padding-right: 4px; 
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.recipe-table > tbody > tr > td.unit {
+  text-align: left; 
+  padding-left: 4px; 
+  white-space: nowrap;
+  font-weight: 600;
+}
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */

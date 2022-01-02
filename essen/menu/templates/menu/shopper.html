@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 {% extends 'essen/base.html' %}
 
 {% load static %}
@@ -12,37 +10,32 @@
         vertical-align: middle;
     }
 
-    .table tr.striped {
-        background-color: #f9f9f9;
+    .table tr.striped > td {
+        box-shadow: inset 0 0 0 9999px var(--bs-table-striped-bg);
     }
 
     .table > tbody > tr.ghost > td {
         border-top: 0;
         padding: 0;
+        background-color: transparent;
     }
 
-    .sub-table {
-        margin-bottom: 0;
-        border-bottom: 0;
-        background-color: rgb(255, 248, 241) !important;
-    }
+    .quantity-table { width: 100%; border: 0; }
+    .quantity-table > tbody > tr > td { padding-top: 0; padding-bottom: 0;}
+    .quantity-table > tbody > tr > td.magnitude { width: 4.5rem; text-align: right; font-weight: 600; padding-right: 4px; }
+    .quantity-table > tbody > tr > td.unit { width: 5.5rem; text-align: left; font-weight: 600; padding-left: 4px; }
 
-    .sub-table > tbody > tr > td:first-child { padding-left: 20px; }
-
-    .sub-table > tbody > tr > td:nth-child(2) { width: 30%; }
-    .sub-table > tbody > tr > td.magnitude { width: 8%; text-align: right; padding-right: 4px; }
-    .sub-table > tbody > tr > td.unit { width: 12%; text-align: left; padding-left: 4px; }
-
-    .quantity-table { width: 100%; }
-    .quantity-table td.magnitude { width: 40%; text-align: right; padding-right: 4px; }
-    .quantity-table td.unit { width: 60%; text-align: left; padding-left: 4px; }
+    .sub-table > tbody > tr > td.magnitude { width: 4.5rem; ; text-align: right; padding-right: 4px; }
+    .sub-table > tbody > tr > td.unit { width: 5.5rem; text-align: left; padding-left: 4px; }
+    .sub-table > tbody > tr > td.name { width: auto; }
+    .sub-table > tbody > tr > td.recipe { width: 40%; }
 </style>
 
 <script type="text/javascript">
     // Auto collapse table
     $(function() {
-        $('#ingredients [data-toggle="collapse"]').click(function() {
-            $('#ingredients .collapse.in').collapse('hide');
+        $('#ingredients [data-bs-toggle="collapse"]').click(function() {
+            $('#ingredients .collapse.show').collapse('hide');
         });
     });
 
@@ -78,30 +71,35 @@
 
 {% block content %}
 
-<div class="text-center">
-{% if filter_date %}
-    <h2>Required ingredients after {{after}}</h2>
-{% else %}
-    <h1>Shopping List</h1>
-    <h3><small>{{menu.notes}}</small></h3>
-{% endif %}
+<!-- Title -->
+<div class="container pt-5 pb-3">
+    <div class="row text-center">
+    {% if filter_date %}
+        <h1>Required ingredients after {{after}}</h1>
+    {% else %}
+        <h1>Shopping List</h1>
+        <p style="white-space: pre-wrap;">{{menu.notes}}</p>
+    {% endif %}
+    </div>
 </div>
 
-<div class="container">
+<!-- Shopping List -->
+<div class="container-xxl pb-5">
     <div class="row">
-        <div class="col-sm-2"></div>
-        <div class="col-sm-8" id="ingredients">
-            <table class="table" id="shopper">
+        <div class="col-lg-2"></div>
+
+        <!-- Shopping List -->
+        <div class="col-lg-8" id="ingredients">
+            <table class="table table-light" id="shopper">
                 <colgroup>
+                    <col style="width: 10rem">
                     <col style="width: auto">
-                    <col style="width: 25%">
                 </colgroup>
 
             {% for c_ingredient in ingredients %}
                 {% if forloop.counter|divisibleby:2 %}<tr>{% else %}<tr class="striped">{% endif %}
-                    <td data-toggle="collapse" data-target="#collapse_{{forloop.counter}}">{{ c_ingredient.name }}</td>
-                    <td>
-                        <table class="quantity-table"> 
+                    <td class="px-0">
+                        <table class="table table-borderless m-0 quantity-table"> 
                         {% for q in c_ingredient.quantities %}
                             <tr class="quantity" data-quantities='{% data_quantities_str quantity=q %}'>
                                 <td class="magnitude noselect">{{ q.magnitude_str }}</td>
@@ -110,20 +108,24 @@
                         {% endfor %}
                         </table>
                     </td>
+                    <td class="name" data-bs-toggle="collapse" data-bs-target="#collapse_{{forloop.counter}}">{{ c_ingredient.name }}</td>
                 </tr>
+
                 <tr class="ghost">
                     <td colspan="2">
                         <div id="collapse_{{forloop.counter}}" class="collapse">
-                            <table class="table sub-table">
-                            {% for ingredient in c_ingredient.ingredients %}
-                                <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
-                                    <td><a href="{% url 'menu:display_meal' ingredient.recipe.meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
-                                    <td>{{ ingredient.name }}</td>
-                                    <td class="magnitude noselect">{{ ingredient.magnitude_str }}</td>
-                                    <td class="unit noselect">{{ ingredient.unit_str }}</td>
-                                </tr>
-                            {% endfor %}
-                            </table>
+                            <div class="py-2">
+                                <table class="table table-borderless mb-0 sub-table">
+                                {% for ingredient in c_ingredient.ingredients %}
+                                    <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
+                                        <td class="magnitude noselect">{{ ingredient.magnitude_str }}</td>
+                                        <td class="unit noselect">{{ ingredient.unit_str }}</td>
+                                        <td class="name">{{ ingredient.name }}</td>
+                                        <td class="recipe"><a href="{% url 'menu:display_meal' ingredient.recipe.meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
+                                    </tr>
+                                {% endfor %}
+                                </table>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -131,8 +133,8 @@
             </table>
 
         </div>
+
+        <div class="col-lg-2"></div>
     </div>
 </div>
 {% endblock %}
-
-</html>

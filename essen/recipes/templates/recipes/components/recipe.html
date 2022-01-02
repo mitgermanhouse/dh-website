@@ -43,15 +43,15 @@
         <h4 class="card-title">Ingredients</h4>
         <table class="table table-striped recipe-table">
             <colgroup>
+                <col style="width: 5rem;">
+                <col style="width: 5rem;">
                 <col style="width: auto">
-                <col style="width: fit-content;">
-                <col style="width: 8%;">
             </colgroup>
         {% for ingredient in recipe.ingredients %}
             <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
-                <td>{{ingredient.name}}</td>
                 <td class="magnitude noselect">{{ingredient.magnitude_str}}</td>
                 <td class="unit noselect">{{ingredient.unit_str}}</td>
+                <td>{{ingredient.name}}</td>
             </tr>
         {% endfor %}
         </table>
