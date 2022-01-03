@@ -64,4 +64,32 @@ class IngredientWrapper:
 
 		return f"{self.simplified_q.u:~}"
 
+	@property
+	def original_unit_str(self):
+		if self.quantity.u == units.dimensionless:
+			return self._ingredient.units
+
+		return f"{self.quantity.u:~}"
+
+
+class RecipeJSONEncoder(json.JSONEncoder):
+	def default(self, it):
+		if isinstance(it, RecipeWrapper):
+			return {
+				"id": it.id,
+				"name": it.name,
+				"directions": it.directions,
+				"serving_size": it.serving_size,
+				"ingredients": it.ingredients
+			}
+
+		if isinstance(it, IngredientWrapper):
+			return {
+				"id": it.id,
+				"name": it.name,
+				"unit": it.quantity.unit_str,
+				"quantity": it.quantity.m,
+			}
+		
+		return json.JSONEncoder.default(self, it)
 	

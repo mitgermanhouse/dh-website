@@ -1,0 +1,123 @@
+{% extends 'essen/base.html' %}
+{% load static %}
+
+{% block script %}
+<script src="{% static 'recipes/js/edit_script.js'%}"></script>
+<script id="template-ingredient" type="text/template">
+    {% include 'recipes/components/edit_ingredient.html' %}
+</script>
+
+<style type="text/css">
+    .form-quantity::-webkit-outer-spin-button, 
+    .form-quantity::-webkit-inner-spin-button { margin-left: 1ch; } 
+
+    .form-quantity {
+        text-align: right;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- TODO: Automatically generate list -->
+<!-- TODO: Maybe force user to select a predefined unit -->
+<datalist id="datalist-units">
+    <option value="lb">
+    <option value="oz">
+    <option value="tsp">
+    <option value="tbsp">
+    <option value="cup">
+    <option value="cup">
+
+    <option value="g">
+    <option value="kg">
+    <option value="l">
+    <option value="ml">
+
+    <option value="unit">
+    <option value="clove">
+    <option value="taste">
+    <option value="can">
+    <option value="head">
+    <option value="pinch">
+</datalist>
+
+<div class="container py-5">
+    <div class="row justify-content-md-center">
+
+        <!-- Body -->
+        <div class="col col-lg-10 col-xl-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h2 class="my-2">
+                    {% if recipe is not None %}
+                        {{recipe.name}}
+                    {% else %}
+                        Add Recipe
+                    {% endif %}
+                    </h2>
+                </div>
+
+                <div class="card-body">
+                {% if recipe is not None %}
+                    <form action="{% url 'recipes:submit_edit' recipe.id %}" method="post">
+                {% else %}
+                    <form action="{% url 'recipes:submit_recipe' %}" method="post">
+                {% endif %}
+                        {% csrf_token %}
+
+                        <!-- Name -->
+                        <div class="row mb-3">
+                            <label for="recipe_name" class="col-md-2 col-form-label">Name</label>
+                            <div class="col-md-10">
+                                <input type="text" class="form-control" id="recipe_name" name="recipe_name"
+                                       value="{{ recipe.name }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Serving Size -->
+                        <div class="row mb-3">
+                            <label for="serving_size" class="col-md-2 col-form-label">Serving Size</label>
+                            <div class="col-md-10">
+                                <input type="number" min="1" class="form-control" id="serving_size" name="serving_size"
+                                       value="{{ recipe.serving_size }}" required>
+                            </div>
+                        </div>
+
+                        <!-- Directions -->
+                        <div class="row mb-3">
+                            <label for="directions" class="col-md-2 col-form-label">Directions</label>
+                            <div class="col-md-10">
+                                <textarea type="text" rows="10" class="form-control" id="directions" name="directions"
+                                       value="{{ recipe.directions }}" required>{{ recipe.directions }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <h4 class="mt-5 mb-3">Ingredients</h4>
+                        <div class="row mb-4 g-3" id="ingredient-list">
+                            {% if recipe.ingredients|length > 0 %}
+                                {% for ingredient in recipe.ingredients %}
+                                    {% include 'recipes/components/edit_ingredient.html' %}
+                                {% endfor %}
+                            {% else %}
+                                {% include 'recipes/components/edit_ingredient.html' %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Buttons  -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-around mb-md-2">
+                            <button type="button" class="btn btn-primary" id="add-ingredient-button">Add Ingredient</button>
+                            <input type="submit" class="btn btn-outline-primary" value="Save Edits"/>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

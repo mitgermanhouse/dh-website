@@ -1,0 +1,14 @@
+<div class="col-12 ingredient-col">
+    <div class="row">
+        <div class="col input-group pe-0">
+            <input type="number" min="0" step="any" name="quantity" placeholder="Quantity" class="form-control form-quantity" value="{{ingredient.quantity.m}}" required>
+            <input type="text" name="units" placeholder="Units" class="form-control form-unit" list="datalist-units" value="{{ingredient.original_unit_str}}" required>
+        </div>
+        <div class="col col-8">
+            <div class="input-group">
+                <input type="text" name="ingredient" placeholder="Ingredient" class="form-control" value="{{ingredient.name}}" required>
+                <button type="button" class="btn btn-danger remove-button" onclick="deleteIngredient(this)"> &#x2717 </button>
+            </div>
+        </div>
+    </div>
+</div>

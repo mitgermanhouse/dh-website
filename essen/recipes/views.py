@@ -33,13 +33,18 @@ def view_recipes(request):
     return render(request, "recipes/index.html", {"recipe_list": recipes})
 
 
-class EditView(generic.DetailView):
-    model = Recipe
-    template_name = 'recipes/edit.html'
+def edit_recipe(request, pk):
+    if not (request.user.is_authenticated and check_if_steward(request.user)):
+        return HttpResponse('401 Unauthorized', status=401)
+    
+    recipe = get_object_or_404(Recipe, pk=pk)
+    wrapped_recipe = RecipeWrapper(recipe)
+
+    return render(request, "recipes/edit_recipe.html", {"recipe": wrapped_recipe})
 
 
 def add_recipe(request):
-    return render(request, "recipes/add_recipe.html")
+    return render(request, "recipes/edit_recipe.html")
 
 
 def submit_recipe(request):

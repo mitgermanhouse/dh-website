@@ -154,5 +154,3 @@ if __name__ == '__main__':
 # TODO: Refactor	
 units = load_unit_group('DH_US_cups')
 all_dh_units = load_unit_group('DH_All')
-
-print(all_dh_units)
