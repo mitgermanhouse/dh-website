@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.urls import reverse
 
@@ -21,8 +20,7 @@ class HomeView(TemplateView):
         return context
 
 # REFERENCE: https://python.plainenglish.io/adventures-in-django-how-to-implement-multiple-modelforms-in-a-view-5ec75058dff4
-@method_decorator(login_required, name='dispatch')
-class EditProfileUpdateView(TemplateView):
+class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
     template_name = 'home/edit_profile.html'
 
     def get_context_data(self, **kwargs):

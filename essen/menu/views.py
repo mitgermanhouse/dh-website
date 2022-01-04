@@ -11,7 +11,8 @@ from menu.units.wrappers import MenuWrapper, combine_ingredients
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
@@ -49,7 +50,9 @@ def index(request, date='None'):
     print(sorted_meals)
     return render(request, template_name, {context_object_name: menu, 'target_date': target_date,
                                            'sorted_meals' : sorted_meals})
+
 @login_required
+@permission_required('polls.add_choice')
 def add_menu(request):
     template_name = "menu/add_menu.html"
     context_object_name = 'recipe_choices'
@@ -124,8 +127,7 @@ def submit_menu(request):
 
     return HttpResponseRedirect(reverse('menu:index'))
 
-@method_decorator(login_required, name='dispatch')
-class DetailView(generic.DetailView):
+class DetailView(LoginRequiredMixin, generic.DetailView):
     model = Meal
     template_name = "menu/rate_meal.html"
 
