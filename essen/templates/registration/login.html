@@ -1,60 +1,63 @@
 {% extends 'essen/base.html' %}
-
-{% block script %}
-<style type="text/css">
-  .table-login > tbody > tr > td {
-    padding: 8px;
-  }
-</style>
-{% endblock %}
+{% load widget_tweaks %}
 
 {% block content %}
+<div class="container py-4 py-md-5">
+    <div class="row justify-content-center">
+        <div class="col col-md-8 col-lg-6">
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12">
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                Your username and password didn't match. Please try again.
+            </div>
+        {% endif %}
 
-    {% if form.errors %}
-      <p>Your username and password didn't match. Please try again.</p>
-    {% endif %}
+            <div class="card shadow bg-light">
+                <div class="card-body">
 
-    {% if next %}
-      {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-        please login with an account that has access.</p>
-      {% else %}
-      <p>Please login to see this page.</p>
-      {% endif %}
-    {% endif %}
 
-      <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        <table class="table-login">
-        <div class="form-group">
-          <tr>
-            <td style="padding-left: 0px">{{ form.username.label_tag }}</td>
-            <td>{{ form.username }}</td>
-          </tr>
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+
+                        {% with field=form.username %}
+                        <div class="row mb-3">
+                            <div class="col">
+                                {% render_field field|add_class:'form-control' placeholder=field.label %}
+                            </div>
+                        </div>
+                        {% endwith %}
+
+                        {% with field=form.password %}
+                        <div class="row mb-3">
+                            <div class="col">
+                                {% render_field field|add_class:'form-control' placeholder=field.label %}
+                            </div>
+                        </div>
+                        {% endwith %}
+
+                        <input class="btn btn-primary w-100" type="submit" value="Login" />
+                        <input type="hidden" name="next" value="{{ next }}" />
+                    </form>
+
+                    <div class="row row-cols-1 mt-1 justify-content-center">
+                        <div class="col">
+                            <a class="btn btn-dark w-100" role="button" href="{% url 'mit:auth' %}?next={{ next }}">
+                                Login using MIT Certificate
+                            </a>
+                        </div>
+
+                        <div class="col mt-4 mb-2 d-flex justify-content-center">
+                            <a class="link-secondary" href="{% url 'password_reset' %}">
+                                Reset Password
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
-
-        <tr>
-          <td style="padding-left: 0px">{{ form.password.label_tag }}</td>
-          <td>{{ form.password }}</td>
-        </tr>
-        </table>
-
-        <input class="btn btn-primary" type="submit" value="Login" />
-        <input type="hidden" name="next" value="{{ next }}" />
-      </form>
-
-      <br>
-      <p><a href="{% url 'mit:auth' %}?next={{ next }}">Login using MIT Certificate</a></p>
-      
-      <br> {# Assumes you setup the password_reset view in your URLconf #}
-      <p><a href="{% url 'password_reset' %}">Reset Password</a></p>
-
     </div>
-  </div>
 </div>
 
 {% endblock %}
