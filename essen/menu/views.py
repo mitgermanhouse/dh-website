@@ -11,6 +11,8 @@ from menu.units.wrappers import MenuWrapper, combine_ingredients
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -47,7 +49,7 @@ def index(request, date='None'):
     print(sorted_meals)
     return render(request, template_name, {context_object_name: menu, 'target_date': target_date,
                                            'sorted_meals' : sorted_meals})
-
+@login_required
 def add_menu(request):
     template_name = "menu/add_menu.html"
     context_object_name = 'recipe_choices'
@@ -77,6 +79,7 @@ def getLatePlateText(user):
 
     return user.get_full_name() + dietary
 
+@login_required
 def submit_menu(request):
     if not (request.user.is_authenticated and check_if_steward(request.user)):
         return HttpResponseRedirect(reverse('menu:index'))
@@ -121,6 +124,7 @@ def submit_menu(request):
 
     return HttpResponseRedirect(reverse('menu:index'))
 
+@method_decorator(login_required, name='dispatch')
 class DetailView(generic.DetailView):
     model = Meal
     template_name = "menu/rate_meal.html"
@@ -255,7 +259,7 @@ def shopper(request, pk):
         context_dict["after"] = d["after"][0]
     return render(request, template_name, context_dict)
     
-
+@login_required
 def submit_rating(request, pk):
     if request.user.is_authenticated:
         d = dict(request.GET.lists())

@@ -1,39 +1,30 @@
-<!DOCTYPE html>
 {% extends 'essen/base.html' %}
 {% load static %}
 
 {% block script %}
 <link rel="stylesheet" href="{% static 'menu/css/style.css' %}">
-
 {% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
 
-<!--graciously modified from https://codepen.io/anon/pen/XwBvoq-->
-<div class="container">
-<div class="row">
-    <div class="row">
-        <div class="col-sm-1">
-        </div>
-        <div class="col-sm-10">
-            <div class="panel panel-default">
-                <div class="panel panel-heading">
-                    <div class="text-center">
-                        <h3>Rate {{meal}}</h3>
-                    </div>
+<div class="container py-4 py-md-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9 col-xxl-8">
+
+            <div class="card shadow" id="recipe_{{recipe.id}}">
+                <div class="card-header">
+                    <h2 class="my-2">Rate {{ meal }}</h2>
                 </div>
 
-                <div class="panel panel-body">
+                <div class="card-body">
+
                     <form action="{% url 'menu:submit_rating' meal.id %}">
                         {% csrf_token %}
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div style="margin: 15px; text-align: right">
-                                    <label for="star-input">*Rating</label>
-                                </div>
+                        <div class="row mb-3">
+                            <div class="col-3 col-md-2 d-flex">
+                                <label for="star-input" class="align-self-center">Rating*</label>
                             </div>
-                            <div class="col-sm-10" id="star-input">
+                            <div class="col-auto" id="star-input">
                                 <div class="rate">
                                     <input type="radio" id="star10" name="rate" value="10"/>
                                     <label for="star10" title="text">10 stars</label>
@@ -58,43 +49,25 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-2">
-                                <div style="margin: 15px; text-align: right">
-                                    <label for="comment-box">Comments</label>
-                                </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-2 form-label">
+                                <label for="comment-box">Comments</label>
                             </div>
-                            <div class="col-sm-10">
-                                <textarea class="form-control" id="comment-box" name="comment-box"></textarea>
+                            <div class="col-md-10">
+                                <textarea class="form-control" rows="4" id="comment-box" name="comment-box"></textarea>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-10">
-                                <input style="margin-top:10px;" class="btn btn-primary" type="submit" value="Submit review">
-                            </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <input class="btn btn-primary" type="submit" value="Submit review">
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-1"></div>
-        <div class="col-sm-10">
-            <h6><small>
-                <div style="text-align: right;">
-                Only one review, per meal, per user is allowed. Subsequent reviews of the same meal
-                    by the same user overwrite previous ones.
-                </div>
-            </small></h6>
-        </div>
-    </div>
 </div>
-</div>
-
-{% else %}
-<h2>You must log in to view this page</h2>
-{% endif %}
 
 {% endblock %}
