@@ -1,110 +1,71 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-from home.models import Member
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 from django.urls import reverse
-import os
-from PIL import Image, ExifTags
-from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
-import sys
 
-# Create your views here.
+from home.models import Member
+from home.forms import MemberDataForm, MemberImageForm
 
-def home(request):
-    template_name = "home/home.html"
-    context_object_name = "members"
+class HomeView(TemplateView):
+    template_name = 'home/home.html'
 
-    return render(request, template_name, {context_object_name: Member.objects.all().order_by('class_year', '-user')})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['members'] = Member.objects.exclude(user__groups__name__in=['alumni']).order_by('class_year', '-user')
+        return context
 
-def edit_profile(request):
-    template_name = "home/edit_profile.html"
-    context_object_name = "member"
+# REFERENCE: https://python.plainenglish.io/adventures-in-django-how-to-implement-multiple-modelforms-in-a-view-5ec75058dff4
+@method_decorator(login_required, name='dispatch')
+class EditProfileUpdateView(TemplateView):
+    template_name = 'home/edit_profile.html'
 
-    d = {}
-    if request.user.is_authenticated:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get user and member
+        user = self.request.user
+        member_list = Member.objects.filter(user=user)
+        member = Member(user=user) if len(member_list) == 0 else member_list.first()
+
+        # Modify context
+        context['member'] = member
+        context['edit_access'] = check_if_profile_edit_access(user)
+        context['data_form'] = MemberDataForm(instance=member, label_suffix='')
+        context['image_form'] = MemberImageForm(instance=member, label_suffix='')
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Get user and member
         user = request.user
         member_list = Member.objects.filter(user=user)
-        member = None
-        if len(member_list) == 0:
-            member = Member(user=user)
-            # member.save()
-        else:
-            member = member_list.first()
-        d = {context_object_name: member, "edit_access":check_if_profile_edit_access(user)}
+        member = Member(user=user) if len(member_list) == 0 else member_list.first()
 
-    return render(request, template_name, d)
+        # Check for edit access
+        if not check_if_profile_edit_access(user):
+            return HttpResponseForbidden("401 Forbidden: You don't have edit access.")
 
-def submit_profile(request):
-    if request.user.is_authenticated and check_if_profile_edit_access(request.user):
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Member Data Form
+        if 'form_type__MemberDataForm' in request.POST:
+            form = MemberDataForm(instance=member, data=request.POST)
+            
+            if form.is_bound and form.is_valid():
+                form.save()
 
-        p = dict(request.FILES.lists())
-        d = dict(request.POST.lists())
-        img = p["pic"][0]
+        elif 'form_type__MemberImageForm' in request.POST:
+            form = MemberImageForm(instance=member, data=request.POST, files=request.FILES)
 
-        class_year = d["class_year"][0]
-        bio = d["bio"][0]
-        major = d["major"][0]
+            if form.is_bound and form.is_valid():
+                form.save()
 
-        # get the member entry
-        member_list = Member.objects.filter(user=request.user)
-        member = None
-        if len(member_list) == 0:
-            member = Member(user=request.user)
-            # member.save()
-        else:
-            member = member_list.first()
-
-        member.bio = bio
-        member.class_year = class_year
-        member.image = img
-
-        output = BytesIO()
-        im = Image.open(member.image)
-
-        # some images come out rotated incorrectly due to EXIF data
-        # solution from: https://stackoverflow.com/questions/13872331/rotating-an-image-with-orientation-specified-in-exif-using-python-without-pil-in
-        try:
-            for orientation in ExifTags.TAGS.keys():
-                if ExifTags.TAGS[orientation] == 'Orientation':
-                    break
-            exif = dict(im._getexif().items())
-
-            if exif[orientation] == 3:
-                im = im.rotate(180, expand=True)
-            elif exif[orientation] == 6:
-                im = im.rotate(270, expand=True)
-            elif exif[orientation] == 8:
-                im = im.rotate(90, expand=True)
-        except (AttributeError, KeyError, IndexError):
-            # cases: image don't have getexif
-            pass
-
-        # resize the image so loading time is not ridiculously long
-        basewidth = 400
-        width, height = im.size
-        wpercent = (basewidth / float(width))
-        hsize = int((float(height) * float(wpercent)))
-        im = im.resize((basewidth, hsize), Image.ANTIALIAS)
-        im.save(output, format='JPEG', quality=100)
-        output.seek(0)
-        member.image = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % member.image.name.split('.')[0], 'image/jpeg',
-                                        sys.getsizeof(output), None)
-
-        member.major = major
-        member.save()
-
-    return HttpResponseRedirect(reverse('home:home') + "#" + request.user.username)
+        return HttpResponseRedirect(reverse('home:edit_profile'))
 
 def check_if_profile_edit_access(user):
     # users under profile ban will not be allowed to edit their profiles (for trolling prevention)
     return user.groups.all().filter(name="profile_ban").count() == 0
-
-
-
-
-

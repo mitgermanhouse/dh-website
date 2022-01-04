@@ -6,10 +6,10 @@ from . import views
 
 app_name = 'home'
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
-    url(r'^edit_profile/$', views.edit_profile, name='edit_profile'),
-    url(r'^submit_profile/$', views.submit_profile, name='submit_profile'),
+    url(r'^$', views.HomeView.as_view(), name='home'),
+    url(r'^edit_profile/$', views.EditProfileUpdateView.as_view(), name='edit_profile'),
 ]
+
 if settings.DEBUG:
     urlpatterns += [
         url(r'^media/(?P<path>.*)$', serve, {
