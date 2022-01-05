@@ -1,5 +1,4 @@
 {% extends 'essen/base.html' %}
-
 {% load static %}
 
 {% block script %}
@@ -42,8 +41,8 @@
 
         <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
             <nav class="nav flex-column">
-                {% if user.is_authenticated %}
-                <a class="nav-link" href="{% url 'recipes:add_recipe' %}">Add Recipes!</a>
+                {% if perms.recipes.add_recipe %}
+                <a class="nav-link" href="{% url 'recipes:add' %}">Add Recipe</a>
                 {% endif %}
             </nav>
         </div>

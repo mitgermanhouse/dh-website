@@ -52,7 +52,6 @@ def index(request, date='None'):
                                            'sorted_meals' : sorted_meals})
 
 @login_required
-@permission_required('polls.add_choice')
 def add_menu(request):
     template_name = "menu/add_menu.html"
     context_object_name = 'recipe_choices'

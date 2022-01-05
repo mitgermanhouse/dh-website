@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Recipe(models.Model):
     recipe_name = models.CharField(max_length=200)
     directions = models.TextField()
-    serving_size = models.IntegerField()
+    serving_size = models.PositiveSmallIntegerField(validators = [MinValueValidator(1), MaxValueValidator(1000)])
 
     def __str__(self):
         return self.recipe_name
