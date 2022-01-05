@@ -1,5 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import collections
+
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
@@ -12,7 +14,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
@@ -281,30 +282,32 @@ def submit_rating(request, pk):
     return HttpResponseRedirect(reverse('menu:index'))
 
 
-def see_reviews(request):
-    final_list = []
-    steward = False
-    if request.user.is_authenticated and check_if_steward(request.user):
-        steward = True
-        d = {}
-        for review in MealRating.objects.all():
-            if review.meal in d:
-                d[review.meal].append((review.rating, review.comment, review.username))
-            else:
-                d[review.meal] = [(review.rating, review.comment, review.username)]
+class ReviewsView(PermissionRequiredMixin, TemplateView):
+    template_name = 'menu/menu_reviews.html'
+    permission_required = 'menu.view_meal_rating'
 
-        print(d)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ratings = MealRating.objects.all()
 
-        final_list = []
-        for key, item in d.items():
-            overall_rating = float(sum([x[0] for x in item]))/len(item)
-            comment_list = []
-            for entry in item:
-                comment_list.append({"username":entry[2], "comment":entry[1], "rating":entry[0]})
-            final_list.append({"meal":key, "overall_rating":overall_rating, "comments":comment_list})
-        final_list.sort(key=lambda entry: entry["meal"].date, reverse=True)
+        grouped_ratings = collections.defaultdict(list)
+        for rating in ratings:
+            grouped_ratings[rating.meal].append(rating)
 
-    return render(request, template_name="menu/menu_reviews.html", context={"all_meals": final_list, "steward":steward})
+        ratings_context = []
+        for meal, meal_ratings in grouped_ratings.items():
+            overall_rating = sum([r.rating for r in meal_ratings]) / len(meal_ratings)
 
+            ratings_context.append({
+                'meal': meal,
+                'overall_rating': overall_rating,
+                'comments': meal_ratings
+            })
+
+        ratings_context.sort(key=lambda e: e['meal'].date, reverse=True)
+        context['ratings'] = ratings_context
+
+        return context
+        
 def check_if_steward(user):
     return user.groups.all().filter(name="stewards").count() > 0

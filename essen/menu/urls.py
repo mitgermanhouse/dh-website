@@ -15,6 +15,6 @@ urlpatterns = [
     url(r'^submit_auto_lateplates/$', views.submit_auto_lateplates, name="submit_auto_lateplates"),
     url(r'^rate_meal/(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name="rate_meal"),
     url(r'^submit_rating/(?P<pk>[0-9]+)/', views.submit_rating, name="submit_rating"),
-    url(r'^menu_reviews/', views.see_reviews, name="menu_reviews")
+    url(r'^menu_reviews/', views.ReviewsView.as_view(), name="menu_reviews")
 ]
 

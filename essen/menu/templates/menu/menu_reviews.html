@@ -1,56 +1,57 @@
-<!DOCTYPE html>
-
 {% extends 'essen/base.html' %}
-
-
 {% block content %}
 
-{% if steward %}
-<div class="col-sm-2">
-
+<!-- Title -->
+<div class="container py-5">
+    <div class="row text-center">
+        <h1 class="my-0">Menu Reviews</h1>
+    </div>
 </div>
 
-<div class="col-sm-8">
-    {% for meal in all_meals %}
-        <div class="panel panel-default">
-            <div class="panel panel-heading">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h3>{{meal.meal}}</h3>
-                    </div>
-                    <div class="col-sm-6">
-                        <h3 style="text-align: right;"> {{meal.overall_rating}}</h3>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <tr>
-                            {% for recipe in meal.meal.recipes.all %}
-                                <td>{{recipe}}</td>
-                            {% endfor %}
-                        </tr>
+<!-- Ratings -->
+<div class="container pb-5">
+    <div class="row row-cols-1 row-cols-xl-2 g-4">
 
+    {% for meal in ratings %}
+        <div class="col" id="meal">
+            <div class="card shadow h-100 overflow-hidden">
+                <div class="card-header">
+                    <div class="d-flex gap-4 justify-content-between align-items-center">
+                        <h4 class="my-2">{{meal.meal}}</h4>
+                        <h4 class="my-2">{{meal.overall_rating|floatformat:"1"}}</h4>
                     </div>
 
+                    <ul class="list-inline">
+                    {% for recipe in meal.meal.recipes.all %}
+                        <li class="list-inline-item">
+                            <a href="{% url 'recipes:detail' recipe.id %}" class="link-dark">{{recipe}}</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
                 </div>
-            </div>
-            <div class="panel panel-body">
-                <h3>Comments</h3>
+
+                <div class="card-body">
                     <table class="table table-striped">
+                        <colgroup>
+                            <col style="width: 5rem">
+                            <col style="width: auto">
+                            <col style="width: 2rem">
+                        </colgroup>
+
                         {% for comment in meal.comments %}
                         <tr>
-                            <td>{{comment.username}}</td>
-                            <td>{{comment.comment}}</td>
-                            <td>{{comment.rating}}</td>
+                            <td><b>{{comment.username}}</b></td>
+                            <td style="white-space: pre-wrap;">{{comment.comment}}</td>
+                            <td class="text-end"><b>{{comment.rating}}</b></td>
                         </tr>
                         {% endfor %}
                     </table>
+                </div>
+
             </div>
         </div>
     {% endfor %}
+    
+    </div>
 </div>
-{% else %}
-<h4>Only the cookcrew steward can view menu reviews.</h4>
-{% endif %}
-
 {% endblock %}
