@@ -1,73 +1,79 @@
 {% extends 'essen/base.html' %}
 {% load static %}
 
-{% block script %}
-<link rel="stylesheet" href="{% static 'menu/css/style.css' %}">
+{% block title %}
+  Rate Meal
+{% endblock %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'menu/css/rating_style.css' %}">
 {% endblock %}
 
 {% block content %}
 
 <div class="container py-3 py-sm-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10 col-xl-9 col-xxl-8">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9 col-xxl-8">
 
-            <div class="card shadow">
-                <div class="card-header">
-                    <h2 class="my-2">Rate {{ meal }}</h2>
-                </div>
-
-                <div class="card-body">
-
-                    <form action="{% url 'menu:submit_rating' meal.id %}">
-                        {% csrf_token %}
-                        <div class="row mb-3">
-                            <div class="col-3 col-md-2 d-flex">
-                                <label for="star-input" class="align-self-center">Rating*</label>
-                            </div>
-                            <div class="col-auto" id="star-input">
-                                <div class="rate">
-                                    <input type="radio" id="star10" name="rate" value="10"/>
-                                    <label for="star10" title="text">10 stars</label>
-                                    <input type="radio" id="star9" name="rate" value="9"/>
-                                    <label for="star9" title="text">9 stars</label>
-                                    <input type="radio" id="star8" name="rate" value="8"/>
-                                    <label for="star8" title="text">8 stars</label>
-                                    <input type="radio" id="star7" name="rate" value="7"/>
-                                    <label for="star7" title="text">7 stars</label>
-                                    <input type="radio" id="star6" name="rate" value="6"/>
-                                    <label for="star6" title="text">6 stars</label>
-                                    <input type="radio" id="star5" name="rate" value="5"/>
-                                    <label for="star5" title="text">5 stars</label>
-                                    <input type="radio" id="star4" name="rate" value="4"/>
-                                    <label for="star4" title="text">4 stars</label>
-                                    <input type="radio" id="star3" name="rate" value="3"/>
-                                    <label for="star3" title="text">3 stars</label>
-                                    <input type="radio" id="star2" name="rate" value="2"/>
-                                    <label for="star2" title="text">2 stars</label>
-                                    <input type="radio" id="star1" name="rate" value="1" required/>
-                                    <label for="star1" title="text">1 star</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-2 form-label">
-                                <label for="comment-box">Comments</label>
-                            </div>
-                            <div class="col-md-10">
-                                <textarea class="form-control" rows="4" id="comment-box" name="comment-box"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <input class="btn btn-primary" type="submit" value="Submit review">
-                        </div>
-                    </form>
-
-                </div>
-            </div>
+      <div class="card shadow">
+        <div class="card-header">
+          <h2 class="my-2">Rate {{ meal }}</h2>
         </div>
+
+        <div class="card-body">
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+              <div class="col-3 col-md-2 d-flex">
+                <label for="star-input" class="align-self-center">Rating*</label>
+              </div>
+
+              <div class="col-auto" id="star-input">
+                <div class="rate">
+                  <input type="radio" id="star10" name="rating" value="10"/>
+                  <label for="star10"></label>
+                  <input type="radio" id="star9" name="rating" value="9"/>
+                  <label for="star9"></label>
+                  <input type="radio" id="star8" name="rating" value="8"/>
+                  <label for="star8"></label>
+                  <input type="radio" id="star7" name="rating" value="7"/>
+                  <label for="star7"></label>
+                  <input type="radio" id="star6" name="rating" value="6"/>
+                  <label for="star6"></label>
+                  <input type="radio" id="star5" name="rating" value="5"/>
+                  <label for="star5"></label>
+                  <input type="radio" id="star4" name="rating" value="4"/>
+                  <label for="star4"></label>
+                  <input type="radio" id="star3" name="rating" value="3"/>
+                  <label for="star3"></label>
+                  <input type="radio" id="star2" name="rating" value="2"/>
+                  <label for="star2"></label>
+                  <input type="radio" id="star1" name="rating" value="1" required/>
+                  <label for="star1"></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-2 form-label">
+                <label for="comment-box">Comments</label>
+              </div>
+              <div class="col-md-10">
+                <textarea class="form-control" rows="4" name="comment"></textarea>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <input class="btn btn-primary" type="submit" value="Submit review">
+            </div>
+          </form>
+
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 {% endblock %}

@@ -1,26 +1,38 @@
 {% extends 'essen/base.html' %}
 {% load static %}
 
+{% block title %}
+  {{ recipe.name }}
+{% endblock %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'recipes/css/recipe.css'%}">
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'recipes/js/recipe.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container-xxl py-5">
-    <div class="row">
-        <!-- Left column -->
-        <div class="col-lg-2"> </div>
-        
-        <!-- Center column -->
-        <div class="col-lg-8" id="meal">
-            {% include 'recipes/components/recipe.html' with show_serves='True' %}
-        </div>
-
-        <!-- Right column -->
-        <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
-            {% if perms.recipes.change_recipe %}
-            <nav class="nav flex-column">
-                <a class="nav-link" href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
-            </nav>
-            {% endif %}
-        </div>
+  <div class="row">
+    <!-- Left column -->
+    <div class="col-lg-2"> </div>
+    
+    <!-- Center column -->
+    <div class="col-lg-8" id="meal">
+      {% include 'recipes/components/recipe.html' with show_serves='True' %}
     </div>
+
+    <!-- Right column -->
+    <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
+      {% if perms.recipes.change_recipe %}
+      <nav class="nav flex-column">
+        <a class="nav-link" href="{% url 'recipes:edit' recipe.id %}">Edit Recipe</a>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
 

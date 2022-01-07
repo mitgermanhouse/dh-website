@@ -1,8 +1,6 @@
-$(function() {
-    $("#add-ingredient-button").click(function () {
-        $("#ingredient-list").append($("#template-ingredient").html());
-    });
-});
+function addIngredient(button) {
+    $("#ingredient-list").append($("#template-ingredient").html());
+}
 
 function deleteIngredient(button) {
     if ($(".remove-button").length > 1) {

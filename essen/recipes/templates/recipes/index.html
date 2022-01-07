@@ -1,51 +1,58 @@
 {% extends 'essen/base.html' %}
 {% load static %}
 
+{% block title %}
+  Recipes
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
 {% block script %}
-<script src="{% static 'recipes/js/searchbar.js'%}" charset="UTF-8"></script>
+  <script src="{% static 'recipes/js/searchbar.js'%}" charset="UTF-8"></script>
 {% endblock %}
 
 {% block content %}
 
 <!-- Menu Header -->
 <div class="container pt-5 pb-3">
-    <div class="row text-center">
-        <h1>Recipes</h1>
-    </div>
+  <div class="row text-center">
+    <h1>Recipes</h1>
+  </div>
 </div>
 
 <div class="container pb-5">
-    <div class="row">
-        <div class="col-lg-2"> </div>
-        
-        <div class="col-lg-8">
+  <div class="row">
+    <div class="col-lg-2"> </div>
+    
+    <div class="col-lg-8">
 
-            <!-- Search Bar -->
-            <input value="" id="searchbar" onkeyup="searchbarFilter()" name="searchbar" class="form-control" type="text" placeholder="Search Recipes" aria-label="Search" list="datalist-recipes">
+      <!-- Search Bar -->
+      <input value="" id="searchbar" onkeyup="searchbarFilter()" name="searchbar" class="form-control" type="text" placeholder="Search Recipes" aria-label="Search" list="datalist-recipes">
 
-            <datalist id="datalist-recipes">
-                {% for recipe in recipe_list %}
-                <option value="{{ recipe.recipe_name }}">
-                {% endfor %}
-            </datalist>
+      <datalist id="datalist-recipes">
+        {% for recipe in recipe_list %}
+        <option value="{{ recipe.recipe_name }}">
+        {% endfor %}
+      </datalist>
 
-            <!-- Recipes -->
-            <div class="card overflow-hidden mt-3">
-                <div class="list-group list-group-flush" id="recipe-list">
-                {% for recipe in recipe_list %}
-                    <a href="{% url 'recipes:detail' recipe.id %}" class="list-group-item list-group-item-action" id="{{recipe.recipe_name}}"> {{recipe.recipe_name}} </a>
-                {% endfor %}
-                </div>
-            </div>
+      <!-- Recipes -->
+      <div class="card overflow-hidden mt-3">
+        <div class="list-group list-group-flush" id="recipe-list">
+        {% for recipe in recipe_list %}
+          <a href="{% url 'recipes:detail' recipe.id %}" class="list-group-item list-group-item-action" id="{{recipe.recipe_name}}"> {{recipe.recipe_name}} </a>
+        {% endfor %}
         </div>
-
-        <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
-            <nav class="nav flex-column">
-                {% if perms.recipes.add_recipe %}
-                <a class="nav-link" href="{% url 'recipes:add' %}">Add Recipe</a>
-                {% endif %}
-            </nav>
-        </div>
+      </div>
     </div>
+
+    <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
+      <nav class="nav flex-column">
+        {% if perms.recipes.add_recipe %}
+        <a class="nav-link" href="{% url 'recipes:add' %}">Add Recipe</a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
 </div>
 {% endblock %}

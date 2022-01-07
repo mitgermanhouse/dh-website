@@ -2,22 +2,28 @@
 {% load widget_tweaks %}
 {% load static %}
 
-{% block script %}
-<script src="{% static 'recipes/js/edit_script.js'%}"></script>
-<script id="template-ingredient" type="text/template">
-{% with form=ingredient_form_empty %}
-    {% include 'recipes/components/edit_ingredient.html' %}
-{% endwith %}
-</script>
+{% block title %}
+  Edit Recipe
+{% endblock %}
 
-<style type="text/css">
+{% block style %}
+  <style type="text/css">
     .form-quantity::-webkit-outer-spin-button, 
     .form-quantity::-webkit-inner-spin-button { margin-left: 1ch; } 
 
     .form-quantity {
-        text-align: right;
+      text-align: right;
     }
-</style>
+  </style>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'recipes/js/edit_script.js'%}"></script>
+  <template id="template-ingredient">
+  {% with form=ingredient_form_empty %}
+    {% include 'recipes/components/edit_ingredient.html' %}
+  {% endwith %}
+  </template>
 {% endblock %}
 
 {% block content %}
@@ -25,134 +31,136 @@
 <!-- TODO: Automatically generate list -->
 <!-- TODO: Maybe force user to select a predefined unit -->
 <datalist id="datalist-units">
-    <option value="lb">
-    <option value="oz">
-    <option value="tsp">
-    <option value="tbsp">
-    <option value="cup">
-    <option value="cup">
+  <option value="lb">
+  <option value="oz">
+  <option value="tsp">
+  <option value="tbsp">
+  <option value="cup">
+  <option value="cup">
 
-    <option value="g">
-    <option value="kg">
-    <option value="l">
-    <option value="ml">
+  <option value="g">
+  <option value="kg">
+  <option value="l">
+  <option value="ml">
 
-    <option value="unit">
-    <option value="clove">
-    <option value="taste">
-    <option value="can">
-    <option value="head">
-    <option value="pinch">
+  <option value="unit">
+  <option value="clove">
+  <option value="taste">
+  <option value="can">
+  <option value="head">
+  <option value="pinch">
 </datalist>
 
 <div class="container-xxl py-5">
-    <div class="row justify-content-md-center">
+  <div class="row justify-content-md-center">
 
-        <!-- Body -->
-        <div class="col col-lg-10 col-xl-8">
-            <div class="card shadow">
-                <div class="card-header">
-                    <div class="d-flex gap-4 justify-content-between align-items-center">
-                        <h2 class="my-2">
-                        {% if recipe is not None %}
-                            {{recipe.name}}
-                        {% else %}
-                            Add Recipe
-                        {% endif %}
-                        </h2>
+    <!-- Body -->
+    <div class="col col-lg-10 col-xl-8">
+      <div class="card shadow">
+        <div class="card-header">
+          <div class="d-flex gap-4 justify-content-between align-items-center">
+            <h2 class="my-2">
+            {% if recipe is not None %}
+              {{recipe.name}}
+            {% else %}
+              Add Recipe
+            {% endif %}
+            </h2>
 
-                    {% if recipe is not None and perms.recipes.delete_recipe %}
-                        <!-- Delete Button -->
-                        <button type="button" class="btn btn-outline-danger" id="button-recipe-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-recipe"> 
-                            &#x2717
-                        </button>
-                        
-                        <!-- Delete Confirmation Modal -->
-                        <div class="modal fade" id="modal-delete-recipe" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Delete Recipe</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
+          {% if recipe is not None and perms.recipes.delete_recipe %}
+            <!-- Delete Button -->
+            <button type="button" class="btn btn-outline-danger" id="button-recipe-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-recipe"> 
+              &#x2717
+            </button>
+          {% endif %}
 
-                                    <div class="modal-body">
-                                        Are you absolutely sure you want to delete this recipe? This can't be undone.
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <form action="{% url 'recipes:delete' recipe.id %}" id="form-recipe-delete" method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                    {% with form=recipe_form %}
-
-                        <!-- Name -->
-                        {% with field=form.recipe_name %}
-                        <div class="row mb-3">
-                            {{ field|add_label_class:'col-md-2 col-form-label' }}
-                            <div class="col">
-                                {% render_field field|add_class:'form-control' %}
-                            </div>
-                        </div>
-                        {% endwith %}
-
-                        <!-- Serving Size -->
-                        {% with field=form.serving_size %}
-                        <div class="row mb-3">
-                            {{ field|add_label_class:'col-md-2 col-form-label' }}
-                            <div class="col">
-                                {% render_field field|add_class:'form-control' min='1' %}
-                            </div>
-                        </div>
-                        {% endwith %}
-
-                        <!-- Directions -->
-                        {% with field=form.directions %}
-                        <div class="row mb-3">
-                            {{ field|add_label_class:'col-md-2 col-form-label' }}
-                            <div class="col">
-                                {% render_field field|add_class:'form-control' rows='10' %}
-                            </div>
-                        </div>
-                        {% endwith %}
-
-                    {% endwith %}
-
-                        <!-- Ingredients -->
-                        <h4 class="mt-5 mb-3">Ingredients</h4>
-                        <div class="row mb-4 g-3" id="ingredient-list">
-                        {% for form in ingredients_forms %}
-                            {% include 'recipes/components/edit_ingredient.html' %}
-                        {% endfor %}
-                        </div>
-
-                        <!-- Buttons  -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-around mb-md-2">
-                            <button type="button" class="btn btn-primary" id="add-ingredient-button">Add Ingredient</button>
-                            <button type="submit" class="btn btn-outline-primary">Save Recipe</button>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
+          </div>
         </div>
 
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+          {% with form=recipe_form %}
+
+            <!-- Name -->
+            {% with field=form.recipe_name %}
+            <div class="row mb-3">
+              {{ field|add_label_class:'col-md-2 col-form-label' }}
+              <div class="col">
+                {% render_field field|add_class:'form-control' %}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- Serving Size -->
+            {% with field=form.serving_size %}
+            <div class="row mb-3">
+              {{ field|add_label_class:'col-md-2 col-form-label' }}
+              <div class="col">
+                {% render_field field|add_class:'form-control' min='1' %}
+              </div>
+            </div>
+            {% endwith %}
+
+            <!-- Directions -->
+            {% with field=form.directions %}
+            <div class="row mb-3">
+              {{ field|add_label_class:'col-md-2 col-form-label' }}
+              <div class="col">
+                {% render_field field|add_class:'form-control' rows='10' %}
+              </div>
+            </div>
+            {% endwith %}
+
+          {% endwith %}
+
+            <!-- Ingredients -->
+            <h4 class="mt-5 mb-3">Ingredients</h4>
+            <div class="row mb-4 g-3" id="ingredient-list">
+            {% for form in ingredients_forms %}
+              {% include 'recipes/components/edit_ingredient.html' %}
+            {% endfor %}
+            </div>
+
+            <!-- Buttons  -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-around mb-md-2">
+              <button type="button" class="btn btn-primary" onclick="addIngredient(this)">Add Ingredient</button>
+              <button type="submit" class="btn btn-outline-primary">Save Recipe</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
     </div>
+
+  </div>
 </div>
+
+{% if recipe is not None %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="modal-delete-recipe" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Recipe</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you absolutely sure you want to delete this recipe? This can't be undone.
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'recipes:delete' recipe.id %}" id="form-recipe-delete" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 
 
 {% endblock %}

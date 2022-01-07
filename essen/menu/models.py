@@ -8,6 +8,7 @@ from recipes.models import Recipe
 
 # Create your models here.
 
+# TODO: Add validators
 class Menu(models.Model):
     start_date = models.DateField("Start Date")
     servings = models.IntegerField(default=24)
@@ -28,6 +29,24 @@ class Meal(models.Model):
     def __str__(self):
         return self.date.strftime(self.meal_name + " for %b %d, %Y")
 
+    @property
+    def day(self):
+        # TODO: Turn into enum model field
+        for i, d in enumerate(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"]):
+            if d in self.meal_name:
+                return i
+
+        return 0
+
+    @property
+    def time(self):
+        # TODO: Turn into enum model field
+        for i, t in enumerate(["Breakfast", "Brunch", "Lunch", "Dinner"]):
+            if t in self.meal_name:
+                return i
+
+        return 0
+
 
 class LatePlate(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, null=True)
@@ -38,7 +57,7 @@ class LatePlate(models.Model):
 
 
 class AutoLatePlate(models.Model):
-    username = models.TextField()
+    username = models.TextField() # TODO: Migrate to user reference
     days = models.TextField(default="")
     dietary = models.TextField(default="")
 
@@ -47,7 +66,7 @@ class AutoLatePlate(models.Model):
 
 class MealRating(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
-    username = models.TextField()
-    rating = models.IntegerField(null=True)
+    username = models.TextField() # TODO: Migrate to user reference
+    rating = models.IntegerField(null=True) # TODO: Add min and max value validators
     comment = models.TextField(null=True)
 

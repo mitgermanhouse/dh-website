@@ -28,8 +28,7 @@ class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         # Get user and member
         user = self.request.user
-        member_list = Member.objects.filter(user=user)
-        member = Member(user=user) if len(member_list) == 0 else member_list.first()
+        member = user.member or Member(user=user)
 
         # Modify context
         context['member'] = member
@@ -42,8 +41,7 @@ class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         # Get user and member
         user = request.user
-        member_list = Member.objects.filter(user=user)
-        member = Member(user=user) if len(member_list) == 0 else member_list.first()
+        member = uer.member or Member(user=user)
 
         # Check for edit access
         if not check_if_profile_edit_access(user):
