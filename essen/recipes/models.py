@@ -14,7 +14,7 @@ class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, null=True)
     ingredient_name = models.CharField(max_length=100, null=True)
     units = models.CharField(max_length=30, null=True)
-    quantity = models.FloatField(default=0)
+    quantity = models.FloatField(default=0, validators = [MinValueValidator(0)])
 
     def __str__(self):
         return self.ingredient_name

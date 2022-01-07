@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 from recipes.models import Recipe, Ingredient
-from menu.models import Menu, Meal, LatePlate, AutoLatePlate, MealRating
+from menu.models import Menu, Meal, MealRating
 from menu.units.wrappers import MenuWrapper, MealWrapper, combine_ingredients
 from menu.forms import MealRatingForm
 

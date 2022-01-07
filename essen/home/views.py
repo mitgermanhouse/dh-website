@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.urls import reverse
+from django.db import transaction
 
 from home.models import Member
 from home.forms import MemberDataForm, MemberImageForm
@@ -38,10 +36,11 @@ class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
 
         return context
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         # Get user and member
         user = request.user
-        member = uer.member or Member(user=user)
+        member = user.member or Member(user=user)
 
         # Check for edit access
         if not check_if_profile_edit_access(user):
@@ -55,6 +54,7 @@ class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
                 form.save()
 
         elif 'form_type__MemberImageForm' in request.POST:
+            member.image.delete()
             form = MemberImageForm(instance=member, data=request.POST, files=request.FILES)
 
             if form.is_bound and form.is_valid():
@@ -64,4 +64,4 @@ class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
 
 def check_if_profile_edit_access(user):
     # users under profile ban will not be allowed to edit their profiles (for trolling prevention)
-    return user.groups.all().filter(name="profile_ban").count() == 0
+    return user.groups.filter(name="profile_ban").count() == 0
