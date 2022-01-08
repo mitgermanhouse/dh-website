@@ -15,4 +15,4 @@ def div(var, args):
 
 @register.filter(is_safe = True)
 def changedate(var, args):
-    return (var + timedelta(days=args)).strftime("%m/%d/%Y")
+    return (var + timedelta(days=args)).strftime("%Y-%m-%d")

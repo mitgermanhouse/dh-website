@@ -113,7 +113,7 @@
           </colgroup>
 
         {% for c_ingredient in ingredients %}
-          {% if forloop.counter|divisibleby:2 %}<tr>{% else %}<tr class="striped">{% endif %}
+          <tr class="{% cycle 'striped' '' %}">
             <td class="px-0">
               <table class="table table-borderless m-0 quantity-table"> 
               {% for q in c_ingredient.quantities %}

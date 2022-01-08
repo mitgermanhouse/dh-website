@@ -19,13 +19,13 @@
 
     <ul class="nav justify-content-center">
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a>
+        <a class="nav-link" href="{% url 'menu:index' page_date|changedate:-7%}">Previous Week</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'menu:index' %}">This Week</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
+        <a class="nav-link" href="{% url 'menu:index' page_date|changedate:7%}">Next Week</a>
       </li>
     </ul>
   </div>
@@ -65,9 +65,11 @@
 
     <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
       <nav class="nav flex-column">
-        <a class="nav-link" href="{% url 'menu:add_menu' %}"> Add Menu </a>
+        <a class="nav-link" href="{% url 'menu:add_menu' page_date|date:'Y-m-d' %}"> Add Menu </a>
+        {% if menu != None %}
+        <a class="nav-link" href="{% url 'menu:edit_menu' menu.id %}"> Edit Menu </a>
+        {% endif %}
         <a class="nav-link" href="{% url 'menu:menu_reviews' %}"> See Menu Reviews </a>
-        <a class="nav-link" href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
       {% if menu != None %}
         <a class="nav-link" href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
       {% endif %}

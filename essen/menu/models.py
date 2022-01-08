@@ -1,9 +1,11 @@
 from enum import Enum
 
 from django.db import models
+from django.db.models import Case, When, Value
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from home.models import Member
 from recipes.models import Recipe
 
 
@@ -56,47 +58,50 @@ class Menu(models.Model):
     servings = models.IntegerField(validators=[MinValueValidator(1)])
     notes = models.TextField(blank=True)
 
-    def __str__(self):
+    @property
+    def name(self):
         return self.start_date.strftime('Menu for %b %d, %Y')
+
+    def __str__(self):
+        return self.name
 
 
 class Meal(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=True)
     date = models.DateField()
-    meal_name = models.CharField(max_length=200, default='Sunday Brunch')
     meal_day_time = models.ForeignKey(MealDayTime, on_delete=models.PROTECT, null=True)
 
     recipes = models.ManyToManyField(Recipe)
 
-    manual_lateplates = models.ManyToManyField(User, related_name='manual_lateplate_meals', blank=True)
-    deleted_auto_lateplates = models.ManyToManyField(User, related_name='deleted_auto_lateplate_meals', blank=True)
+    manual_lateplates = models.ManyToManyField(Member, related_name='manual_lateplate_meals', blank=True)
+    deleted_auto_lateplates = models.ManyToManyField(Member, related_name='deleted_auto_lateplate_meals', blank=True)
+
+    @property
+    def name(self):
+        return self.date.strftime(str(self.meal_day_time) + ' (%b %d, %Y)')
+
+    @property
+    def lateplates(self):
+        alp_qs = self.meal_day_time.auto_lateplate_members.all()
+        dalp_qs = self.deleted_auto_lateplates.all()
+        mlp_qs = self.manual_lateplates.all()
+
+        return (alp_qs.exclude(pk__in=dalp_qs) | mlp_qs).distinct()
 
     def __str__(self):
-        return self.date.strftime(self.meal_name + ' for %b %d, %Y')
+        return self.name
 
-
-    @property
-    def day(self):
-        # TODO: Turn into enum model field
-        for i, d in enumerate(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday']):
-            if d in self.meal_name:
-                return i
-
-        return 0
-
-    @property
-    def time(self):
-        # TODO: Turn into enum model field
-        for i, t in enumerate(['Breakfast', 'Brunch', 'Lunch', 'Dinner']):
-            if t in self.meal_name:
-                return i
-
-        return 0
+    meal_order = ('date', Case(
+        When(meal_day_time__meal_time='BRK', then=Value(0)), 
+        When(meal_day_time__meal_time='BRU', then=Value(1)),
+        When(meal_day_time__meal_time='LUN', then=Value(2)),
+        When(meal_day_time__meal_time='DIN', then=Value(3)),
+        default = Value(100)
+    ))
 
 
 class MealRating(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
-    username = models.TextField()
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     rating = models.IntegerField(null=True, validators=[MinValueValidator(1), MaxValueValidator(10)])
     comment = models.TextField(null=True)

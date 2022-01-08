@@ -49,21 +49,21 @@
       <h4>Late Plates</h4>
       
       <ul class="list-unstyled">
-      {% for lateplate in meal.lateplates %}
+      {% for user in meal.lateplates %}
         <li id="lateplate_{{forloop.counter}}">
-          {{ lateplate|safe }}
+          {{ user.lateplate_str|safe }}
         </li>
       {% endfor %}
       </ul>
 
     {% if user.is_authenticated %}
       <div class="row g-2">
-        <form id="lateplate_form" action="{% url 'menu:modify_lateplate' meal.id user.id %}" method="post">
+        <form id="lateplate_form" action="{% url 'menu:modify_lateplate' meal.id %}" method="post">
           {% csrf_token %}
-          <select class="form-select" type="text" name="name" >
-            <option selected>Select User</option>
-          {% for user in users %}
-            <option value='{{user.username}}'>{{user.get_full_name}}</option>
+          <select class="form-select" type="text" name="name" required>
+            <option value="" selected>Select User</option>
+          {% for member in members %}
+            <option value='{{member.pk}}'>{{member.user.get_full_name}}</option>
           {% endfor %}
           </select>
 

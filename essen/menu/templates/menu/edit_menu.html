@@ -78,7 +78,7 @@
               <!-- Start Date -->
               <div class="col">
                 <label class="col-12 col-form-label" for="id_start_date">Start Date</label>
-                <input type="text" name="start_date" value="{{menu.start_date|date:'Y-m-d'}}" id="start_date_datepicker" class="form-select" required>
+                <input type="text" name="start_date" value="{% firstof menu.start_date|date:'Y-m-d' start_date %}" id="start_date_datepicker" class="form-select" required>
               </div>
 
               <!-- Servings -->

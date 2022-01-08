@@ -13,7 +13,8 @@
     <div class="card-body">
       <!-- Meal Metadata -->
       <div class="input-group mb-3">
-        <select class="form-select day-select" onchange="updateMealTitle(this)" name="meal-day" data-selection="{{ meal.day }}" required>
+        <select class="form-select day-select" onchange="updateMealTitle(this)" name="meal-weekday" data-selection="{{ meal.meal_day_time.weekday }}" required>
+          <!-- TODO: Automatically Load Values from DB -->
           <option value="" disabled selected>Select Day</option>
           <option value="0">Sunday</option>
           <option value="1">Monday</option>
@@ -24,12 +25,13 @@
           <option value="6">Saturday</option>
         </select>
 
-        <select class="form-select time-select" onchange="updateMealTitle(this)" name="meal-time" data-selection="{{ meal.time }}" required>
+        <select class="form-select time-select" onchange="updateMealTitle(this)" name="meal-time" data-selection="{{ meal.meal_day_time.meal_time }}" required>
+          <!-- TODO: Automatically Load Values from DB -->
           <option value="" disabled selected>Select Time</option>
-          <option value="0">Breakfast</option>
-          <option value="1">Brunch</option>
-          <option value="2">Lunch</option>
-          <option value="3">Dinner</option>
+          <option value="BRK">Breakfast</option>
+          <option value="BRU">Brunch</option>
+          <option value="LUN">Lunch</option>
+          <option value="DIN">Dinner</option>
         </select>
       </div>
 

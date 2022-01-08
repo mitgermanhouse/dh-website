@@ -19,7 +19,7 @@ class MenuWrapper:
 
 	@reify
 	def meals(self):
-		return [MealWrapper(meal, self) for meal in self._menu.meal_set.all()]
+		return [MealWrapper(meal, self) for meal in self._menu.meal_set.order_by(*Meal.meal_order)]
 
 
 class MealWrapper:
@@ -33,8 +33,8 @@ class MealWrapper:
 
 		self.id = self._meal.id
 		self.date = self._meal.date
-		self.name = self._meal.meal_name
-		self.lateplates = self._meal.lateplate_set.all()
+		self.name = self._meal.name
+		self.lateplates = self._meal.lateplates
 
 	@reify
 	def recipes(self):
