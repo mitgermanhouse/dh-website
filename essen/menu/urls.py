@@ -1,19 +1,18 @@
-from django.conf.urls import url
+from django.urls import path, re_path
 
 from . import views
 
 app_name = 'menu'
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^(?P<date>[0-9]+-[0-9]+-[0-9]+)/$', views.IndexView.as_view(), name='index'),
-    url(r'^meal/(?P<pk>[0-9]+)/$', views.MealView.as_view(), name='display_meal'),
-    url(r'^meal/(?P<pk>[0-9]+)/lateplate$', views.ModifyLateplate.as_view(), name='modify_lateplate'),
-    url(r'^meal/(?P<pk>[0-9]+)/rate/$', views.RateMealView.as_view(), name='rate_meal'),
-    url(r'^menu/add$', views.MenuAddView.as_view(), name='add_menu'),
-    url(r'^menu/add/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$', views.MenuAddView.as_view(), name='add_menu'),
-    url(r'^menu/(?P<pk>[0-9]+)/edit$', views.MenuEditView.as_view(), name='edit_menu'),
-    url(r'^menu/(?P<pk>[0-9]+)/delete$', views.MenuDeleteView.as_view(), name='delete_menu'),
-    url(r'^shopper/(?P<pk>[0-9]+)/$', views.ShopperView.as_view(), name='shopper'),
-    url(r'^menu_reviews/', views.ReviewsView.as_view(), name="menu_reviews")
+    path('', views.IndexView.as_view(), name='index'),
+    path('<y-m-d:date>/', views.IndexView.as_view(), name='index'),
+    path('add/', views.MenuAddView.as_view(), name='add_menu'),
+    path('add/<y-m-d:date>/', views.MenuAddView.as_view(), name='add_menu'),
+    path('<int:pk>/edit/', views.MenuEditView.as_view(), name='edit_menu'),
+    path('<int:pk>/delete/', views.MenuDeleteView.as_view(), name='delete_menu'),
+    path('meal/<int:pk>/', views.MealView.as_view(), name='display_meal'),
+    path('meal/<int:pk>/lateplate/', views.ModifyLateplate.as_view(), name='modify_lateplate'),
+    path('meal/<int:pk>/rate/', views.RateMealView.as_view(), name='rate_meal'),
+    path('shopper/<int:pk>/', views.ShopperView.as_view(), name='shopper'),
+    path('menu_reviews/', views.ReviewsView.as_view(), name='menu_reviews')
 ]
-

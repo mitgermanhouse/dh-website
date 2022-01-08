@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from pytz import timezone
 
+from essen.converters import DateConverter
 from recipes.models import Recipe, Ingredient
 from home.models import Member
 from menu.models import MealDayTime, Menu, Meal, MealRating
@@ -38,10 +39,9 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        date_str = kwargs.get('date')
 
         # Get Menu for Date
-        target_date = self.get_current_week_date() if date_str is None else datetime.strptime(date_str, '%Y-%m-%d')
+        target_date = kwargs.get('date') or self.get_current_week_date()
         menu = Menu.objects.filter(start_date__year=target_date.year,
                                    start_date__month=target_date.month,
                                    start_date__day=target_date.day).first()
@@ -89,10 +89,11 @@ class MenuEditView(PermissionRequiredMixin, DetailView):
         # Delete old menu meals
         menu = self.get_object() or Menu()
         if menu is not None:
+            # TODO: Currently we delete all manual lateplates when editing a menu. Maybe try to keep them...
             menu.meal_set.all().delete()
 
         # Check if menu already exists in the specified week
-        start_date = datetime.strptime(request.POST.get('start_date'), "%Y-%m-%d").date()
+        start_date = DateConverter().to_python(request.POST.get('start_date'))
         if Menu.objects.filter(start_date=start_date).exclude(pk=menu.pk).count() > 0:
             raise ValueError('A menu already exists for this week.')
 
