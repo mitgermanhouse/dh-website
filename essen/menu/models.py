@@ -2,13 +2,11 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from recipes.models import Recipe
 
 
 # Create your models here.
 
-@python_2_unicode_compatible
 class Menu(models.Model):
     start_date = models.DateField("Start Date")
     servings = models.IntegerField(default=24)
@@ -18,7 +16,6 @@ class Menu(models.Model):
         return self.start_date.strftime("Menu for %b %d, %Y")
 
 
-@python_2_unicode_compatible
 class Meal(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=True)
     date = models.DateField()
@@ -31,7 +28,6 @@ class Meal(models.Model):
         return self.date.strftime(self.meal_name + " for %b %d, %Y")
 
 
-@python_2_unicode_compatible
 class LatePlate(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, null=True)
     name = models.TextField(null=True)
@@ -40,7 +36,6 @@ class LatePlate(models.Model):
         return self.name
 
 
-@python_2_unicode_compatible
 class AutoLatePlate(models.Model):
     username = models.TextField()
     days = models.TextField(default="")
@@ -49,7 +44,7 @@ class AutoLatePlate(models.Model):
     def __str__(self):
         return self.username + " " + self.days
 
-# @python_2_unicode_compatible
+#
 class MealRating(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     username = models.TextField()

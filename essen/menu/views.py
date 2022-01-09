@@ -11,7 +11,6 @@ from menu.units.wrappers import MenuWrapper, combine_ingredients
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.utils.encoding import python_2_unicode_compatible
 from datetime import datetime, timedelta
 from pytz import timezone
 # Create your views here.
