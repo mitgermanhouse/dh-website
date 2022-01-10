@@ -1,0 +1,34 @@
+{% extends 'essen/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+  Create Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4 py-sm-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+
+      <!-- Title -->
+      <div class="row">
+        <div class="col">
+          <h4>Create Profile</h4>
+          <h5 class="text-secondary">{{ user.get_full_name }}</h5>
+          <hr>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="row g-4 justify-content-center">
+        <div class="col col-12">
+          {% crispy form %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

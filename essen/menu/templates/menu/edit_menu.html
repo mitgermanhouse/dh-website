@@ -73,20 +73,20 @@
             <div class="row g-3 row-cols-1 row-cols-lg-2 mb-3">
               <!-- Start Date -->
               <div class="col">
-                <label class="col-12 col-form-label" for="id_start_date">Start Date</label>
+                <label class="col-12 form-label" for="id_start_date">Start Date</label>
                 <input type="text" name="start_date" value="{% firstof menu.start_date|date:'Y-m-d' start_date|date:'Y-m-d' %}" id="start_date_datepicker" class="form-select" required>
               </div>
 
               <!-- Servings -->
               <div class="col">
-                <label class="col-12 col-form-label" for="id_servings">Servings</label>
+                <label class="col-12 form-label" for="id_servings">Servings</label>
                 <input type="number" name="servings" value="{{menu.servings}}" min="1" class="form-control" id="id_servings" required>
               </div>
             </div>
 
             <!-- Notes -->
             <div class="row mb-3">
-              <label class="col-12 col-form-label" for="id_notes">Notes</label>
+              <label class="col-12 form-label" for="id_notes">Notes</label>
               <div class="col">
                 <textarea name="notes" cols="40" rows="4" class="form-control" id="id_notes">{{ menu.notes }}</textarea>
               </div>

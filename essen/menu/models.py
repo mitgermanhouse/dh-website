@@ -52,6 +52,14 @@ class MealDayTime(models.Model):
     def __str__(self):
         return f'{Weekday(self.weekday).description} {MealTime(self.meal_time).description}'
 
+    day_time_order = ('weekday', Case(
+        When(meal_time='BRK', then=Value(0)), 
+        When(meal_time='BRU', then=Value(1)),
+        When(meal_time='LUN', then=Value(2)),
+        When(meal_time='DIN', then=Value(3)),
+        default = Value(100)
+    ))
+
 # -- Other Models --
 class Menu(models.Model):
     start_date = models.DateField('Start Date')

@@ -1,12 +1,14 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from django.urls import reverse
+from django.views.generic import TemplateView, FormView, CreateView, UpdateView
+from django.urls import reverse, reverse_lazy
 from django.db import transaction
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
 from home.models import Member
-from home.forms import MemberDataForm, MemberImageForm
+from home.forms import MemberDataForm, MemberImageForm, MemberDiningForm, MemberCreateForm
 
 class HomeView(TemplateView):
     template_name = 'home/home.html'
@@ -16,51 +18,96 @@ class HomeView(TemplateView):
         context['members'] = Member.objects.exclude(user__groups__name__in=['alumni']).order_by('class_year', '-user')
         return context
 
-# REFERENCE: https://python.plainenglish.io/adventures-in-django-how-to-implement-multiple-modelforms-in-a-view-5ec75058dff4
-class EditProfileUpdateView(LoginRequiredMixin, TemplateView):
+
+class ProfileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Member
+    form_class = MemberCreateForm
+    template_name = 'home/create_profile.html'
+    success_url = reverse_lazy('home:home')
+
+    def setup(self, request, *args, **kwargs):
+        if hasattr(request.user, 'member'):
+            messages.warning(request, '<b>WARNING:</b> You already have a profile.')
+        return super().setup(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_message(self, form):
+        return f'Welcome {self.request.user.get_full_name()}! Your profile was created sucessfully.'
+
+
+# REFERENCE: https://chriskief.com/2012/12/30/django-class-based-views-with-multiple-forms/
+class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = 'home/edit_profile.html'
+    form_class = MemberDataForm
+    image_form_class = MemberImageForm
+    context_object_name = 'member'
+    success_url = reverse_lazy('home:edit_profile')
+    success_message = 'Your profile was updated sucessfully.'
+
+    def get_object(self):
+        user = self.request.user
+        if hasattr(user, 'member'):
+            return user.member
+        else:
+            raise Http404
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Get user and member
-        user = self.request.user
-        member = user.member or Member(user=user)
-
         # Modify context
-        context['member'] = member
-        context['edit_access'] = check_if_profile_edit_access(user)
-        context['data_form'] = MemberDataForm(instance=member, label_suffix='')
-        context['image_form'] = MemberImageForm(instance=member, label_suffix='')
+        context['edit_access'] = check_if_profile_edit_access(self.request.user)
+
+        if 'data_form' not in context:
+            context['data_form'] = self.form_class(instance=self.object)
+        if 'image_form' not in context:
+            context['image_form'] = self.image_form_class(instance=self.object)
 
         return context
 
+    def form_invalid(self, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs))
+
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        # Get user and member
-        user = request.user
-        member = user.member or Member(user=user)
+        self.object = self.get_object()
 
-        # Check for edit access
-        if not check_if_profile_edit_access(user):
-            return HttpResponseForbidden("401 Forbidden: You don't have edit access.")
+        # determine which form is being submitted
+        # uses the name of the form's submit button
+        if 'data_form' in request.POST:
+            form_class = self.form_class
+            form_name = 'data_form'
+        else:
+            form_class = self.image_form_class
+            form_name = 'image_form'
 
-        # Member Data Form
-        if 'form_type__MemberDataForm' in request.POST:
-            form = MemberDataForm(instance=member, data=request.POST)
-            
-            if form.is_bound and form.is_valid():
-                form.save()
+        # get the form
+        form = self.get_form(form_class)
 
-        elif 'form_type__MemberImageForm' in request.POST:
-            member.image.delete()
-            form = MemberImageForm(instance=member, data=request.POST, files=request.FILES)
+        # validate
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(**{form_name: form})
+    
 
-            if form.is_bound and form.is_valid():
-                form.save()
+class DiningUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = 'home/edit_dining.html'
+    context_object_name = 'member'
+    form_class = MemberDiningForm
+    success_url = reverse_lazy('home:edit_dining')
+    success_message = 'Your dining preferences were updated sucessfully.'
 
-        return HttpResponseRedirect(reverse('home:edit_profile'))
+    def get_object(self):
+        user = self.request.user
+        if hasattr(user, 'member'):
+            return user.member
+        else:
+            raise Http404
+
 
 def check_if_profile_edit_access(user):
     # users under profile ban will not be allowed to edit their profiles (for trolling prevention)
-    return user.groups.filter(name="profile_ban").count() == 0
+    return user.groups.filter(name='profile_ban').count() == 0

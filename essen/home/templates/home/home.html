@@ -140,7 +140,9 @@
     {% for member in members %}
       <div class="col" id="{{member.user.username}}">
         <div class="card h-100 shadow bg-body">
+          {% if member.image %}
           <img class="card-img-top" src="{{member.image.url}}">
+          {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{member}}</h5>
             <h6 class="card-subtitle mb-2 text-muted">Class of {{member.class_year}}</h6>

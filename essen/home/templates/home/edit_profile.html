@@ -1,5 +1,5 @@
 {% extends 'essen/base.html' %}
-{% load widget_tweaks %}
+{% load crispy_forms_tags %}
 
 {% block title %}
   Edit Profile
@@ -7,113 +7,65 @@
 
 {% block content %}
 
-<div class="container py-5">
+<div class="container py-4 py-sm-5">
 
 {% if edit_access %}
 
-<div class="row justify-content-center">
-<div class="col-md-10">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
 
-  <!-- Title -->
-  <div class="row">
-    <div class="col">
-      <h4>Edit Profile</h4>
-      <h5 class="text-secondary">{{ member.user.get_full_name }}</h5>
-      <hr>
-    </div>
-  </div>
-
-  <!-- Profile -->
-  <div class="row g-4 justify-content-center">
-
-    <!-- Profile Pic -->
-    <div class="col col-lg-3 pe-lg-3">
-      <div class="ratio ratio-1x1 rounded border bg-secondary">
-      {% if member.image %}
-        <img src="{{member.image.url}}" style="object-fit: cover;" />
-      {% endif %}
-      </div>
-
-      <button type="button" class="btn btn-outline-primary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#pfpModal">
-        Change Profile Picture
-      </button>
-
-      <!-- Modal -->
-      <div class="modal fade" id="pfpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Upload Profile Picture</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form id="form-pfp" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {% for hidden in image_form.hidden_fields %}
-                  {{ hidden }}
-                {% endfor %}
-                <input type="hidden" name="form_type__MemberImageForm">
-
-                {% render_field image_form.image|add_class:'form-control' %}
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-primary" form="form-pfp">Upload</button>
-            </div>
-          </div>
+      <!-- Title -->
+      <div class="row">
+        <div class="col">
+          <h4>Edit Profile</h4>
+          <h5 class="text-secondary">{{ member.user.get_full_name }}</h5>
+          <hr>
         </div>
       </div>
-    </div>
 
-    <!-- Other Stuff -->
-    <div class="col col-12 ps-lg-4 col-lg-9">
-      <form method="post">
-        {% csrf_token %}
-        {% for hidden in data_form.hidden_fields %}
-          {{ hidden }}
-        {% endfor %}
-        <input type="hidden" name="form_type__MemberDataForm">
+      <!-- Profile -->
+      <div class="row g-4 justify-content-center">
 
-        <div class="row g-3 row-cols-1 row-cols-lg-2 mb-3">
-          <!-- Class Year -->
-          {% with field=data_form.class_year %}
-          <div class="col">
-            {{ field|add_label_class:'col-12 col-form-label' }}
-            {% render_field field|add_class:'form-control' min='2000' max='2100' %}
+        <!-- Profile Pic -->
+        <div class="col col-lg-3 pe-lg-3">
+          <div class="ratio ratio-1x1 rounded border bg-secondary">
+          {% if member.image %}
+            <img src="{{member.image.url}}" style="object-fit: cover;" />
+          {% endif %}
           </div>
-          {% endwith %}
 
-          <!-- Major -->
-          {% with field=data_form.major %}
-          <div class="col">
-            {{ field|add_label_class:'col-12 col-form-label' }}
-            {{ field|add_class:'form-control' }}
-          </div>
-          {% endwith %}
-        </div>
+          <button type="button" class="btn btn-outline-primary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#pfpModal">
+            Change Profile Picture
+          </button>
 
-        <!-- About -->
-        {% with field=data_form.bio %}
-        <div class="row mb-3">
-          {{ field|add_label_class:'col-12 col-form-label' }}
-          <div class="col">
-            {% render_field field|add_class:'form-control' rows='4' %}
+          <!-- Modal -->
+          <div class="modal fade" id="pfpModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Upload Profile Picture</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  {% crispy image_form %}
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-primary" name="image_form" form="image_form">Upload</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        {% endwith %}
 
-        <!-- Buttons  -->
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <input type="submit" class="btn btn-primary" value="Update"/>
+        <!-- Data Form -->
+        <div class="col col-12 ps-lg-4 col-lg-9">
+          {% crispy data_form %}
         </div>
+      </div>
 
-      </form>
     </div>
   </div>
-
-</div>
-</div>
 
 {% else %}
   <div class="alert alert-warning" role="alert">
