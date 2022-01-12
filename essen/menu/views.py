@@ -205,7 +205,7 @@ class MealView(DetailView):
         context = super().get_context_data(**kwargs)
 
         context['meal'] = MealWrapper(self.object)
-        context['members'] = Member.objects.order_by('user__first_name')
+        context['members'] = Member.objects.filter(user__is_active=True).order_by('user__first_name')
 
         return context
 

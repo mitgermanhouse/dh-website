@@ -65,11 +65,15 @@
 
     <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
       <nav class="nav flex-column">
+      {% if perms.menu.add_menu %}
         <a class="nav-link" href="{% url 'menu:add_menu' page_date|date:'Y-m-d' %}"> Add Menu </a>
-        {% if menu != None %}
+      {% endif %}
+      {% if menu != None and perms.menu.change_menu %}
         <a class="nav-link" href="{% url 'menu:edit_menu' menu.id %}"> Edit Menu </a>
-        {% endif %}
+      {% endif %}
+      {% if perms.menu.view_mealrating %}
         <a class="nav-link" href="{% url 'menu:menu_reviews' %}"> See Menu Reviews </a>
+      {% endif %}
       {% if menu != None %}
         <a class="nav-link" href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
       {% endif %}

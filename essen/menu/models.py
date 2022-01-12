@@ -94,7 +94,7 @@ class Meal(models.Model):
         dalp_qs = self.deleted_auto_lateplates.all()
         mlp_qs = self.manual_lateplates.all()
 
-        return (alp_qs.exclude(pk__in=dalp_qs) | mlp_qs).distinct()
+        return (alp_qs.exclude(pk__in=dalp_qs) | mlp_qs).filter(user__is_active=True).distinct()
 
     def __str__(self):
         return self.name
