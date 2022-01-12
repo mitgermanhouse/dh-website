@@ -5,8 +5,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class DietaryRestriction(models.Model):
-    long_name  = models.CharField(max_length=200)
-    short_name = models.CharField(max_length=100)
+    long_name  = models.CharField(max_length=255)
+    short_name = models.CharField(max_length=127)
 
     def __str__(self):
         return self.long_name
@@ -14,7 +14,7 @@ class DietaryRestriction(models.Model):
 class Member(models.Model):
     user = models.OneToOneField(User, primary_key=True, on_delete=models.CASCADE)
     class_year = models.IntegerField(null=True, validators=[MinValueValidator(2000), MaxValueValidator(2100)])
-    major = models.CharField(max_length=20, null=True)
+    major = models.CharField(max_length=127, null=True)
     bio = models.TextField(null=True)
     image = models.ImageField(upload_to="images/", null=True)
 
