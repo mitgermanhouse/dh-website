@@ -63,6 +63,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'essen_base_tags': 'essen.templatetags.base_tags',
+            },
         },
     },
 ]

@@ -1,5 +1,6 @@
 {% load static %}
 {% load profile_helpers %}
+{% load essen_base_tags %}
 
 <!doctype html>
 <html lang="en">
@@ -24,18 +25,20 @@
   <body>
 
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-md navbar-light bg-light shadow-sm p-2" style="z-index: 1030">
-      <div class="container-xxl">
+    <header class="navbar navbar-expand-md navbar-light bg-light shadow-sm p-2" style="z-index: 1030">
+      <nav class="container-xxl">
         <a class="navbar-brand" href="{% url 'home:home' %}">German House</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav me-auto">
-            <a class="nav-link" href="{% url 'menu:index'%}">Menu</a>
-            <a class="nav-link" href="{% url 'recipes:index'%}">Recipes</a>
+            <a class="nav-link {% active_link 'menu:index' %}" href="{% url 'menu:index'%}">Menu</a>
+            <a class="nav-link {% active_link 'recipes:index' %}" href="{% url 'recipes:index'%}">Recipes</a>
           </div>
+          
           <div class="navbar-nav">
           {% if user.is_authenticated %}
             <li class="nav-item dropdown">
@@ -53,9 +56,10 @@
             <a class="nav-link" href="{% url 'login'%}?next={{request.path}}"> Login </a>
           {% endif %}
           </div>
+          
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
 
     {% if messages %}
     <div class="container-xxl" id="messages-container">
