@@ -2,6 +2,8 @@ from django.urls import include, path, register_converter
 from django.contrib import admin
 from django.conf import settings
 from django.views.static import serve
+from django.views.generic.base import RedirectView
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.http import HttpResponseRedirect
 
 from essen.converters import DateConverter
@@ -16,6 +18,8 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('home/', include('home.urls')),
     path('mit/', include('mit.urls')),
+
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('icon/favicon.ico'))),
 ]
 
 if settings.DEBUG:

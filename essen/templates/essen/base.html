@@ -6,7 +6,12 @@
 <html lang="en">
   <head>
     <title>{% block title %}German House{% endblock %}</title>
-    <link rel="icon" type="image/png"  href="{% static 'essen/img/eagle.png' %}">
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'icon/favicon.ico' %}" sizes="any"><!-- 32×32 -->
+    <link rel="icon" href="{% static 'icon/icon.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'icon/apple-touch-icon.png' %}"><!-- iOS -->
+    <link rel="manifest" href="{% static 'icon/manifest.webmanifest' %}"> <!-- Android -->
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -27,7 +32,10 @@
     <!-- Navigation Bar -->
     <header class="navbar navbar-expand-md navbar-light bg-light shadow-sm p-2" style="z-index: 1030">
       <nav class="container-xxl">
-        <a class="navbar-brand" href="{% url 'home:home' %}">German House</a>
+        <a class="navbar-brand" href="{% url 'home:home' %}">
+          <img src="{% static 'essen/img/dh-logo-navbar.svg' %}" alt="" width="36px" height="30px" class="d-inline-block align-text-center me-2" style="margin-top: -2px; margin-bottom: -2px;">
+          German House
+        </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -48,6 +56,7 @@
               <ul class="dropdown-menu" aria-labelledby="navbarUserDropdownMenuLink">
                 <li><a class="dropdown-item" href="{% url 'home:edit_profile' %}">Edit Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'home:edit_dining' %}">Dining Settings</a></li>
+                {% if user.is_staff %} <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li> {% endif %}
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
               </ul>
@@ -56,7 +65,7 @@
             <a class="nav-link" href="{% url 'login'%}?next={{request.path}}"> Login </a>
           {% endif %}
           </div>
-          
+
         </div>
       </nav>
     </header>
