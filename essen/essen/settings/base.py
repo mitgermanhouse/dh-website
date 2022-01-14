@@ -28,9 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'widget_tweaks',
-
     'crispy_forms',
     'crispy_bootstrap5',
+    'easy_thumbnails',
+    'easy_thumbnails.optimize',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -108,6 +110,15 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# Easy Thumbnails
+THUMBNAIL_BASEDIR = 'thumbs'
+THUMBNAIL_ALIASES = {
+    'home': {
+        'avatar': {'size': (750, 750), 'crop': False},
+        'carousel': {'size': (1920, 1080), 'crop': 'smart'},
+    },
+}
 
 # Crispy Forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'

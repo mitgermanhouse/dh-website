@@ -16,7 +16,7 @@ class Member(models.Model):
     class_year = models.IntegerField(null=True, validators=[MinValueValidator(2000), MaxValueValidator(2100)])
     major = models.CharField(max_length=127, null=True)
     bio = models.TextField(null=True)
-    image = models.ImageField(upload_to="images/", null=True)
+    image = models.ImageField(upload_to='images/', null=True)
 
     auto_lateplates = models.ManyToManyField('menu.MealDayTime', related_name='auto_lateplate_members', blank=True)
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
@@ -31,3 +31,12 @@ class Member(models.Model):
 
         return self.user.get_full_name() + ' ' + dr_str
     
+class GalleryContent(models.Model):
+    title = models.CharField(max_length=255, blank=True)
+    caption = models.TextField(blank=True)
+    date = models.DateField(null=True, blank=True)
+
+    image = models.ImageField(upload_to='gallery/')
+
+    def __str__(self):
+        return self.title or self.caption

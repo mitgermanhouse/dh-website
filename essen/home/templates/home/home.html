@@ -1,4 +1,5 @@
 {% extends 'essen/base.html' %}
+{% load thumbnail %}
 {% load static %}
 
 {% block title %}
@@ -36,65 +37,47 @@
   </div>
 
 <!-- Gallery -->
-<!-- Maybe transition to Masonry for automatic layout https://getbootstrap.com/docs/5.1/examples/masonry/ -->
 
-  <div class="row row-cols-2 row-cols-md-3 g-3 pt-4">
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/iap2020brunch.jpg'%}">
-        <p>A group of DHers ventured out to go to brunch during IAP 2020!</p>
-      </div>
-    </div>
+  <div class="row pt-4">
+    <div class="col-12">
 
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/em_ginny_elaine.jpg'%}">
-        <p>DH at 2018 Ring Delivery</p>
-      </div>
-    </div>
+      <div id="carouselMain" class="carousel carousel-fade slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+        {% for content in galleryContent %}
+        
+          <div class="carousel-item ratio ratio-16x9 {% if forloop.first %}active{% endif %}">
+            <img src="{{ content.image|thumbnail_url:'carousel' }}" class="d-block" alt="{{content}}"/>
 
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/applepicking2.jpg'%}">
-        <p>MIT wide trip to apple picking, ft. DH</p>
-      </div>
-    </div>
+            <div>
+              <div class="carousel-caption text-start d-block">
+                <h3 class="mb-0">{{ content.title }}</h3>
 
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/cookcrew.jpg'%}">
-        <p>We celebrate Oktoberfest by cooking traditional foods so we can feast and invite friends!</p>
-      </div>
-    </div>
+                <div class="d-none d-md-flex mt-2 gap-1 justify-content-between flex-wrap">
+                  {{ content.caption }}
 
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/skating.jpg'%}">
-        <p>Halloween ice skating at an event called Spooky Skate!</p>
-      </div>
-    </div>
+                  {% if content.date %}
+                  <small class="text-end fst-italic">{{ content.date|date:'N j, Y' }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/dh.jpg'%}">
-        <p>A reg-day trip to The Friendly Toast, yum!</p>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/dhfreshmen.jpg'%}">
-        <p>Our wonderful 2022s!</p>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="img-container shadow-sm rounded">
-        <img class="w-100" src="{% static 'home/img/apples.jpg'%}">
-        <p>No firemen had to be called to get us down from these apple trees!</p>
+        {% endfor %}
+        </div>
+        
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselMain" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselMain" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
     </div>
   </div>
+
 </div>
 
 <!-- About Us -->
@@ -141,7 +124,7 @@
       <div class="col" id="{{member.user.username}}">
         <div class="card h-100 shadow bg-body">
           {% if member.image %}
-          <img class="card-img-top" src="{{member.image.url}}">
+          <img class="card-img-top" src="{{ member.image|thumbnail_url:'avatar' }}">
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{member}}</h5>

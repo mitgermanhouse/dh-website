@@ -1,28 +1,11 @@
-/* Parent Container */
-.img-container{
-    position: relative;
-    overflow: hidden;
+/* Gallery Carousel */
+.carousel-inner img {
+    object-fit: cover;
+    background-color: var(--bs-secondary);
 }
 
-.img-container p {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    text-align: center;
-    transform: translate(-50%, -100%);
-
-    width: 100%;
-    padding: 8px 15px;
-    background: black;
-    color: white;
-    opacity: 0;
-    
-    -webkit-transition: opacity 0.3s; 
-    transition: opacity 0.3s;
-}
-
-.img-container:hover p {
-    opacity: 0.7; 
+.carousel-caption {
+    text-shadow: 0 .125rem .75rem black;
 }
 
 /* Members Card */

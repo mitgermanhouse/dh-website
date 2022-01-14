@@ -7,7 +7,7 @@ from django.db import transaction
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 
-from home.models import Member
+from home.models import Member, GalleryContent
 from home.forms import MemberDataForm, MemberImageForm, MemberDiningForm, MemberCreateForm
 
 class HomeView(TemplateView):
@@ -16,6 +16,7 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['members'] = Member.objects.filter(user__is_active=True).order_by('class_year', '-user')
+        context['galleryContent'] = GalleryContent.objects.all()
         return context
 
 
