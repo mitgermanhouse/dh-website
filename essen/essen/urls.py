@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.static import serve
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 
 from essen.converters import DateConverter
 
@@ -21,6 +21,7 @@ urlpatterns = [
 
     path('essen', RedirectView.as_view(url='menu/')),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('icon/favicon.ico'))),
+    path('ping', lambda r: HttpResponse('The website is running.')),
 ]
 
 if settings.DEBUG:

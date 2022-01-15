@@ -19,7 +19,7 @@ class MenuWrapper:
 
 	@reify
 	def meals(self):
-		return [MealWrapper(meal, self) for meal in self._menu.meal_set.order_by(*Meal.meal_order)]
+		return [MealWrapper(meal, self) for meal in self._menu.meal_set.prefetch_related('recipes').prefetch_related('recipes__ingredient_set').prefetch_related('meal_day_time').order_by(*Meal.meal_order)]
 
 
 class MealWrapper:
@@ -38,7 +38,10 @@ class MealWrapper:
 
 	@reify
 	def recipes(self):
-		return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.all()]
+		if self.menu is None:
+			return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.prefetch_related('ingredient_set').all()]
+		else:	
+			return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.all()]
 
 @dataclass
 class CombinedIngredients:

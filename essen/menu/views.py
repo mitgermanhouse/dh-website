@@ -51,7 +51,7 @@ class IndexView(TemplateView):
         sorted_meals = []
 
         if menu is not None:
-            for meal in menu.meal_set.order_by(*Meal.meal_order):
+            for meal in menu.meal_set.prefetch_related('recipes').prefetch_related('meal_day_time').order_by(*Meal.meal_order):
                 sorted_meals.append({
                     'meal': meal,
                     'today': meal.date == today
@@ -205,7 +205,7 @@ class MealView(DetailView):
         context = super().get_context_data(**kwargs)
 
         context['meal'] = MealWrapper(self.object)
-        context['members'] = Member.objects.filter(user__is_active=True).order_by('user__first_name')
+        context['members'] = Member.objects.filter(user__is_active=True).select_related('user').order_by('user__first_name')
 
         return context
 
@@ -260,7 +260,7 @@ class ReviewsView(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ratings = MealRating.objects.all()
+        ratings = MealRating.objects.all().select_related('user').select_related('meal').select_related('meal__meal_day_time').prefetch_related('meal__recipes')
 
         grouped_ratings = collections.defaultdict(list)
         for rating in ratings:

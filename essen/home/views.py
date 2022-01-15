@@ -15,7 +15,7 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['members'] = Member.objects.filter(user__is_active=True).order_by('class_year', '-user')
+        context['members'] = Member.objects.filter(user__is_active=True).order_by('class_year', '-user').select_related('user')
         context['galleryContent'] = GalleryContent.objects.all()
         return context
 
