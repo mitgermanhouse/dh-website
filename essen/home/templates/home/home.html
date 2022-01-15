@@ -47,8 +47,7 @@
         
           <div class="carousel-item ratio ratio-16x9 {% if forloop.first %}active{% endif %}">
 
-            {% thumbnail content.image 'carousel' as thumb %}
-            <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" class="d-block" alt="{{content}}" />
+            <img src="{{ content.image|thumbnail_url:'carousel' }}" class="d-block" alt="{{content}}"/>
 
             <div>
               <div class="carousel-caption text-start d-block">
@@ -126,8 +125,7 @@
       <div class="col" id="{{member.user.username}}">
         <div class="card h-100 shadow bg-body">
           {% if member.image %}
-          {% thumbnail member.image 'avatar' as thumb %}
-          <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" class="card-img-top" />
+          <img class="card-img-top" src="{{ member.image|thumbnail_url:'avatar' }}">
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{member}}</h5>
