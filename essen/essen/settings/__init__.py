@@ -1,11 +1,5 @@
 import os
 
-try:
-    from .base import *
-except ImportError:
-    pass
-
-
 senv = os.environ.get('DH_SETTINGS_ENVIRONMENT', 'dev')
 if senv == 'dev':
     from .dev import *

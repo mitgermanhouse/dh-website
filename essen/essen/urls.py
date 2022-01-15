@@ -27,4 +27,9 @@ if settings.DEBUG:
     urlpatterns += [
         path('media/<path:path>/', serve, {
             'document_root': settings.MEDIA_ROOT,
-        })]
+        })
+    ]
+
+    from django.apps import apps
+    if apps.is_installed('debug_toolbar'):
+        urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))
