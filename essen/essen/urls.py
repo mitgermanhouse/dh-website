@@ -19,6 +19,7 @@ urlpatterns = [
     path('home/', include('home.urls')),
     path('mit/', include('mit.urls')),
 
+    path('essen', RedirectView.as_view(url='menu/')),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('icon/favicon.ico'))),
 ]
 

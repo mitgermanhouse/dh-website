@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block script %}
-  <script src="{% static 'home/js/home.js'%}"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@slightlyoff/lite-vimeo@0.1.2/lite-vimeo.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -46,7 +46,9 @@
         {% for content in galleryContent %}
         
           <div class="carousel-item ratio ratio-16x9 {% if forloop.first %}active{% endif %}">
-            <img src="{{ content.image|thumbnail_url:'carousel' }}" class="d-block" alt="{{content}}"/>
+
+            {% thumbnail content.image 'carousel' as thumb %}
+            <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" class="d-block" alt="{{content}}" />
 
             <div>
               <div class="carousel-caption text-start d-block">
@@ -124,7 +126,8 @@
       <div class="col" id="{{member.user.username}}">
         <div class="card h-100 shadow bg-body">
           {% if member.image %}
-          <img class="card-img-top" src="{{ member.image|thumbnail_url:'avatar' }}">
+          {% thumbnail member.image 'avatar' as thumb %}
+          <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" class="card-img-top" />
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{member}}</h5>
@@ -147,36 +150,33 @@
   <div class="row row-cols-1 row-cols-lg-3 g-4">
     <div class="col">
       <div class="card video-card shadow h-100 bg-body">
-        <div class="video-container">
-          <iframe class="video" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <div class="card-img-top">
+          <lite-vimeo videoid="562801172" autoload></lite-vimeo>
         </div>
-
         <div class="card-body">
-          <h5>2018</h5>
+          <h5>2021</h5>
         </div>
       </div>
     </div>
 
     <div class="col">
       <div class="card video-card shadow h-100 bg-body">
-        <div class="video-container">
-          <iframe class="video" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <div class="card-img-top">
+          <lite-vimeo videoid="417246220" autoload></lite-vimeo>
         </div>
-
         <div class="card-body">
-          <h5>2015</h5>
+          <h5>2020</h5>
         </div>
       </div>
     </div>
 
     <div class="col">
       <div class="card video-card shadow h-100 bg-body">
-        <div class="video-container">
-          <iframe class="video" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <div class="card-img-top">
+          <lite-vimeo videoid="333324282" autoload></lite-vimeo>
         </div>
-
         <div class="card-body">
-          <h5>2014</h5>
+          <h5>2019</h5>
         </div>
       </div>
     </div>
