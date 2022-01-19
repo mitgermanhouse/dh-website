@@ -43,6 +43,16 @@ function addMeal() {
         makeSelectpicker(this);
     });
 
+    // Set Day / Time
+    let lastContainer = $(".meal-container").last();
+    let lastContainerDay = lastContainer.find(".day-select").val();
+    let lastContainerTime = lastContainer.find(".time-select").val();
+    
+    if (lastContainerDay != null && lastContainerDay < 6) {
+        mealNode.find('.day-select').val(parseInt($(".meal-container").last().find(".day-select").val()) + 1);
+        mealNode.find('.time-select').val('DIN');
+    }
+
     $("#meal-list").append(mealNode);
 }
 
