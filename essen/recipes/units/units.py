@@ -11,11 +11,10 @@ from pint.errors import UndefinedUnitError
 from pint.unit import Unit
 
 # Load unit registry with DH specific unit definitions
-ureg = pint.UnitRegistry()
-ureg.load_definitions(os.path.join(os.path.dirname(__file__), 'dh_units.txt'))
+ureg = pint.UnitRegistry(filename=os.path.join(os.path.dirname(__file__), 'dh_units.txt'))
 Q_ = ureg.Quantity
 
-dimensionless = ureg.parse_units("dimensionless")
+dimensionless = ureg.parse_units('dimensionless')
 
 # Helper Functions
 def load_unit_group(group_name: str) -> List[Unit]:
