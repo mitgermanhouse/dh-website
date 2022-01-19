@@ -1,14 +1,13 @@
 import collections
+import sys
 
 from django.views.generic import View, TemplateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
 from django.db.models.functions import Lower
-
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
+from django.core.exceptions import BadRequest
+from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
-import sys
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -18,7 +17,7 @@ from pytz import timezone
 from essen.converters import DateConverter
 from recipes.models import Recipe, Ingredient
 from home.models import Member
-from menu.models import MealDayTime, Menu, Meal, MealRating
+from menu.models import Weekday, MealTime, MealDayTime, Menu, Meal, MealRating
 from menu.units.wrappers import MenuWrapper, MealWrapper, combine_ingredients
 from menu.forms import MealRatingForm
 
@@ -42,9 +41,7 @@ class IndexView(TemplateView):
 
         # Get Menu for Date
         target_date = kwargs.get('date') or self.get_current_week_date()
-        menu = Menu.objects.filter(start_date__year=target_date.year,
-                                   start_date__month=target_date.month,
-                                   start_date__day=target_date.day).first()
+        menu = Menu.objects.filter(start_date=target_date).first()
 
         # Today
         today = self.today()
@@ -77,8 +74,11 @@ class MenuEditView(PermissionRequiredMixin, DetailView):
         menu = self.object  # Can be None
 
         # Modify context
-        context['sorted_meals'] = menu.meal_set.order_by(*Meal.meal_order) if menu is not None else None
-        context['available_recipes'] = Recipe.objects.all().order_by(Lower('recipe_name'))
+        context['sorted_meals'] = menu.meal_set.prefetch_related('recipes').prefetch_related('meal_day_time').order_by(*Meal.meal_order) if menu is not None else None
+        context['available_recipes'] = Recipe.objects.all().values('recipe_name', 'id').order_by(Lower('recipe_name'))
+
+        context['weekdays'] = [(tag.value, tag.description) for tag in Weekday]
+        context['meal_times'] = [(tag.value, tag.description) for tag in MealTime]
 
         return context
 
@@ -193,8 +193,7 @@ class ModifyLateplate(LoginRequiredMixin, View):
 
             return response
 
-        # TODO: Raise Instead
-        return HttpResponseBadRequest()
+        raise BadRequest('Invalid form action.')
 
 
 class MealView(DetailView):

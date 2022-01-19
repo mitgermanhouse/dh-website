@@ -38,10 +38,7 @@ class MealWrapper:
 
 	@reify
 	def recipes(self):
-		if self.menu is None:
-			return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.prefetch_related('ingredient_set').all()]
-		else:	
-			return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.all()]
+		return [RecipeWrapper(recipe, self) for recipe in self._meal.recipes.all()]
 
 @dataclass
 class CombinedIngredients:
