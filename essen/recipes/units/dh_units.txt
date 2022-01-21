@@ -100,7 +100,7 @@ grain = 64.79891 * milligram = gr
 @group USCSVolumeOther
     teaspoon = fluid_ounce / 6 = tsp
     tablespoon = fluid_ounce / 2 = tbsp
-    cup = pint / 2 = cp = liquid_cup = US_liquid_cup
+    cup = pint / 2 = _ = cp = liquid_cup = US_liquid_cup
 @end
 
 @group Avoirdupois
