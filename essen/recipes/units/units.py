@@ -10,6 +10,9 @@ from pint.definitions import UnitDefinition
 from pint.errors import UndefinedUnitError
 from pint.unit import Unit
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Load unit registry with DH specific unit definitions
 ureg = pint.UnitRegistry(filename=os.path.join(os.path.dirname(__file__), 'dh_units.txt'))
 Q_ = ureg.Quantity
@@ -37,7 +40,6 @@ def load_unit_group(group_name: str) -> List[Unit]:
 def dh_unit_parser(unit_str: str) -> Optional[Unit]:
 	# Remove plural '(s)'. Pint interprets this as  * seconds
 	unit_str = unit_str.lower()
-
 	if unit_str.endswith('(s)'):
 		unit_str = unit_str[:-3]
 
@@ -45,11 +47,15 @@ def dh_unit_parser(unit_str: str) -> Optional[Unit]:
 		return ureg.parse_units(unit_str)
 	except UndefinedUnitError as e:
 		# TODO: Handle correctly
-		print(e)
+		logger.info(f'Got error "{e}" while trying parsing unit string ("{unit_str}").')
 		return dimensionless
 	except ValueError as e:
 		# This is the case if the unit is for example "3lb bags" because a unit can't contain a scalar
-		print(e)
+		logger.info(f'Got error "{e}" while trying parsing unit string ("{unit_str}").')
+		return dimensionless
+	except TypeError as e:
+		# This is the case if the unit contains an operand, for example "4-6 inch"
+		logger.info(f'Got error "{e}" while trying parsing unit string ("{unit_str}").')
 		return dimensionless
 
 def expand(quantity: Quantity, units: List[Unit]) -> List[Quantity]:

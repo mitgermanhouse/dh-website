@@ -31,16 +31,14 @@
       <input value="" id="searchbar" onkeyup="searchbarFilter()" name="searchbar" class="form-control" type="text" placeholder="Search Recipes" aria-label="Search" list="datalist-recipes">
 
       <datalist id="datalist-recipes">
-        {% for recipe in recipe_list %}
-        <option value="{{ recipe.recipe_name }}">
-        {% endfor %}
+        {% for recipe in recipe_list %}<option value="{{ recipe.name }}">{% endfor %}
       </datalist>
 
       <!-- Recipes -->
       <div class="card overflow-hidden mt-3">
         <div class="list-group list-group-flush" id="recipe-list">
         {% for recipe in recipe_list %}
-          <a href="{% url 'recipes:detail' recipe.id %}" class="list-group-item list-group-item-action" id="{{recipe.recipe_name}}"> {{recipe.recipe_name}} </a>
+          <a href="{% url 'recipes:detail' recipe.id %}" class="list-group-item list-group-item-action" id="{{recipe.name}}"> {{recipe.name}} </a>
         {% endfor %}
         </div>
       </div>

@@ -19,10 +19,10 @@ class PintUnitInput(forms.TextInput):
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ('recipe_name', 'directions', 'serving_size')
+        fields = ('name', 'directions', 'serving_size')
 
         labels = {
-            'recipe_name': 'Name',
+            'name': 'Name',
             'directions': 'Directions',
             'serving_size': 'Serving Size'
         }
@@ -30,14 +30,14 @@ class RecipeForm(forms.ModelForm):
 class IngredientForm(forms.ModelForm):
     class Meta:
         model = Ingredient
-        fields = ('ingredient_name', 'units', 'quantity')
+        fields = ('name', 'unit', 'quantity')
 
         labels = {
-            'ingredient_name': 'Ingredient',
-            'units': 'Unit',
+            'name': 'Ingredient',
+            'unit': 'Unit',
             'quantity': 'Quantity'
         }
 
         widgets = {
-            'units': PintUnitInput()
+            'unit': PintUnitInput()
         }

@@ -4,7 +4,7 @@ from recipes.models import Recipe, Ingredient
 
 class IngredientInline(admin.TabularInline):
    model = Ingredient
-   fields = ('ingredient_name', 'quantity', 'units')
+   fields = ('name', 'quantity', 'unit')
 
 class RecipeAdmin(admin.ModelAdmin):
    inlines = [IngredientInline]

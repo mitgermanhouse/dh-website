@@ -27,7 +27,7 @@
     {% include 'menu/components/edit_meal_recipe_select.html' %}
   </template>
   <template id="template-recipe-select-options">
-  {% for recipe in available_recipes %}<option value='{{recipe.id}}'>{{ recipe.recipe_name }}</option>
+  {% for recipe in available_recipes %}<option value='{{recipe.id}}'>{{ recipe.name }}</option>
   {% endfor %}
   </template>
 

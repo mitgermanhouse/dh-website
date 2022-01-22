@@ -75,7 +75,7 @@ class MenuEditView(PermissionRequiredMixin, DetailView):
 
         # Modify context
         context['sorted_meals'] = menu.meal_set.prefetch_related('recipes').prefetch_related('meal_day_time').order_by(*Meal.meal_order) if menu is not None else None
-        context['available_recipes'] = Recipe.objects.all().values('recipe_name', 'id').order_by(Lower('recipe_name'))
+        context['available_recipes'] = Recipe.objects.all().values('name', 'id').order_by(Lower('name'))
 
         context['weekdays'] = [(tag.value, tag.description) for tag in Weekday]
         context['meal_times'] = [(tag.value, tag.description) for tag in MealTime]

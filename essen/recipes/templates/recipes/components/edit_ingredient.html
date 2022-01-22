@@ -8,11 +8,11 @@
 
     <div class="col input-group pe-0">
       {% render_field form.quantity|add_class:'form-control form-quantity' placeholder=form.quantity.label min='0' %}
-      {% render_field form.units|add_class:'form-control form-unit' placeholder=form.units.label list='datalist-units' %}
+      {% render_field form.unit|add_class:'form-control form-unit' placeholder=form.unit.label list='datalist-units' %}
     </div>
     <div class="col col-8">
       <div class="input-group">
-        {% render_field form.ingredient_name|add_class:'form-control' placeholder=form.ingredient_name.label %}
+        {% render_field form.name|add_class:'form-control' placeholder=form.name.label %}
         <button type="button" class="btn btn-danger remove-button" onclick="deleteIngredient(this)"> &#x2717 </button>
       </div>
     </div>

@@ -8,7 +8,7 @@ class RecipeWrapper:
 		self.meal = meal
 
 		self.id = self._recipe.id
-		self.name = self._recipe.recipe_name
+		self.name = self._recipe.name
 		self.directions = self._recipe.directions
 		self.serving_size = self._recipe.serving_size
 
@@ -33,8 +33,8 @@ class IngredientWrapper:
 		self.recipe = recipe
 
 		self.id = self._ingredient.id
-		self.name = self._ingredient.ingredient_name
-		self.unit = units.dh_unit_parser(self._ingredient.units)
+		self.name = self._ingredient.name
+		self.unit = units.dh_unit_parser(self._ingredient.unit)
 		self.quantity = units.ureg.Quantity(self._ingredient.quantity, self.unit)
 
 		self._update()
@@ -60,14 +60,14 @@ class IngredientWrapper:
 	@property
 	def unit_str(self):
 		if self.quantity.u == units.dimensionless:
-			return self._ingredient.units
+			return self._ingredient.unit
 
 		return f"{self.simplified_q.u:~}"
 
 	@property
 	def original_unit_str(self):
 		if self.quantity.u == units.dimensionless:
-			return self._ingredient.units
+			return self._ingredient.unit
 
 		return f"{self.quantity.u:~}"
 

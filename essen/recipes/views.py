@@ -12,7 +12,7 @@ from recipes.forms import RecipeForm, IngredientForm
 
 class RecipesListView(ListView):
     template_name = 'recipes/index.html'
-    queryset = Recipe.objects.all().values('recipe_name', 'id').order_by(Lower('recipe_name'))
+    queryset = Recipe.objects.all().values('name', 'id').order_by(Lower('name'))
     context_object_name = 'recipe_list'
 
 class RecipeDetailView(DetailView):
