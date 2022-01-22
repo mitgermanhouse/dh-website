@@ -1,13 +1,12 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db import transaction
 from django.db.models.functions import Lower
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.views.generic import View, DetailView, ListView, TemplateView
+from django.views.generic import DetailView, ListView
 
-from recipes.models import Recipe, Ingredient
-from recipes.units.wrappers import RecipeWrapper
+from recipes.models import Recipe
 from recipes.forms import RecipeForm, IngredientForm
 
 class RecipesListView(ListView):
@@ -20,9 +19,6 @@ class RecipeDetailView(DetailView):
     model = Recipe
     context_object_name = 'recipe'
 
-    def get_object(self, queryset=None):
-        obj = super().get_object(queryset)
-        return RecipeWrapper(obj)
 
 class RecipeEditView(PermissionRequiredMixin, DetailView):
     template_name = 'recipes/edit_recipe.html'
@@ -45,7 +41,7 @@ class RecipeEditView(PermissionRequiredMixin, DetailView):
         )
 
         if recipe is not None:
-            context['recipe'] = RecipeWrapper(recipe)
+            context['recipe'] = recipe
             context['ingredients_forms'] = [
                 IngredientForm(instance=ingredient, label_suffix='', prefix=RecipeEditView.ingredients_form_prefix) 
                 for ingredient in recipe.ingredient_set.all()

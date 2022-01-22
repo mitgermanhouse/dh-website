@@ -1,5 +1,4 @@
 import collections
-import sys
 
 from django.views.generic import View, TemplateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -7,18 +6,16 @@ from django.db import transaction
 from django.db.models.functions import Lower
 from django.core.exceptions import BadRequest
 from django.shortcuts import get_object_or_404
-from datetime import datetime, timedelta
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from pytz import timezone
 
 from essen.converters import DateConverter
-from recipes.models import Recipe, Ingredient
+from recipes.models import Recipe
 from home.models import Member
 from menu.models import Weekday, MealTime, MealDayTime, Menu, Meal, MealRating
-from menu.units.wrappers import MenuWrapper, MealWrapper, combine_ingredients
+from menu.helper import combine_ingredients
 from menu.forms import MealRatingForm
 
 # Create your views here.
@@ -199,11 +196,17 @@ class ModifyLateplate(LoginRequiredMixin, View):
 class MealView(DetailView):
     template_name = 'menu/display_meal.html'
     model = Meal
+    context_object_name = 'meal'
+
+    def get_queryset(self):
+        return Meal.objects.prefetch_related('recipes').prefetch_related('recipes__ingredient_set').prefetch_related('meal_day_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['meal'] = MealWrapper(self.object)
+        scaled_recipes = [recipe for recipe in self.object.recipes.all()]
+        [recipe.scale_to(self.object.menu.servings) for recipe in scaled_recipes]
+        context['scaled_recipes'] = scaled_recipes
         context['members'] = Member.objects.filter(user__is_active=True).select_related('user').order_by('user__first_name')
 
         return context
@@ -231,24 +234,26 @@ class RateMealView(LoginRequiredMixin, DetailView):
 class ShopperView(DetailView):
     template_name = 'menu/shopper.html'
     model = Menu
+    context_object_name = 'menu'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        menu = MenuWrapper(self.object)
-        meals = menu.meals
-        meals_id = [meal.id for meal in meals]
+
+        menu = self.object
+        meal_set = menu.meal_set.order_by(*Meal.meal_order).prefetch_related('recipes').prefetch_related('recipes__ingredient_set').select_related('meal_day_time')
+        meals_id = [meal.id for meal in meal_set]
 
         # Filter out all meals before the after_meal
         after_meal_pk = self.request.GET.get('after_meal')
-        after_meal = self.object.meal_set.filter(pk=after_meal_pk).first()
+        after_meal = menu.meal_set.filter(pk=after_meal_pk).first()
 
         if after_meal is not None and after_meal.id in meals_id:
-            meals = meals[meals_id.index(after_meal.id)+1:]
-            context['after_meal'] = MealWrapper(after_meal)
+            context['after_meal'] = after_meal
+            offset = meals_id.index(after_meal.id)+1
 
-        context['menu'] = menu
-        context['ingredients'] = combine_ingredients(meals)
+            meal_set = meal_set[offset:]
+
+        context['ingredients'] = combine_ingredients(meal_set)
 
         return context
 

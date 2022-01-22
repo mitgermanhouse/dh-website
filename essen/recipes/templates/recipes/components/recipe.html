@@ -16,7 +16,7 @@
         <col style="width: 5rem;">
         <col style="width: auto">
       </colgroup>
-    {% for ingredient in recipe.ingredients %}
+    {% for ingredient in recipe.ingredient_set.all %}
       <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
         <td class="magnitude noselect">{{ingredient.magnitude_str}}</td>
         <td class="unit noselect">{{ingredient.unit_str}}</td>

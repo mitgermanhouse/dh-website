@@ -1,12 +1,9 @@
 import os
-import sys
 import math
-from typing import Optional, Dict, List
+from typing import Optional, List
 
 import pint
 from pint import Quantity
-from pint.util import UnitsContainer
-from pint.definitions import UnitDefinition
 from pint.errors import UndefinedUnitError
 from pint.unit import Unit
 
@@ -109,38 +106,6 @@ def simplify(quantity: Quantity, units: List[Unit]) -> Quantity:
 	candidates = [quantity.to(u) for u in units]
 	return list(reversed(sorted([(score(q), q) for q in candidates])))[0][1]
 
-# # WrapperClass
-# def QuantityWrapper:
-
-# 	def __init__(self, magnitude, unit):
-# 		self._magnitude = magnitude
-# 		self._unit_str  = unit
-
-# 		parsed_unit = dh_unit_parser(self._unit_str)
-# 		self._quantity = Q_(self._magnitude, parsed_unit)
-
-# 		self._valid = False
-# 		self.invalidate()
-
-# 	def _invalidate(self):
-# 		self._valid = False
-
-# 	def _compute_properties(self):
-# 		if self._valid:
-# 			return
-
-# 		self._simplified_q = simplify(self._quantity, units)
-
-# 	@property
-# 	def sm_str(self):
-# 		self._compute_properties()
-# 		return f"{round(self._simplified_q.m, 2):g}"
-
-# 	@property
-# 	def su_str(self):
-# 		if self._quantity.u == dimensionless:
-# 			return self._unit_str
-# 		return f"{self._simplified_q.u:~}"
 
 # Extend Quantity type
 #  This is a hack and should be fixed at some point in the future

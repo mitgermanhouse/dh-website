@@ -27,7 +27,7 @@
     <!-- Recipes Sidebar -->
     <div class="col-lg-2 my-4 my-lg-0 sticky-lg-top h-100" style="top: 24px;" id="sidebar">
       <nav class="nav flex-column">
-      {% for recipe in meal.recipes %}
+      {% for recipe in meal.recipes.all %}
         <a class="nav-link" href="#recipe_{{recipe.id}}">{{recipe.name}}</a>
       {% endfor %}
       </nav>
@@ -36,7 +36,7 @@
     <!-- Meal -->
     <div class="col-lg-8" id="meal">
       <div class="row row-cols-1 g-4">
-      {% for recipe in meal.recipes %}
+      {% for recipe in scaled_recipes %}
         <div class="col">
           {% include 'recipes/components/recipe.html' %}
         </div>

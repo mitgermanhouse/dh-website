@@ -137,7 +137,7 @@
                       <td class="magnitude noselect">{{ ingredient.magnitude_str }}</td>
                       <td class="unit noselect">{{ ingredient.unit_str }}</td>
                       <td class="name">{{ ingredient.name }}</td>
-                      <td class="recipe"><a href="{% url 'menu:display_meal' ingredient.recipe.meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
+                      <td class="recipe"><a href="{% url 'menu:display_meal' ingredient.recipe.associated_meal.id %}#recipe_{{ingredient.recipe.id}}">{{ ingredient.recipe.name }}</a></td>
                     </tr>
                   {% endfor %}
                   </table>

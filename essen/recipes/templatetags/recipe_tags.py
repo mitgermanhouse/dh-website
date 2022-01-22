@@ -1,16 +1,14 @@
 from django import template
 import json
-from typing import Union
 
 from recipes.units import units
-from recipes.units.wrappers import IngredientWrapper
 
 register = template.Library()
 
 @register.simple_tag
 def data_quantities_str(**kwargs):
     if "ingredient" in kwargs:
-        quantity = kwargs["ingredient"].quantity
+        quantity = kwargs["ingredient"]._p_quantity
     elif "quantity" in kwargs:
         quantity = kwargs["quantity"]
     else:
