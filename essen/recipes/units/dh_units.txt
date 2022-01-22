@@ -120,7 +120,7 @@ clove = []
 taste = []
 can = []
 head = []
-pinch = []
+pinch = [] = _ = little = some
 
 # Define unit groups for use in the kitchen
 @group DH_US_Base
