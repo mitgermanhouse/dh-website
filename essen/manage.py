@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import os
 import sys
-sys.path.append("/Users/kderek/dialup/dh-essen/essen")
-
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "essen.settings")

@@ -1,21 +1,20 @@
 import os
-import sys
 import math
-from typing import Optional, Dict, List
+from typing import Optional, List
 
 import pint
 from pint import Quantity
-from pint.util import UnitsContainer
-from pint.definitions import UnitDefinition
 from pint.errors import UndefinedUnitError
 from pint.unit import Unit
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Load unit registry with DH specific unit definitions
-ureg = pint.UnitRegistry()
-ureg.load_definitions(os.path.join(os.path.dirname(__file__), 'dh_units.txt'))
+ureg = pint.UnitRegistry(filename=os.path.join(os.path.dirname(__file__), 'dh_units.txt'))
 Q_ = ureg.Quantity
 
-dimensionless = ureg.parse_units("dimensionless")
+dimensionless = ureg.parse_units('dimensionless')
 
 # Helper Functions
 def load_unit_group(group_name: str) -> List[Unit]:
@@ -38,7 +37,6 @@ def load_unit_group(group_name: str) -> List[Unit]:
 def dh_unit_parser(unit_str: str) -> Optional[Unit]:
 	# Remove plural '(s)'. Pint interprets this as  * seconds
 	unit_str = unit_str.lower()
-
 	if unit_str.endswith('(s)'):
 		unit_str = unit_str[:-3]
 
@@ -46,11 +44,15 @@ def dh_unit_parser(unit_str: str) -> Optional[Unit]:
 		return ureg.parse_units(unit_str)
 	except UndefinedUnitError as e:
 		# TODO: Handle correctly
-		print(e)
+		logger.info(f'Got error "{e}" while trying parsing unit string ("{unit_str}").')
 		return dimensionless
 	except ValueError as e:
 		# This is the case if the unit is for example "3lb bags" because a unit can't contain a scalar
-		print(e)
+		logger.info(f'Got error "{e}" while trying parsing unit string ("{unit_str}").')
+		return dimensionless
+	except TypeError as e:
+		# This is the case if the unit contains an operand, for example "4-6 inch"
+		logger.info(f'Got error "{e}" while trying parsing unit string ("{unit_str}").')
 		return dimensionless
 
 def expand(quantity: Quantity, units: List[Unit]) -> List[Quantity]:
@@ -104,38 +106,6 @@ def simplify(quantity: Quantity, units: List[Unit]) -> Quantity:
 	candidates = [quantity.to(u) for u in units]
 	return list(reversed(sorted([(score(q), q) for q in candidates])))[0][1]
 
-# # WrapperClass
-# def QuantityWrapper:
-
-# 	def __init__(self, magnitude, unit):
-# 		self._magnitude = magnitude
-# 		self._unit_str  = unit
-
-# 		parsed_unit = dh_unit_parser(self._unit_str)
-# 		self._quantity = Q_(self._magnitude, parsed_unit)
-
-# 		self._valid = False
-# 		self.invalidate()
-
-# 	def _invalidate(self):
-# 		self._valid = False
-
-# 	def _compute_properties(self):
-# 		if self._valid:
-# 			return
-
-# 		self._simplified_q = simplify(self._quantity, units)
-
-# 	@property
-# 	def sm_str(self):
-# 		self._compute_properties()
-# 		return f"{round(self._simplified_q.m, 2):g}"
-
-# 	@property
-# 	def su_str(self):
-# 		if self._quantity.u == dimensionless:
-# 			return self._unit_str
-# 		return f"{self._simplified_q.u:~}"
 
 # Extend Quantity type
 #  This is a hack and should be fixed at some point in the future
@@ -154,5 +124,3 @@ if __name__ == '__main__':
 # TODO: Refactor	
 units = load_unit_group('DH_US_cups')
 all_dh_units = load_unit_group('DH_All')
-
-print(all_dh_units)

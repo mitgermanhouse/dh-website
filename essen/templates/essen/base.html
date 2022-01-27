@@ -1,49 +1,101 @@
 {% load static %}
 {% load profile_helpers %}
+{% load essen_base_tags %}
 
+<!doctype html>
 <html lang="en">
-<head>
-    <link rel="icon" type="image/png"  href="{% static 'essen/img/eagle.png' %}">
+  <head>
+    <title>{% block title %}German House{% endblock %}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'icon/favicon.ico' %}" sizes="any"><!-- 32×32 -->
+    <link rel="icon" href="{% static 'icon/icon.svg' %}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{% static 'icon/apple-touch-icon.png' %}"><!-- iOS -->
+    <link rel="manifest" href="{% static 'icon/manifest.webmanifest' %}"> <!-- Android -->
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="UTF-8">
-    <title>German House</title>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
+    <!-- DH CSS -->
     <link rel="stylesheet" href="{% static 'essen/css/dh.css' %}">
 
-    {% block script %}
-
+    {% block style %}
     {% endblock %}
-</head>
-<body>
-    <nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a href="{% url 'home:home' %}"class="navbar-brand" href="#">German House</a>
+  </head>
+
+  <body>
+
+    <!-- Navigation Bar -->
+    <header class="navbar navbar-expand-md navbar-light bg-light shadow-sm p-2" style="z-index: 1030">
+      <nav class="container-xxl">
+        <a class="navbar-brand" href="{% url 'home:home' %}">
+          <img src="{% static 'essen/img/dh-logo-navbar.svg' %}" alt="" width="36px" height="30px" class="d-inline-block align-text-center me-2" style="margin-top: -2px; margin-bottom: -2px;">
+          German House
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav me-auto">
+            <a class="nav-link {% active_link 'menu:index' %}" href="{% url 'menu:index'%}">Menu</a>
+            <a class="nav-link {% active_link 'recipes:index' %}" href="{% url 'recipes:index'%}">Recipes</a>
+          </div>
+          
+          <div class="navbar-nav">
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarUserDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% firstof user.get_full_name 'Profile' %}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarUserDropdownMenuLink">
+                <li><a class="dropdown-item" href="{% url 'home:edit_profile' %}">Edit Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'home:edit_dining' %}">Dining Settings</a></li>
+                {% if user.is_staff %} <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li> {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <a class="nav-link" href="{% url 'login'%}?next={{request.path}}"> Login </a>
+          {% endif %}
+          </div>
+
         </div>
-        <ul class="nav navbar-nav">
-            <li><a href="{% url 'menu:index'%}"> Menu </a></li>
-            <li><a href="{% url 'recipes:index'%}"> Recipes </a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            {% if user.is_authenticated %}
-            <li><a href="{% url 'home:edit_profile' %}">{{user|member_or_none}}</a></li>
-            <li><a href="{% url 'logout' %}?next={{request.path}}">Logout</a></li>
-            {% else %}
-            <li><a href="{% url 'login'%}?next={{request.path}}"> Login </a></li>
-            {% endif %}
-        </ul>
+      </nav>
+    </header>
+
+    {% if messages %}
+    <div class="container-xxl" id="messages-container">
+      <div class="row">
+        {% for message in messages %}
+        <div class="col">
+          <div class="alert {{ message.tags }} alert-dismissible fade show mt-3 mb-0" role="alert">
+            {{ message|safe }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
-</nav>
+    {% endif %}
 
-    {% block content%}
-
+    {% block content %}
     {% endblock %}
 
-</body>
+    <!-- Bootstrap Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    {% block script %}
+    {% endblock %}
+
+  </body>
 </html>

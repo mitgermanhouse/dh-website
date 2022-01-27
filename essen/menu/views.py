@@ -1,325 +1,286 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+import collections
 
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from datetime import datetime, timedelta
-import sys
-from recipes.models import Recipe, Ingredient
-from menu.models import Menu, Meal, LatePlate, AutoLatePlate, MealRating
-from menu.units.wrappers import MenuWrapper, combine_ingredients
-from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic import View, TemplateView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db import transaction
+from django.db.models.functions import Lower
+from django.core.exceptions import BadRequest
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from pytz import timezone
+
+from essen.converters import DateConverter
+from recipes.models import Recipe
+from home.models import Member
+from menu.models import Weekday, MealTime, MealDayTime, Menu, Meal, MealRating
+from menu.helper import combine_ingredients
+from menu.forms import MealRatingForm
+
 # Create your views here.
 
-
-def index(request, date='None'):
+class IndexView(TemplateView):
     template_name = 'menu/index.html'
     context_object_name = 'menu'
 
-    if datetime.utcnow().today().weekday() < 6:
-        days_from_sunday = 1 + datetime.utcnow().today().weekday()
-    else:
-        days_from_sunday = 0
-    target_date = datetime.utcnow() - timedelta(days=days_from_sunday)
-    y, m, d = target_date.year, target_date.month, target_date.day
-    menu = Menu.objects.filter(start_date__year=y,
-                                start_date__month=m,
-                                start_date__day=d).first()
+    def today(self):
+        return datetime.now(timezone('EST')).today().date()
 
-    if date != 'None':
-        target_date = datetime.strptime(date, '%m/%d/%Y')
-        y, m, d = target_date.year, target_date.month, target_date.day
-        menu = Menu.objects.filter(start_date__year=y,
-                                   start_date__month=m,
-                                   start_date__day=d).first()
-    sorted_meals = []
-    if menu != None:
-        for meal in menu.meal_set.order_by('date').all():
-            if meal.date == (datetime.utcnow() - timedelta(hours=4)).date():
-                sorted_meals.append({"today": True, "meal": meal})
-            else:
-                sorted_meals.append({"today": False, "meal": meal})
-    print(sorted_meals)
-    return render(request, template_name, {context_object_name: menu, 'target_date': target_date,
-                                           'sorted_meals' : sorted_meals})
+    def get_current_week_date(self):
+        today = self.today()
+        days_from_sunday = (today.weekday() + 1) % 7
 
-def add_menu(request):
-    template_name = "menu/add_menu.html"
-    context_object_name = 'recipe_choices'
+        return today - timedelta(days=days_from_sunday)
 
-    recipe_choices = Recipe.objects.all()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    return render(request, template_name, {context_object_name: recipe_choices, 'steward': check_if_steward(request.user)})
+        # Get Menu for Date
+        target_date = kwargs.get('date') or self.get_current_week_date()
+        menu = Menu.objects.filter(start_date=target_date).first()
+
+        # Today
+        today = self.today()
+        sorted_meals = []
+
+        if menu is not None:
+            for meal in menu.meal_set.prefetch_related('recipes').prefetch_related('meal_day_time').order_by(*Meal.meal_order):
+                sorted_meals.append({
+                    'meal': meal,
+                    'today': meal.date == today
+                })
+
+        context['menu'] = menu
+        context['sorted_meals'] = sorted_meals
+        context['page_date'] = target_date
+
+        return context
 
 
-def getLatePlateText(user):
-    '''
-    Gets the text to be displayed for a specific user's lateplate based on their
-    dietary restrictions and full name
-    :return: string w/ html codes
-    '''
-    auto_plate = AutoLatePlate.objects.filter(username=user.username).first()
-    dietary = ""
-    emoji_mapping = {"Vegetarian": "&#x1F33F", "Lactose Free": "&#x1f95b", "Nut Free": "&#x1F95C",
-                     "No Pork": "&#x1F437", "No Red Meat": "&#x1f969", "No Seafood": "&#x1f41f",
-                     "No Raw Apple": "&#x1F34E", "No Coconut": "&#x1F965", "No Raw Carrots": "&#x1F955", 
-                     "Gluten Free": "&#x1F35E", "No Mushroom": "&#x1F344"}
-    if auto_plate != None and len(auto_plate.dietary) > 0:
-        for restriction in auto_plate.dietary.split(";"):
-            if dietary == "":
-                dietary += " "
-            dietary += emoji_mapping[restriction]
+class MenuEditView(PermissionRequiredMixin, DetailView):
+    template_name = 'menu/edit_menu.html'
+    model = Menu
+    context_object_name = 'menu'
+    meal_form_prefix = 'meal'
 
-    return user.get_full_name() + dietary
+    permission_required = 'menu.change_menu'
 
-def submit_menu(request):
-    if not (request.user.is_authenticated and check_if_steward(request.user)):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        menu = self.object  # Can be None
+
+        # Modify context
+        context['sorted_meals'] = menu.meal_set.prefetch_related('recipes').prefetch_related('meal_day_time').order_by(*Meal.meal_order) if menu is not None else None
+        context['available_recipes'] = Recipe.objects.all().values('name', 'id').order_by(Lower('name'))
+
+        context['weekdays'] = [(tag.value, tag.description) for tag in Weekday]
+        context['meal_times'] = [(tag.value, tag.description) for tag in MealTime]
+
+        return context
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        meal_post = dict(request.POST.lists())
+
+        # Delete old menu meals
+        menu = self.get_object() or Menu()
+        if menu is not None:
+            # TODO: Currently we delete all manual lateplates when editing a menu. Maybe try to keep them...
+            menu.meal_set.all().delete()
+
+        # Check if menu already exists in the specified week
+        start_date = DateConverter().to_python(request.POST.get('start_date'))
+        if Menu.objects.filter(start_date=start_date).exclude(pk=menu.pk).count() > 0:
+            raise ValueError('A menu already exists for this week.')
+
+        # Validate Data
+        meal_weekday = meal_post.get('meal-weekday')
+        meal_time = meal_post.get('meal-time')
+        meal_recipe_id = meal_post.get('meal-recipe')
+        meal_recipe_count = [int(s) for s in meal_post.get('meal-recipe-count') or []]
+
+        if not len(meal_weekday) == len(meal_time) == len(meal_recipe_count):
+            raise ValueError('Inconsistent number of meals.')
+
+        if len(meal_recipe_id) != sum(meal_recipe_count):
+            raise ValueError('Inconsistent number of recipes.')
+
+        if len(set(zip(meal_weekday, meal_time))) != len(meal_weekday):
+            raise ValueError('The days and times of each meal should be unique.')
+
+        # Get Recipes for Meals
+        recipes_qs = Recipe.objects.filter(id__in=meal_recipe_id)
+        meal_recipes = [recipes_qs.filter(id=id).first() for id in meal_recipe_id]
+
+        if None in meal_recipes:
+            raise ValueError('Invalid recipe selected.')
+
+        meal_recipes_grouped = []
+        meal_recipes_group_offset = 0
+        for count in meal_recipe_count:
+            meal_recipes_grouped.append(meal_recipes[meal_recipes_group_offset : meal_recipes_group_offset+count])
+            meal_recipes_group_offset += count
+
+        # Construct Menu
+        menu.start_date = start_date
+        menu.servings = int(request.POST.get('servings'))
+        menu.notes = request.POST.get('notes')
+        menu.save()
+
+        # Construct Meals
+        for i in range(len(meal_weekday)):
+            time = meal_time[i]
+
+            meal = Meal(
+                menu = menu,
+                date = start_date + timedelta(days=int(meal_weekday[i])),
+                meal_day_time = MealDayTime.objects.filter(weekday=int(meal_weekday[i]), meal_time=meal_time[i]).first()
+            )
+
+            meal.save()
+            meal.recipes.set(meal_recipes_grouped[i])
+
+        # raise ValueError('Not implemented... PLZ DONT COMMIT TO DATABASE :)')
+        return HttpResponseRedirect(reverse('menu:index', args=[request.POST.get('start_date')]))
+
+
+class MenuAddView(MenuEditView):
+    permission_required = 'menu.add_menu'
+
+    def get_object(self):
+        return None
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['start_date'] = self.kwargs.get('date')
+        return context
+
+
+class MenuDeleteView(PermissionRequiredMixin, DetailView):
+    permission_required = 'menu.delete_menu'
+    model = Menu
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.delete()
+
         return HttpResponseRedirect(reverse('menu:index'))
 
-    days_to_num = {"Sunday Brunch": 0, "Sunday Dinner": 0, "Monday Dinner": 1, "Tuesday Dinner": 2,
-                   "Wednesday Dinner": 3, "Thursday Dinner": 4}
 
-    d = dict(request.POST.lists())
-    start_date = datetime.strptime(request.POST.get('start_date'), "%Y-%m-%d").date()
+class ModifyLateplate(LoginRequiredMixin, View):
+    http_method_names = ['post']
 
-    Menu.objects.filter(start_date=start_date).delete()
+    def post(self, request, *args, **kwargs):
+        meal = get_object_or_404(Meal, pk=kwargs.get('pk'))
+        member = get_object_or_404(Member, pk=request.POST.get('name'))
 
-    menu = Menu(start_date = start_date,
-                servings = request.POST.get("serving_size"),
-                notes = request.POST.get("notes"))
-    menu.save()
+        response = HttpResponseRedirect(reverse('menu:display_meal', args=[kwargs.get('pk')]))
 
+        if 'action_add' in request.POST:
+            meal.manual_lateplates.add(member)
+            meal.save()
+            return response
 
-    for key, item in d.items():
-        if "day" in key:
-            day_num = key.split("_")[1]
-            meal_key = "item_" + day_num
-
-            recipes = d[meal_key] #list of all recipe names corresponding to that meal in the menu
-            meal = Meal(menu=menu,
-                        date=start_date+timedelta(days_to_num[request.POST.get(key)]),
-                        meal_name=request.POST.get(key))
+        if 'action_remove' in request.POST:
+            meal.manual_lateplates.remove(member)
+            meal.deleted_auto_lateplates.add(member)
             meal.save()
 
-            # add automatic lateplates
-            for auto_plate in AutoLatePlate.objects.all():
-                if str(request.POST.get(key)) in str(auto_plate.days):
-                    user = User.objects.filter(username=auto_plate.username).first()
-                    l = LatePlate(meal=meal,
-                                  name=getLatePlateText(user))
-                    l.save()
+            return response
 
-            # add recipes
-            for r in recipes:
-                recipe = Recipe.objects.filter(recipe_name=r).first()
-                meal.recipes.add(recipe)
+        raise BadRequest('Invalid form action.')
 
-    return HttpResponseRedirect(reverse('menu:index'))
 
-class DetailView(generic.DetailView):
-    model = Meal
-    template_name = "menu/rate_meal.html"
-
-def view_meal(request, pk):
+class MealView(DetailView):
     template_name = 'menu/display_meal.html'
-    context_object_name = 'info'
+    model = Meal
+    context_object_name = 'meal'
 
-    meal = get_object_or_404(Meal, pk=pk)
+    def get_queryset(self):
+        return Meal.objects.prefetch_related('recipes').prefetch_related('recipes__ingredient_set').prefetch_related('meal_day_time')
 
-    from menu.units.wrappers import MealWrapper
-    wrapped_meal = MealWrapper(meal)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    info = {
-        "meal": wrapped_meal, 
-        "users": User.objects.exclude(username="admin").order_by('first_name')
-    }
+        scaled_recipes = [recipe for recipe in self.object.recipes.all()]
+        [recipe.scale_to(self.object.menu.servings) for recipe in scaled_recipes]
+        context['scaled_recipes'] = scaled_recipes
+        context['members'] = Member.objects.filter(user__is_active=True).select_related('user').order_by('user__first_name')
 
-    return render(request, template_name, {context_object_name: info})
-
-
-def add_lateplate(request, meal_pk, user_pk):
-    meal = get_object_or_404(Meal, pk=meal_pk)
-
-    username = request.POST.get("name")
-    print(request.POST)
-    print(username)
-    user = User.objects.filter(username=username).first()
-
-    if user.is_authenticated:
-        l = LatePlate(name=getLatePlateText(user), meal=meal)
-        l.save()
-
-    return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_pk]))
-
-def remove_lateplate(request, lateplate_pk, user_pk):
-    lateplate = get_object_or_404(LatePlate, pk=lateplate_pk)
-
-    if request.user.is_authenticated:
-        meal_id = lateplate.meal.id
-        lateplate.delete()
-
-    return HttpResponseRedirect(reverse('menu:display_meal', args=[meal_id]))
+        return context
 
 
-def auto_lateplates(request):
-    template_name = 'menu/auto_lateplates.html'
-    map = {"Sunday Brunch": 0, "Sunday Dinner": 1, "Monday Dinner": 2, "Tuesday Dinner": 3,
-                   "Wednesday Dinner": 4, "Thursday Dinner": 5}
-    requested_days = [{"day": "Sunday Brunch", "state": False}, {"day": "Sunday Dinner", "state": False}, {"day": "Monday Dinner", "state": False},
-                      {"day": "Tuesday Dinner", "state": False},  {"day": "Wednesday Dinner", "state": False}, {"day": "Thursday Dinner", "state": False},]
+class RateMealView(LoginRequiredMixin, DetailView):
+    template_name = 'menu/rate_meal.html'
+    model = Meal
 
-    dietary_map = {"Vegetarian": 0, "Lactose Free": 1, "Nut Free": 2, "No Pork": 3, "No Red Meat": 4, "No Seafood": 5,
-                   "No Raw Apple": 6, "No Coconut": 7, "No Raw Carrots": 8, "Gluten Free": 9, "No Mushroom": 10}
-    restrictions = [{"restriction" : "Vegetarian", "state" : False}, {"restriction" : "Lactose Free", "state" : False},
-                    {"restriction": "Nut Free", "state": False}, {"restriction": "No Pork", "state": False},
-                    {"restriction": "No Red Meat", "state": False}, {"restriction": "No Seafood", "state": False},
-                    {"restriction": "No Raw Apple", "state": False}, {"restriction": "No Coconut", "state": False}, 
-                    {"restriction": "No Raw Carrots", "state": False}, {"restriction": "Gluten Free", "state": False}, 
-                    {"restriction": "No Mushroom", "state": False}]
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        meal = self.get_object()
 
-    lateplate = AutoLatePlate.objects.filter(username=request.user.username).first()
+        # Get previous rating. If it exists, update values using form, else create a new rating
+        rating = meal.mealrating_set.filter(username=request.user.username).first() or MealRating()
+        rating.username = request.user.username
+        rating.meal = meal
 
-    if lateplate != None:
-        if len(lateplate.days) > 0:
-            for day in lateplate.days.split(";"):
-                print("this is a day", day)
-                requested_days[map[day]] = {"day": day, "state": True}
+        rating_form = MealRatingForm(instance=rating, data=request.POST)
+        rating_form.save()
 
-        if len(lateplate.dietary) > 0:
-            for restriction in lateplate.dietary.split(";"):
-                restrictions[dietary_map[restriction]] = {"restriction": restriction, "state": True}
-
-    return render(request, template_name, {"days" : requested_days, "d_restrictions": restrictions})
-
-def submit_auto_lateplates(request):
-    if request.user.is_authenticated:
-        d = dict(request.POST.lists())
-        print(d)
-        # delete the previous lateplate registrys
-        AutoLatePlate.objects.filter(username=request.user.username).delete()
-        # add the new one
-        days = ""
-        dietary = ""
-        if "date" in d.keys():
-            for day in d.get("date"):
-                if days != "":
-                    days += ";"
-                days += day
-                print(day)
-
-        if "dietary" in d.keys():
-            for restriction in d.get("dietary"):
-                if dietary != "":
-                    dietary += ";"
-                dietary += restriction
-        auto = AutoLatePlate(username=request.user.username, days=days, dietary=dietary)
-        auto.save()
-
-    return HttpResponseRedirect(reverse('menu:index'))
+        return HttpResponseRedirect(reverse('menu:index'))
 
 
-def shopper(request, pk):
+class ShopperView(DetailView):
     template_name = 'menu/shopper.html'
-    name_map = {"Sunday Brunch": 0, "Sunday Dinner": 1, "Monday Dinner": 2, "Tuesday Dinner": 3,
-                   "Wednesday Dinner": 4, "Thursday Dinner": 5}
+    model = Menu
+    context_object_name = 'menu'
 
-    menu = get_object_or_404(Menu, pk=pk)
-    d = dict(request.GET.lists())
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    after_filter = False
-    after_date = (datetime.now() - timedelta(days=8)).date()
-    if "filter_date" in d:
-        after_date = name_map[d["after"][0]]
-        after_filter = d["filter_date"][0]
-    else:
-        after_date = -1 # accept all recipes for shopping list
+        menu = self.object
+        meal_set = menu.meal_set.order_by(*Meal.meal_order).prefetch_related('recipes').prefetch_related('recipes__ingredient_set').select_related('meal_day_time')
+        meals_id = [meal.id for meal in meal_set]
 
-    all_ingredients = {}
+        # Filter out all meals before the after_meal
+        after_meal_pk = self.request.GET.get('after_meal')
+        after_meal = menu.meal_set.filter(pk=after_meal_pk).first()
 
+        if after_meal is not None and after_meal.id in meals_id:
+            context['after_meal'] = after_meal
+            offset = meals_id.index(after_meal.id)+1
 
-    wrapped_menu = MenuWrapper(menu)
-    filtered_meals = [meal for meal in wrapped_menu.meals if name_map[meal.name] > after_date]
-    combined_ingredients = combine_ingredients(filtered_meals)
+            meal_set = meal_set[offset:]
 
-    context_dict = {
-        'ingredients': combined_ingredients,
-        'menu': wrapped_menu
-    }
+        context['ingredients'] = combine_ingredients(meal_set)
 
-    if after_filter:
-        context_dict["filter_date"] = after_filter
-        context_dict["after"] = d["after"][0]
-    return render(request, template_name, context_dict)
+        return context
 
 
-def ingredient_info(request, ing, menu):
-    template_name = 'menu/ingredient_info.html'
-    context_object_name = 'usages'
+class ReviewsView(PermissionRequiredMixin, TemplateView):
+    template_name = 'menu/menu_reviews.html'
+    permission_required = 'menu.view_meal_rating'
 
-    search = get_object_or_404(Ingredient, pk=str(ing))
-    menu = get_object_or_404(Menu, pk=str(menu))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ratings = MealRating.objects.all().select_related('user').select_related('meal').select_related('meal__meal_day_time').prefetch_related('meal__recipes')
 
-    ingredient_uses = []
+        grouped_ratings = collections.defaultdict(list)
+        for rating in ratings:
+            grouped_ratings[rating.meal].append(rating)
 
-    for meal in menu.meal_set.all():
-        for recipe in meal.recipes.all():
-            scale_factor = menu.servings/recipe.serving_size
-            for ingredient in recipe.ingredient_set.all():
+        ratings_context = []
+        for meal, meal_ratings in grouped_ratings.items():
+            overall_rating = sum([r.rating for r in meal_ratings]) / len(meal_ratings)
 
-                if ingredient.ingredient_name == search.ingredient_name and meal.date > datetime.now().date():
-                    ingredient_uses.append(str(ingredient.quantity * scale_factor) + " " + ingredient.units + " for " + meal.meal_name)
+            ratings_context.append({
+                'meal': meal,
+                'overall_rating': overall_rating,
+                'comments': meal_ratings
+            })
 
-    return render(request, template_name, {context_object_name: ingredient_uses})
+        ratings_context.sort(key=lambda e: e['meal'].date, reverse=True)
+        context['ratings'] = ratings_context
 
-
-def submit_rating(request, pk):
-    if request.user.is_authenticated:
-        d = dict(request.GET.lists())
-        meal = get_object_or_404(Meal, pk=pk)
-
-        print("rating", d)
-        # rating = d[]
-
-        if 'rate' in d:
-            previous_rating = MealRating.objects.filter(username=request.user.username).filter(meal=meal)
-            previous_rating.delete()
-
-            rating = MealRating(meal=meal, username=request.user.username, rating=d['rate'][0], comment=d['comment-box'][0])
-            rating.save()
-
-        # MealRating(meal=meal, username=request.user.username, rating=)
-
-    return HttpResponseRedirect(reverse('menu:index'))
-
-
-def see_reviews(request):
-    final_list = []
-    steward = False
-    if request.user.is_authenticated and check_if_steward(request.user):
-        steward = True
-        d = {}
-        for review in MealRating.objects.all():
-            if review.meal in d:
-                d[review.meal].append((review.rating, review.comment, review.username))
-            else:
-                d[review.meal] = [(review.rating, review.comment, review.username)]
-
-        print(d)
-
-        final_list = []
-        for key, item in d.items():
-            overall_rating = float(sum([x[0] for x in item]))/len(item)
-            comment_list = []
-            for entry in item:
-                comment_list.append({"username":entry[2], "comment":entry[1], "rating":entry[0]})
-            final_list.append({"meal":key, "overall_rating":overall_rating, "comments":comment_list})
-        final_list.sort(key=lambda entry: entry["meal"].date, reverse=True)
-
-    return render(request, template_name="menu/menu_reviews.html", context={"all_meals": final_list, "steward":steward})
-
-def check_if_steward(user):
-    return user.groups.all().filter(name="stewards").count() > 0
+        return context

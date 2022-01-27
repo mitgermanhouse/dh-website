@@ -1,8 +1,9 @@
 **/media/home/images/*
 *.pyc
-**settings.py
 .DS_Store
 **db.sqlite3
 requirements.txt
 
-
+/essen/essen/settings/*
+!/essen/essen/settings/__init__.py
+!/essen/essen/settings/base.py

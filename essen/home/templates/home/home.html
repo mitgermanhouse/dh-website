@@ -1,232 +1,200 @@
-<!DOCTYPE html>
-
 {% extends 'essen/base.html' %}
+{% load thumbnail %}
 {% load static %}
 
-{% block script %}
-<link rel="stylesheet" href="{% static 'home/css/home.css'%}">
-<script src="{% static 'home/js/home.js'%}"></script>
-
+{% block title %}
+  German House
 {% endblock %}
 
-<html>
+{% block style %}
+  <link rel="stylesheet" href="{% static 'home/css/home.css'%}">
+{% endblock %}
+
+{% block script %}
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@slightlyoff/lite-vimeo@0.1.2/lite-vimeo.min.js"></script>
+{% endblock %}
+
 {% block content %}
 
-<div class="container">
-    <div class="col-sm-12">
-        <div class="row">
-            <!--<div class="col-sm-1"></div>-->
-            <div class="col-sm-12">
-                <div class="text-center">
-                    <h1 style="border-bottom: 1px solid slategrey">Welcome to German House!</h1>
-                    <h1>
-                        <small><a href="#about">About</a>
-                            | <a href="#members">Members</a>
-                            | <a href="#i3">i3 Videos</a>
-                            | <a href="#contact">Contact</a>
-                        </small>
-                    </h1>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6 col-xs-12">
-                        <div class="row">
-                            <div class="col-sm-12 col-xs-12 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/iap2020brunch.jpg'%}">
-                                <p class="imgtext">A group of DHers ventured out to go to brunch during IAP 2020!</p>
-                            </div>
-                            <div class="col-sm-6 col-xs-6 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/em_ginny_elaine.jpg'%}">
-                                <p class="imgtext" a>DH at 2018 Ring Delivery</p>
-                            </div>
-                            <div class="col-sm-6 col-xs-6 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/applepicking2.jpg'%}">
-                                <p class="imgtext">MIT wide trip to apple picking, ft. DH</p>
-                            </div>
-                        </div>
-                    </div>
+<!-- Navigation Header -->
+<div class="container py-5">
+  <div class="row text-center">
+    <h1>Welcome to German House!</h1>
+    <ul class="nav justify-content-center">
+      <li class="nav-item">
+        <a class="nav-link" href="#about">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#members">Members</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#i3">i3 Videos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#contact">Contact</a>
+      </li>
+    </ul>
+  </div>
 
-                    <div class="col-sm-3 col-xs-6">
-                        <div class="row">
-                            <div class="col-sm-12 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/cookcrew.jpg'%}">
-                                <p class="imgtext">We celebrate Oktoberfest by cooking traditional foods so we can feast
-                                    and
-                                    invite friends!</p>
-                            </div>
-                            <div class="col-sm-12 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/skating.jpg'%}">
-                                <p class="imgtext">Halloween ice skating at an event called Spooky Skate!</p>
-                            </div>
-                            <div class="col-sm-12 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/dh.jpg'%}">
-                                <p class="imgtext">A reg-day trip to The Friendly Toast, yum!</p>
-                            </div>
-                        </div>
-                    </div>
+<!-- Gallery -->
 
-                    <div class="col-sm-3 col-xs-6">
-                        <div class="row">
-                            <div class="col-sm-12 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/dhfreshmen.jpg'%}">
-                                <p class="imgtext">Our wonderful 2022s!</p>
-                            </div>
-                            <div class="col-sm-12 imgwrap" style="padding:5px">
-                                <img class="img-rounded" width="100%" src="{% static 'home/img/apples.jpg'%}">
-                                <p class="imgtext">No firemen had to be called to get us down from these apple
-                                    trees!</p>
-                            </div>
-                        </div>
-                    </div>
+  <div class="row pt-4">
+    <div class="col-12">
+
+      <div id="carouselMain" class="carousel carousel-fade slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+        {% for content in galleryContent %}
+        
+          <div class="carousel-item ratio ratio-16x9 {% if forloop.first %}active{% endif %}">
+
+            <img src="{{ content.image|thumbnail_url:'carousel' }}" class="d-block" alt="{{content}}"/>
+
+            <div>
+              <div class="carousel-caption text-start d-block">
+                <h3 class="mb-0">{{ content.title }}</h3>
+
+                <div class="d-none d-md-flex mt-2 gap-1 justify-content-between flex-wrap">
+                  {{ content.caption }}
+
+                  {% if content.date %}
+                  <small class="text-end fst-italic">{{ content.date|date:'N j, Y' }}</small>
+                  {% endif %}
                 </div>
-                <div class="col-sm-12">
-                    <p class="text" style="text-align:center; color:grey"><em>Hover over the pictures to see what's
-                        happening!</em></p>
-                </div>
+              </div>
             </div>
+          </div>
+
+        {% endfor %}
         </div>
+        
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselMain" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselMain" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
     </div>
+  </div>
+
 </div>
 
-<div class="container">
-    <div class="col-sm-12">
-        <div class="row" id="about">
-            <div class="col-sm-12">
-                <div class="text-center">
-                    <h1 style="border-bottom: 1px solid slategrey">About Us</h1>
-                </div>
-                <div class="row">
-                    <div class="col-sm-4">
-                        <h3>Living</h3>
-                        In German House, you'll live with 28 students in an independent community inside New House. We eat
-                        together, play music together, speak German with poor accents together, and fight through psets
-                        together. We're into playing games with each other, from smash, to jackbox games, codenames, and
-                        more.
-                        One of the great things about German House is that the community is small enough to know everyone,
-                        but
-                        large enough that there is always someone in the lounge to hang out with.
-                    </div>
-                    <div class="col-sm-4">
-                        <h3>Cookcrew</h3>
-                        German House keeps you well-fed with home-cooked meals. You will become a member of a cook crew of 4
-                        or
-                        5 people, and cook for everyone once a week in the best kitchen of any dorm here at MIT. The rest of
-                        the
-                        week, you will benefit from the culinary skills of other members. On any given night, our meal could
-                        include quinoa salads, fried rice, honey-glazed baked chicken, oreo truffles, and sometimes even the
-                        occasional surprise created from any extra ingredients left over from the week. You can check out
-                        our
-                        recipes <a href="{% url 'recipes:index' %}">here!</a>
-                    </div>
-                    <div class="col-sm-4">
-                        <h3>Culture</h3>
-                        German House members come from all over the world. People here grew up speaking English, German,
-                        Chinese, Swahili, Korean and more. Several of us speak a fluent German, and others have taken German
-                        classes in high school and MIT. Our common interest in the culture ties us all together -- some
-                        people
-                        spend entire summers working in Germany; while some travel to Germany over IAP. Others simply want
-                        to
-                        practice the occasional German on duolingo, or even just watch German movies once in a while.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-12">
-            <div class="row" id="members">
-                <div class="text-center">
-                    <h1 style="border-bottom: 1px solid slategrey">Members</h1>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-sm-12">
-                <div id="col" align="center">
-                    {% for member in members %}
-                    <div style="border-style:solid;border-color:lightblue;
-                                border-radius:20px;position:relative;
-                                margin-bottom:10px;padding:5px;"
-                         class="cols">
-
-                        {% if member.image.width > member.image.height %}
-                        <div id="{{member.user.username}}">
-                            <!--<div class="col-sm-10 text-center">-->
-                            <strong>{{member}}</strong>
-                            <br> Class of {{member.class_year}}
-                            <br> Course {{member.major}}
-                            <div style="width:90%;">
-                                <img class="img-responsive img-rounded" src="{{member.image.url}}">
-                            </div>
-                            <br> {{member.bio}}
-                        </div>
-                        {% endif %}
-
-                        {% if member.image.width <= member.image.height %}
-                        <strong>{{member}}</strong>
-                        <br> Class of {{member.class_year}}
-                        <br> Course {{member.major}}
-                        <div style="width:70%;">
-                            <div id="{{member.user.username}}">
-                                <img class="img-responsive img-rounded" src="{{member.image.url}}">
-                            </div>
-                        </div>
-                        <br> {{member.bio}}
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-12">
-            <div class="row" id="i3">
-                <div class="col-sm-12">
-                    <div class="text-center">
-                        <h1 style="border-bottom: 1px solid slategrey">i3 Videos</h1>
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-8">
-                            <h3>2018</h3>
-                            <div class="video-cont">
-                                <iframe class="video" src="https://www.youtube.com/embed/CFB-ICLAVLM" frameborder="0"
-                                        allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
-                            </div>
-                            <h3>2015</h3>
-                            <div class="video-cont">
-                                <iframe class="video" src="https://www.youtube.com/embed/ZcZtQI8OVL8" frameborder="0"
-                                        allowfullscreen=""></iframe>
-                            </div>
-                            <h3>2014</h3>
-                            <div class="video-cont">
-                                <iframe class="video" src="https://www.youtube.com/embed/t44I8ApCy6c" frameborder="0"
-                                        allowfullscreen=""></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-sm-12">
-            <div class="row" id="contact">
-                <div class="text-center">
-                    <h1 style="border-bottom: 1px solid slategrey">Contact</h1>
-                </div>
-                <div style="padding-bottom:20em;">
-                    <strong>DH President:</strong> dh-president [dot] mit [dot] edu <br>
-                    <strong>DH Housing</strong> dh-housing [dot] mit [dot] edu <br>
-                    <strong>Webmaster:</strong> dh-webmaster [dot] mit [dot] edu <br>
-
-                    <a href="https://adminappsts.mit.edu/facilities/CreateRequest.action?sapSystemId=PS1">
-                        Click here to make a work request.</a>
-                </div>
-            </div>
-
-            </div>
-        </div>
-
+<!-- About Us -->
+<div class="container py-5" id="about">
+  <div class="row pb-3 text-center">
+    <h1>About Us</h1>
+  </div>
+  <div class="row row-cols-1 row-cols-lg-3 g-3">
+    <div class="col">
+      <h3>Living</h3>
+      In German House, you'll live with 28 students in an independent community inside New House. We eat
+      together, play music together, speak German with poor accents together, and fight through psets
+      together. We're into playing games with each other, from smash, to jackbox games, codenames, and
+      more. One of the great things about German House is that the community is small enough to know everyone,
+      but large enough that there is always someone in the lounge to hang out with.
     </div>
+    <div class="col">
+      <h3>Cookcrew</h3>
+      German House keeps you well-fed with home-cooked meals. You will become a member of a cook crew of 4
+      or 5 people, and cook for everyone once a week in the best kitchen of any dorm here at MIT. The rest of
+      the week, you will benefit from the culinary skills of other members. On any given night, our meal could
+      include quinoa salads, fried rice, honey-glazed baked chicken, oreo truffles, and sometimes even the
+      occasional surprise created from any extra ingredients left over from the week. You can check out
+      our recipes <a href="{% url 'recipes:index' %}">here!</a>
+    </div>
+    <div class="col">
+      <h3>Culture</h3>
+      German House members come from all over the world. People here grew up speaking English, German,
+      Chinese, Swahili, Korean and more. Several of us speak a fluent German, and others have taken German
+      classes in high school and MIT. Our common interest in the culture ties us all together -- some
+      people spend entire summers working in Germany; while some travel to Germany over IAP. Others simply want
+      to practice the occasional German on duolingo, or even just watch German movies once in a while.
+    </div>
+  </div>
+</div>
+
+<!-- Members -->
+<div class="container py-5" id="members">
+  <div class="row pb-3 text-center">
+    <h1>Members</h1>
+  </div>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for member in members %}
+      <div class="col" id="{{member.user.username}}">
+        <div class="card h-100 shadow bg-body">
+          {% if member.image %}
+          <img class="card-img-top" src="{{ member.image|thumbnail_url:'avatar' }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{member}}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Class of {{member.class_year}}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">Course {{member.major}}</h6>
+            <p class="card-text">{{member.bio}}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- i3 Videos -->
+<div class="container py-5" id="i3">
+  <div class="row pb-3 text-center">
+    <h1>i3 Videos</h1>
+  </div>
+
+  <div class="row row-cols-1 row-cols-lg-3 g-4">
+    <div class="col">
+      <div class="card video-card shadow h-100 bg-body">
+        <div class="card-img-top">
+          <lite-vimeo videoid="562801172" autoload></lite-vimeo>
+        </div>
+        <div class="card-body">
+          <h5>2021</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card video-card shadow h-100 bg-body">
+        <div class="card-img-top">
+          <lite-vimeo videoid="417246220" autoload></lite-vimeo>
+        </div>
+        <div class="card-body">
+          <h5>2020</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card video-card shadow h-100 bg-body">
+        <div class="card-img-top">
+          <lite-vimeo videoid="333324282" autoload></lite-vimeo>
+        </div>
+        <div class="card-body">
+          <h5>2019</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact -->
+<div class="container py-5" id="contact">
+  <div class="row pb-3 text-center">
+    <h1>Contact</h1>
+  </div>
+
+  <div class="row">
+    <p>
+      <strong>DH President:</strong> dh-president [dot] mit [dot] edu <br>
+      <strong>DH Housing</strong> dh-housing [dot] mit [dot] edu <br>
+      <strong>Webmaster:</strong> dh-webmaster [dot] mit [dot] edu <br>
+      <a href="https://adminappsts.mit.edu/facilities/CreateRequest.action?sapSystemId=PS1">Click here to make a work request.</a>
+    </p>
+  </div>
 </div>
 
 {% endblock %}
-</html>

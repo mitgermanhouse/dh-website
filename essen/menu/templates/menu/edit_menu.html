@@ -1,0 +1,145 @@
+{% extends 'essen/base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}
+  {% if menu is None %}
+    Add Menu
+  {% else %}
+    Edit Menu
+  {% endif%}
+{% endblock %}
+
+{% block style %}
+<style type="text/css">
+  .border-select {
+    border: 1px solid #ced4da !important;
+  }
+</style>
+{% endblock %}
+
+{% block script %}
+  <!-- Templates -->
+  <template id="template-meal">
+    {% include 'menu/components/edit_meal.html' with form=meal_form_empty %}
+  </template>
+  <template id="template-recipe-select">
+    {% include 'menu/components/edit_meal_recipe_select.html' %}
+  </template>
+  <template id="template-recipe-select-options">
+  {% for recipe in available_recipes %}<option value='{{recipe.id}}'>{{ recipe.name }}</option>
+  {% endfor %}
+  </template>
+
+  <script src="{% static 'menu/js/edit_menu.js' %}"></script>
+
+  <!-- Bootstrap Datepicker https://github.com/uxsolutions/bootstrap-datepicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker3.min.css" integrity="sha512-rxThY3LYIfYsVCWPCW9dB0k+e3RZB39f23ylUYTEuZMDrN/vRqLdaCBo/FbvVT6uC2r0ObfPzotsfKF9Qc5W5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Bootstrap Select https://github.com/snapappointments/bootstrap-select/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js" integrity="sha512-FHZVRMUW9FsXobt+ONiix6Z0tIkxvQfxtCSirkKc5Sb4TKHmqq1dZa8DphF0XqKb3ldLu/wgMa8mT6uXiLlRlw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css" integrity="sha512-mR/b5Y7FRsKqrYZou7uysnOdCIJib/7r5QeJMFvLNHNhtye3xJp1TdJVPLtetkukFn227nKpXD9OjUc09lx97Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-10 col-xl-8">
+      <form method="post">
+        {% csrf_token %}
+
+        <!-- Menu Card -->
+        <div class="card shadow mb-4">
+          <div class="card-header">
+            <div class="d-flex gap-4 justify-content-between align-items-center">
+              <h2 class="my-2">
+              {% firstof menu 'Add Menu' %}
+              </h2>
+
+            {% if menu is not None and perms.menu.delete_menu %}
+              <!-- Delete Button -->
+              <!-- The corresponding modal appears after the main container -->
+              <button type="button" class="btn btn-outline-danger" id="button-menu-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-menu"> 
+                &#x2717
+              </button>
+            {% endif %}
+
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="row g-3 row-cols-1 row-cols-lg-2 mb-3">
+              <!-- Start Date -->
+              <div class="col">
+                <label class="col-12 form-label" for="id_start_date">Start Date</label>
+                <input type="text" name="start_date" value="{% firstof menu.start_date|date:'Y-m-d' start_date|date:'Y-m-d' %}" id="start_date_datepicker" class="form-select" required>
+              </div>
+
+              <!-- Servings -->
+              <div class="col">
+                <label class="col-12 form-label" for="id_servings">Servings</label>
+                <input type="number" name="servings" value="{{menu.servings}}" min="1" class="form-control" id="id_servings" required>
+              </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="row mb-3">
+              <label class="col-12 form-label" for="id_notes">Notes</label>
+              <div class="col">
+                <textarea name="notes" cols="40" rows="4" class="form-control" id="id_notes">{{ menu.notes }}</textarea>
+              </div>
+            </div>
+
+            <!-- Meals -->
+            <div class="row mt-3 g-3" id="meal-list">
+            {% for meal in sorted_meals %}
+              {% include 'menu/components/edit_meal.html' %}
+            {% empty %}
+              {% include 'menu/components/edit_meal.html' with meal=None %}
+            {% endfor %}
+            </div>
+            
+          </div>
+
+          <div class="card-footer">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-around mb-md-2 my-2">
+              <button type="button" class="btn btn-primary" onclick="addMeal()">Add Meal</button>
+              <button type="submit" class="btn btn-outline-primary">Save Menu</button>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if menu is not None %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="modal-delete-menu" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you absolutely sure you want to delete this menu? This can't be undone.
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'menu:delete_menu' menu.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

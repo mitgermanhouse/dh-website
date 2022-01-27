@@ -1,18 +1,11 @@
-from django.conf.urls import url
-from django.conf import settings
-from django.views.static import serve
+from django.urls import path
 
 from . import views
 
 app_name = 'home'
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
-    url(r'^edit_profile/$', views.edit_profile, name='edit_profile'),
-    url(r'^submit_profile/$', views.submit_profile, name='submit_profile'),
+    path('', views.HomeView.as_view(), name='home'),
+    path('user/create_profile/', views.ProfileCreateView.as_view(), name='create_profile'),
+    path('user/edit_profile/', views.ProfileUpdateView.as_view(), name='edit_profile'),
+    path('user/dining/', views.DiningUpdateView.as_view(), name='edit_dining'),
 ]
-if settings.DEBUG:
-    urlpatterns += [
-        url(r'^media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT,
-        })]
-

@@ -1,108 +1,85 @@
 {% extends 'essen/base.html' %}
-
 {% load static %}
 {% load menu_extras %}
 
-{% block script %}
-<script>
-    function setScrolling(id) {
-        $(function() {
-            var $meal = $("#menus");
-            var $element = $("#" + id),
-                $window = $(window),
-                offset = $element.offset(),
-                topPadding = 15;
-
-            $window.scroll(function () {
-                console.log("sidebar" + $element.position().left);
-                console.log("meal" + $meal.position().left);
-                if ($element.position().left != $meal.position().left && $window.scrollTop() > offset.top) {
-                    $element.stop().animate({
-                        duration: 0,
-                        marginTop: $window.scrollTop() - offset.top + topPadding
-                    });
-                } else {
-                    $element.stop().animate({
-                        duration: 0,
-                        marginTop: 0
-                    });
-                }
-            });
-        });
-    };
-    setScrolling("sidebar");
-</script>
-<!--<link rel="stylesheet" type="text/css" href="{% static 'menu/css/style.css' %}">-->
+{% block title %}
+  Menu
 {% endblock %}
 
-<body>
 {% block content %}
 
-<div style="text-align: center; margin-bottom: 10px">
-    {% if menu %}
-        <h1> {{ menu }} </h1>
-    {% else %}
-        <h1>No menu for this week</h1>
-    {% endif %}
-    <a href="{% url 'menu:index' target_date|changedate:-7%}">Previous Week</a> |
-    <a href="{% url 'menu:index' %}">This Week</a> |
-    <a href="{% url 'menu:index' target_date|changedate:7%}">Next Week</a>
+<!-- Menu Header -->
+<div class="container pt-5 pb-3">
+  <div class="row text-center">
+  {% if menu %}
+    <h1> {{ menu }} </h1>
+  {% else %}
+    <h1>No menu for this week</h1>
+  {% endif %}
+
+    <ul class="nav justify-content-center">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'menu:index' page_date|changedate:-7%}">Previous Week</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'menu:index' %}">This Week</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'menu:index' page_date|changedate:7%}">Next Week</a>
+      </li>
+    </ul>
+  </div>
 </div>
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-2" id="sidebar">
-            <ul class="nav nav-pills nav-stacked">
-            {% for meal in sorted_meals %}
-                <li><a {% if meal.today %} style="color:maroon;" {% endif %} href="{% url 'menu:display_meal' meal.meal.id %}">{{ meal.meal }}</a></li>
-            {% endfor %}
-            </ul>
-        </div>
+<!-- Menu -->
+<div class="container-xxl pb-5">
+  <div class="row">
+    <div class="col-lg-2"> </div>
 
-        <div class="col-sm-8">
-            {% for meal in sorted_meals %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3>
-                        <a {% if meal.today %} style="color:maroon;" {% endif %}
-                           href="{% url 'menu:display_meal' meal.meal.id %}" >{{ meal.meal }}
-                        </a>
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <ul>
-                    {% for recipe in meal.meal.recipes.all %}
-                        <li> {{ recipe }} </li>
-                    {% endfor %}
-                    </ul>
-                </div>
+    <div class="col-lg-8">
+      <div class="row row-cols-1 g-4">
+      {% for meal in sorted_meals %}
+        <div class="col">
+          <div class="card shadow">
+            <div class="card-header">
+              <h3 class="my-2">
+                <a {% if not meal.today %} class="link-secondary" {% endif %}
+                   href="{% url 'menu:display_meal' meal.meal.id %}">
+                   {{ meal.meal }}
+                </a>
+              </h3>
             </div>
-            {% endfor %}
+
+            <div class="card-body">
+              <ul class="mb-0">
+              {% for recipe in meal.meal.recipes.all %}
+                <li> {{ recipe }} </li>
+              {% endfor %}
+              </ul>
+            </div>
+          </div>
         </div>
-
-        <div class="col-sm-2">
-            <ul class="nav nav-pills nav-stacked">
-
-                <li>
-                    <a href="{% url 'menu:add_menu' %}"> Add Menus </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'menu:menu_reviews' %}"> See Menu Reviews </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'menu:auto_lateplates' %}"> Register Automatic Lateplate </a>
-                </li>
-
-                <li>
-                {% if menu != None %}
-                    <a href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
-                {% endif %}
-                </li>
-            </ul>
-        </div>
+      {% endfor %}
+      </div>
     </div>
+
+    <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
+      <nav class="nav flex-column">
+      {% if perms.menu.add_menu %}
+        <a class="nav-link" href="{% url 'menu:add_menu' page_date|date:'Y-m-d' %}"> Add Menu </a>
+      {% endif %}
+      {% if menu != None and perms.menu.change_menu %}
+        <a class="nav-link" href="{% url 'menu:edit_menu' menu.id %}"> Edit Menu </a>
+      {% endif %}
+      {% if perms.menu.view_mealrating %}
+        <a class="nav-link" href="{% url 'menu:menu_reviews' %}"> See Menu Reviews </a>
+      {% endif %}
+      {% if menu != None %}
+        <a class="nav-link" href="{% url 'menu:shopper' menu.id %}"> Shopping List </a>
+      {% endif %}
+      </ul>
+    </div>
+  </div>
 </div>
+
 {% endblock %}
-</body>

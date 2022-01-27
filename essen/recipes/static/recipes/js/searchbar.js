@@ -1,7 +1,6 @@
 function searchbarFilter() {
-    var recipeList = document.getElementById("recipe-list");
-    var recipes = recipeList.getElementsByTagName("a");
-    var filter = document.getElementById("searchbar").value.toUpperCase();
+    var recipes = $("#recipe-list a");
+    var filter = $("#searchbar").val().toUpperCase();
 
     for (let i = 0; i < recipes.length; i++) {
         let recipe = recipes[i];

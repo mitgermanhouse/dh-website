@@ -1,60 +1,31 @@
 {% load recipe_tags %}
 
-<script type="text/javascript">
-    // Change units when user clicks on the unit or magnitude cell.
-    $(function() {
-        let recipeDiv = $("#recipe_{{recipe.id}}");
-        $("tr.quantity > td.unit, tr.quantity > td.magnitude", recipeDiv).click(function() {
-            let row = $(this).parent();
-            let currentIndex = row.data("index");
-            let quantities = row.data("quantities") ;
-            
-            if (quantities.length == 0) return;
-            if (currentIndex === undefined) {
-                // Set the initial index
-                if (quantities.length > 1) {
-                    let initialUnit = $(".unit", row).text();
-                    if (quantities[0][1] == initialUnit) {
-                        currentIndex = 0;
-                    } else {
-                        currentIndex = -1;
-                    }
-                }
-            }
+<div class="card shadow recipe-container" id="recipe_{{recipe.id}}">
+  <div class="card-header">
+    <h2 class="my-2">{{recipe.name}}</h2>
+    {% if show_serves %}
+    <h5 class="mb-2 text-muted">Serves {{recipe.serving_size}}</h5>
+    {% endif %}
+  </div>
 
-            let newIndex = (currentIndex + 1) % quantities.length;
-            row.data("index", newIndex);
+  <div class="card-body">
+    <h4 class="card-title">Ingredients</h4>
+    <table class="table table-striped recipe-table">
+      <colgroup>
+        <col style="width: 5rem;">
+        <col style="width: 5rem;">
+        <col style="width: auto">
+      </colgroup>
+    {% for ingredient in recipe.ingredient_set.all %}
+      <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
+        <td class="magnitude noselect">{{ingredient.magnitude_str}}</td>
+        <td class="unit noselect">{{ingredient.unit_str}}</td>
+        <td>{{ingredient.name}}</td>
+      </tr>
+    {% endfor %}
+    </table>
 
-            $(".magnitude", row).text(quantities[newIndex][0]);
-            $(".unit", row).text(quantities[newIndex][1]);
-        });
-    });
-</script>
-
-<div class="panel panel-default" id="recipe_{{recipe.id}}">
-    <div class="panel-heading">
-    	<h2>{{recipe.name}}</h2>
-    	{% if show_serves %}
-    	<p>Serves {{recipe.serving_size}}</p>
-    	{% endif %}
-    </div>
-    <div class="panel-body">
-        <h3>Ingredients</h3>
-        <table class="table table-striped recipe-table">
-            <colgroup>
-                <col style="width: auto">
-                <col style="width: fit-content;">
-                <col style="width: 8%;">
-            </colgroup>
-        {% for ingredient in recipe.ingredients %}
-            <tr class="quantity" data-quantities='{% data_quantities_str ingredient=ingredient %}'>
-                <td>{{ingredient.name}}</td>
-                <td class="magnitude noselect">{{ingredient.magnitude_str}}</td>
-                <td class="unit noselect">{{ingredient.unit_str}}</td>
-            </tr>
-        {% endfor %}
-        </table>
-        <h3>Directions</h3>
-        <div style="white-space: pre-wrap">{{ recipe.directions }}</div>
-    </div>
+    <h4 class="card-title mt-4">Directions</h4>
+    <p class="card-text" style="white-space: pre-wrap">{{ recipe.directions }}</p>
+  </div>
 </div>

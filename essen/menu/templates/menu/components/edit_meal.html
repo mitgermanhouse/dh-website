@@ -1,0 +1,53 @@
+<div class="col-12 meal-container">
+  <div class="card shadow-sm bg-light">
+    <div class="card-header">
+      <h3 class="my-2 meal-title">
+        {% if meal is not None %}
+          Loading...
+        {% else %}
+          New Meal
+        {% endif %}
+      </h3>
+    </div>
+
+    <div class="card-body">
+      <!-- Meal Metadata -->
+      <div class="input-group mb-3">
+        <select class="form-select day-select" onchange="updateMealTitle(this)" name="meal-weekday" data-selection="{{ meal.meal_day_time.weekday }}" required>
+          <option value="" disabled selected>Select Day</option>
+          {% for choice in weekdays %}
+          <option value="{{choice.0}}">{{choice.1}}</option>
+          {% endfor %}
+        </select>
+
+        <select class="form-select time-select" onchange="updateMealTitle(this)" name="meal-time" data-selection="{{ meal.meal_day_time.meal_time }}" required>
+          <option value="" disabled selected>Select Time</option>
+          {% for choice in meal_times %}
+          <option value="{{choice.0}}">{{choice.1}}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <hr>
+
+      <!-- Recipes -->
+    {% with recipes=meal.recipes.all %}
+      <div class="row g-2 recipe-list">
+        <input type="hidden" class="meal-recipe-count" name="meal-recipe-count" value="{% if recipes|length == 0 %}1{% else %}{{recipes|length}}{% endif %}" required>
+      {% for recipe in recipes %}
+        {% include 'menu/components/edit_meal_recipe_select.html' %}
+      {% empty %}
+        {% include 'menu/components/edit_meal_recipe_select.html' %}
+      {% endfor %}
+      </div>
+    {% endwith%}
+    </div>
+
+    <div class="card-footer">
+      <div class="d-flex gap-2 justify-content-end my-2">
+        <button type="button" class="btn btn-outline-danger" onclick="deleteMeal(this)">Delete Meal</button>
+        <button type="button" class="btn btn-primary" onclick="addRecipe(this)">Add Recipe</button>
+      </div>
+    </div>
+  </div>
+</div>

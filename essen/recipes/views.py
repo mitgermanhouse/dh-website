@@ -1,98 +1,99 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from recipes.models import Recipe, Ingredient
-from recipes.units.wrappers import RecipeWrapper
-
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db import transaction
 from django.db.models.functions import Lower
-from django.views.decorators.csrf import csrf_exempt
 
-import logging
-logger = logging.getLogger("recipes/views")
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.views.generic import DetailView, ListView
 
-# Create your views here.
+from recipes.models import Recipe
+from recipes.forms import RecipeForm, IngredientForm
 
-def detail(request, pk):
+class RecipesListView(ListView):
+    template_name = 'recipes/index.html'
+    queryset = Recipe.objects.all().values('name', 'id').order_by(Lower('name'))
+    context_object_name = 'recipe_list'
+
+class RecipeDetailView(DetailView):
     template_name = 'recipes/detail.html'
-    steward = False
-    if request.user.is_authenticated and check_if_steward(request.user):
-        steward = True
-
-    recipe = get_object_or_404(Recipe, pk=pk)
-    wrapped_recipe = RecipeWrapper(recipe)
-
-    return render(request, template_name, {"recipe": wrapped_recipe,
-                                           "steward": steward})
-
-def view_recipes(request):
-    recipes = Recipe.objects.all().order_by(Lower('recipe_name'))
-    return render(request, "recipes/index.html", {"recipe_list": recipes})
-
-
-class EditView(generic.DetailView):
     model = Recipe
-    template_name = 'recipes/edit.html'
+    context_object_name = 'recipe'
 
 
-def add_recipe(request):
-    return render(request, "recipes/add_recipe.html")
+class RecipeEditView(PermissionRequiredMixin, DetailView):
+    template_name = 'recipes/edit_recipe.html'
+    model = Recipe
+    context_object_name = 'recipe'
+    ingredients_form_prefix = 'ingredient'
 
+    permission_required = 'recipes.change_recipe'
 
-def submit_recipe(request):
-    if request.user.is_authenticated:
-        d = dict(request.POST.lists())
-        r = Recipe(recipe_name=d['recipe_name'][0], directions=d['directions'][0], serving_size=int(d['serving_size'][0]))
-        r.save()
-        print(d)
-        if 'ingredient' in d:
-            for i in range(len(d['ingredient'])):
-                Ingredient(recipe=r, ingredient_name=d['ingredient'][i], units=d['units'][i],
-                               quantity=float(d['quantity'][i])).save()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe = self.object # Can be None
 
-    return HttpResponseRedirect(reverse('recipes:detail', args=[r.id]))
+        # Modify context
+        context['recipe_form'] = RecipeForm(instance=recipe, label_suffix='')
+        context['ingredient_form_empty'] = IngredientForm(
+            label_suffix='', 
+            prefix=RecipeEditView.ingredients_form_prefix, 
+            initial={k:'' for k in IngredientForm.base_fields.keys()}
+        )
 
+        if recipe is not None:
+            context['recipe'] = recipe
+            context['ingredients_forms'] = [
+                IngredientForm(instance=ingredient, label_suffix='', prefix=RecipeEditView.ingredients_form_prefix) 
+                for ingredient in recipe.ingredient_set.all()
+            ]
+        else:
+            context['ingredients_forms'] = [context['ingredient_form_empty']]
 
-def submit_edit(request, recipe_id):
-    if request.user.is_authenticated and check_if_steward(request.user):
-        recipe = get_object_or_404(Recipe, pk=recipe_id)
-        for ingredient in recipe.ingredient_set.all():
-            ingredient.delete()
-        d = dict(request.POST.lists())
+        return context
 
-        recipe.serving_size = d['serving_size'][0]
-        recipe.recipe_name = d['recipe_name'][0]
-        recipe.directions = d['directions'][0]
-        recipe.save()
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        recipe = self.get_object()
 
-        if 'ingredient' in d:
-            for i in range(len(d['ingredient'])):
-                Ingredient(recipe=recipe, ingredient_name=d['ingredient'][i], units=d['units'][i],
-                               quantity=float(d['quantity'][i])).save()
+        # Save Recipe
+        recipe_form = RecipeForm(instance=recipe, data=request.POST)
+        recipe = recipe_form.save()
 
-    return HttpResponseRedirect(reverse('recipes:detail', args=[recipe_id]))
+        # Delete old ingredients
+        recipe.ingredient_set.all().delete()
 
-def delete(request, recipe_id):
-    # To prevent accidentally deleting a recipe, for the request to be of type DELETE.
-    if request.method != 'DELETE':
-        return HttpResponseBadRequest('400 Bad Request: This method only allows DELETE requests.')
+        # Create new ingredients
+        prefix_class = IngredientForm(prefix=RecipeEditView.ingredients_form_prefix)
+        ingredient_field_keys = [prefix_class.add_prefix(key) for key in IngredientForm.base_fields.keys()]
+        ingredient_fields = {key:request.POST.getlist(key) for key in ingredient_field_keys}
 
-    # Check if user is authenticated properly
-    if not request.user.is_authenticated:
-        return HttpResponse('401 Unauthorized', status=401)
-    if not check_if_steward(request.user):
-        return HttpResponseForbidden('401 Unauthorized: User is not steward.', status=401)
+        num_ingredients = min([len(val) for _, val in ingredient_fields.items()])
 
-    # Delete Recipe
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
-    recipe.delete()
-    logger.info(f'Did delete recipe "{recipe}" with ID {recipe_id}.')
+        # Construct all ingredient forms
+        for i in range(num_ingredients):
+            data = {key:value[i] for key, value in ingredient_fields.items()}
+            ingredient_form = IngredientForm(data=data, prefix=RecipeEditView.ingredients_form_prefix)
+            ingredient = ingredient_form.save(commit=False)
 
-    return HttpResponse(status=200)
+            ingredient.recipe = recipe
+            ingredient.save()
 
+        return HttpResponseRedirect(reverse('recipes:detail', args=[recipe.pk]))
 
-def check_if_steward(user):
-    return user.groups.all().filter(name="stewards").count() > 0
+class RecipeAddView(RecipeEditView):
+    permission_required = 'recipes.add_recipe'
+
+    def get_object(self):
+        return None
+
+class RecipeDeleteView(PermissionRequiredMixin, DetailView):
+    permission_required = 'recipes.delete_recipe'
+    model = Recipe
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.delete()
+
+        return HttpResponseRedirect(reverse('recipes:index'))
+

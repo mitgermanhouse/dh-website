@@ -5,9 +5,11 @@ register = template.Library()
 # from profiles.models import Member
 
 @register.filter(is_safe = True)
-def member_or_none(var):
+def name_or_edit(var):
     try:
-        member = var.member
-        return "Welcome back, " + var.get_full_name() + "!"
+        name = var.get_full_name().strip()
+        if name != "":
+            return name
     except:
-        return "Hi " + var.get_full_name() + ", edit your profile here!"
+        pass
+    return "Edit Profile"

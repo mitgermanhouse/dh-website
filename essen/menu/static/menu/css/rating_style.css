@@ -1,0 +1,45 @@
+.rate {
+    font-size: 30px;
+    font-family: Helvetica, Arial, sans-serif;
+
+    display: flex !important;
+    flex-direction: row-reverse !important;
+}
+
+.rate > input {
+    display: none;
+}
+
+.rate > label {
+    cursor: pointer;
+    color: #ccc;
+    padding-right: 0.2em;
+
+    -webkit-transition: color .2s;
+    -moz-transition: color .2s;
+    -o-transition: color .2s;
+    transition: color .2s;
+}
+
+/* Star Symbol */
+.rate > label:before {
+    content: '☆';
+}
+.rate > input:checked ~ label:before {
+    content: '★'!important;
+}
+
+/* Color Animations */
+.rate > input:checked ~ label {
+    color: #ffc700;
+}
+
+.rate > input:checked + label ~ label:hover,
+.rate > input:checked + label ~ label:hover ~ label {
+    color: #c59b08 !important;
+}
+
+.rate > label:hover,
+.rate > label:hover ~ label {
+    color: #ffc700;
+}

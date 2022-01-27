@@ -1,0 +1,28 @@
+{% extends 'essen/base.html' %}
+
+{% block content %}
+<div class="container my-3 my-sm-5">
+    <div class="row justify-content-center">
+        <div class="col-auto">
+
+            <div class="card text-white bg-danger">
+                <div class="card-header">
+                    <h2 class="my-2">403 - Permission Denied</h2>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        You don't have permission to access this page. To proceed, you have to <a class="link-light" href="{% url 'login'%}?next={{request.path}}">login</a> with an account that has the required permissions.
+                    </p>
+
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="javascript:history.back()" class="btn btn-outline-light">Back</a>
+                        <a href="{% url 'login'%}?next={{request.path}}" class="btn btn-light">Login</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

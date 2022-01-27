@@ -1,42 +1,37 @@
-
-#col {
-  columns: 20em;
+/* Gallery Carousel */
+.carousel-inner img {
+    object-fit: cover;
+    background-color: var(--bs-secondary);
 }
 
-.cols {
-    break-inside: avoid-column;
+.carousel-caption {
+    text-shadow: 0 .125rem .75rem black;
 }
 
-.imgtext {
-    position:absolute;
-    top: 50%;
-    left: 50%;
-    text-align: center;
-    transform: translate(-50%, -50%);
-    visibility: hidden;
-    opacity: 0;
-    color: #337ab7;
+/* Members Card */
+#members .card-img-top {
+    max-height: 50vh;
+    object-fit: cover;
 }
 
-.imgwrap:hover .img-rounded {
-    opacity:.2;
+/* i3 Videos */
+#i3 .card {
+    overflow: hidden;
 }
 
-.imgwrap:hover .imgtext {
-    visibility: visible;
-    opacity: 1;
+#i3 .card .card-body h5 {
+    margin-bottom: 0;
 }
 
-.video-cont {
+.video-container {
     position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 56.25%;
+    padding-top: 56.25%;
 }
-.video {
+
+.video-container .video {
     position: absolute;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
 }

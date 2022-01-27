@@ -50,6 +50,68 @@
 
 
 
+#### PREFIXES ####
+
+# decimal prefixes
+milli- = 1e-3  = m-
+centi- = 1e-2  = c-
+deci- =  1e-1  = d-
+deca- =  1e+1  = da- = deka-
+hecto- = 1e2   = h-
+kilo- =  1e3   = k-
+
+## BASE UNITS ##
+meter = [length] = m = metre
+gram = [mass] = g
+
+# Volume
+[volume] = [length] ** 3
+liter = decimeter ** 3 = l = L = litre
+cubic_centimeter = centimeter ** 3 = cc
+
+# Mass
+grain = 64.79891 * milligram = gr
+
+@group USCSLengthInternational
+    inch = yard / 36 = in = international_inch = inches = international_inches
+    foot = yard / 3 = ft = international_foot = feet = international_feet
+    yard = 0.9144 * meter = yd = international_yard  # since Jul 1959
+    mile = 1760 * yard = mi = international_mile
+
+    square_inch = inch ** 2 = sq_in = square_inches
+    square_foot = foot ** 2 = sq_ft = square_feet
+    square_yard = yard ** 2 = sq_yd
+    square_mile = mile ** 2 = sq_mi
+
+    cubic_inch = in ** 3 = cu_in
+    cubic_foot = ft ** 3 = cu_ft = cubic_feet
+    cubic_yard = yd ** 3 = cu_yd
+@end
+
+@group USCSLiquidVolume
+    fluid_ounce = pint / 16 = floz = US_fluid_ounce = US_liquid_ounce
+    gill = pint / 4 = gi = liquid_gill = US_liquid_gill
+    pint = quart / 2 = pt = liquid_pint = US_pint
+    fifth = gallon / 5 = _ = US_liquid_fifth
+    quart = gallon / 4 = qt = liquid_quart = US_liquid_quart
+    gallon = 231 * cubic_inch = gal = liquid_gallon = US_liquid_gallon
+@end
+
+@group USCSVolumeOther
+    teaspoon = fluid_ounce / 6 = tsp
+    tablespoon = fluid_ounce / 2 = tbsp
+    cup = pint / 2 = _ = cp = liquid_cup = US_liquid_cup
+@end
+
+@group Avoirdupois
+    ounce = pound / 16 = oz = avoirdupois_ounce = avdp_ounce
+    pound = 7e3 * grain = lb = avoirdupois_pound = avdp_pound
+@end
+
+
+###############################
+
+
 # Defining dimensionless units
 unit = []
 
@@ -58,7 +120,7 @@ clove = []
 taste = []
 can = []
 head = []
-pinch = []
+pinch = [] = _ = little = some
 
 # Define unit groups for use in the kitchen
 @group DH_US_Base
@@ -74,6 +136,8 @@ pinch = []
 @group DH_US_gal using DH_US_Base
 	# Volumes
 	gallon
+	quart
+	pint
 	fluid_ounce
 @end
 

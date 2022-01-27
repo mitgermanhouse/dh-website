@@ -1,110 +1,114 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-from django.shortcuts import render
-from home.models import Member
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
-from django.urls import reverse
-import os
-from PIL import Image, ExifTags
-from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
-import sys
+from django.http import HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView, FormView, CreateView, UpdateView
+from django.urls import reverse, reverse_lazy
+from django.db import transaction
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 
-# Create your views here.
+from home.models import Member, GalleryContent
+from home.forms import MemberDataForm, MemberImageForm, MemberDiningForm, MemberCreateForm
 
-def home(request):
-    template_name = "home/home.html"
-    context_object_name = "members"
+class HomeView(TemplateView):
+    template_name = 'home/home.html'
 
-    return render(request, template_name, {context_object_name: Member.objects.all().order_by('class_year', '-user')})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['members'] = Member.objects.filter(user__is_active=True).order_by('class_year', '-user').select_related('user')
+        context['galleryContent'] = GalleryContent.objects.all()
+        return context
 
-def edit_profile(request):
-    template_name = "home/edit_profile.html"
-    context_object_name = "member"
 
-    d = {}
-    if request.user.is_authenticated:
-        user = request.user
-        member_list = Member.objects.filter(user=user)
-        member = None
-        if len(member_list) == 0:
-            member = Member(user=user)
-            # member.save()
+class ProfileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Member
+    form_class = MemberCreateForm
+    template_name = 'home/create_profile.html'
+    success_url = reverse_lazy('home:home')
+
+    def setup(self, request, *args, **kwargs):
+        if hasattr(request.user, 'member'):
+            messages.warning(request, '<b>WARNING:</b> You already have a profile.')
+        return super().setup(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_message(self, form):
+        return f'Welcome {self.request.user.get_full_name()}! Your profile was created sucessfully.'
+
+
+# REFERENCE: https://chriskief.com/2012/12/30/django-class-based-views-with-multiple-forms/
+class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = 'home/edit_profile.html'
+    form_class = MemberDataForm
+    image_form_class = MemberImageForm
+    context_object_name = 'member'
+    success_url = reverse_lazy('home:edit_profile')
+    success_message = 'Your profile was updated sucessfully.'
+
+    def get_object(self):
+        user = self.request.user
+        if hasattr(user, 'member'):
+            return user.member
         else:
-            member = member_list.first()
-        d = {context_object_name: member, "edit_access":check_if_profile_edit_access(user)}
+            raise Http404
 
-    return render(request, template_name, d)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-def submit_profile(request):
-    if request.user.is_authenticated and check_if_profile_edit_access(request.user):
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # Modify context
+        context['edit_access'] = check_if_profile_edit_access(self.request.user)
 
-        p = dict(request.FILES.lists())
-        d = dict(request.POST.lists())
-        img = p["pic"][0]
+        if 'data_form' not in context:
+            context['data_form'] = self.form_class(instance=self.object)
+        if 'image_form' not in context:
+            context['image_form'] = self.image_form_class(instance=self.object)
 
-        class_year = d["class_year"][0]
-        bio = d["bio"][0]
-        major = d["major"][0]
+        return context
 
-        # get the member entry
-        member_list = Member.objects.filter(user=request.user)
-        member = None
-        if len(member_list) == 0:
-            member = Member(user=request.user)
-            # member.save()
+    def form_invalid(self, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs))
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # determine which form is being submitted
+        # uses the name of the form's submit button
+        if 'data_form' in request.POST:
+            form_class = self.form_class
+            form_name = 'data_form'
         else:
-            member = member_list.first()
+            form_class = self.image_form_class
+            form_name = 'image_form'
 
-        member.bio = bio
-        member.class_year = class_year
-        member.image = img
+        # get the form
+        form = self.get_form(form_class)
 
-        output = BytesIO()
-        im = Image.open(member.image)
+        # validate
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(**{form_name: form})
+    
 
-        # some images come out rotated incorrectly due to EXIF data
-        # solution from: https://stackoverflow.com/questions/13872331/rotating-an-image-with-orientation-specified-in-exif-using-python-without-pil-in
-        try:
-            for orientation in ExifTags.TAGS.keys():
-                if ExifTags.TAGS[orientation] == 'Orientation':
-                    break
-            exif = dict(im._getexif().items())
+class DiningUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = 'home/edit_dining.html'
+    context_object_name = 'member'
+    form_class = MemberDiningForm
+    success_url = reverse_lazy('home:edit_dining')
+    success_message = 'Your dining preferences were updated sucessfully.'
 
-            if exif[orientation] == 3:
-                im = im.rotate(180, expand=True)
-            elif exif[orientation] == 6:
-                im = im.rotate(270, expand=True)
-            elif exif[orientation] == 8:
-                im = im.rotate(90, expand=True)
-        except (AttributeError, KeyError, IndexError):
-            # cases: image don't have getexif
-            pass
+    def get_object(self):
+        user = self.request.user
+        if hasattr(user, 'member'):
+            return user.member
+        else:
+            raise Http404
 
-        # resize the image so loading time is not ridiculously long
-        basewidth = 400
-        width, height = im.size
-        wpercent = (basewidth / float(width))
-        hsize = int((float(height) * float(wpercent)))
-        im = im.resize((basewidth, hsize), Image.ANTIALIAS)
-        im.save(output, format='JPEG', quality=100)
-        output.seek(0)
-        member.image = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % member.image.name.split('.')[0], 'image/jpeg',
-                                        sys.getsizeof(output), None)
-
-        member.major = major
-        member.save()
-
-    return HttpResponseRedirect(reverse('home:home') + "#" + request.user.username)
 
 def check_if_profile_edit_access(user):
     # users under profile ban will not be allowed to edit their profiles (for trolling prevention)
-    return user.groups.all().filter(name="profile_ban").count() == 0
-
-
-
-
-
+    return user.groups.filter(name='profile_ban').count() == 0
