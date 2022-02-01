@@ -1,5 +1,5 @@
 {% extends 'essen/base.html' %}
-{% load widget_tweaks %}
+{% load crispy_forms_tags %}
 {% load static %}
 
 {% block title %}
@@ -14,6 +14,10 @@
     .form-quantity {
       text-align: right;
     }
+
+    .asteriskField {
+      display: none;
+    }
   </style>
 {% endblock %}
 
@@ -24,6 +28,11 @@
     {% include 'recipes/components/edit_ingredient.html' %}
   {% endwith %}
   </template>
+
+  <!-- Select2 + Bootstrap 5 Theme https://github.com/apalfrey/select2-bootstrap-5-theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -64,8 +73,8 @@
 
           {% if recipe is not None and perms.recipes.delete_recipe %}
             <!-- Delete Button -->
-            <button type="button" class="btn btn-outline-danger" id="button-recipe-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-recipe"> 
-              &#x2717
+            <button type="button" class="btn btn-outline-danger p-2" id="button-recipe-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-recipe">
+              <span class="close-icon"></span>
             </button>
           {% endif %}
 
@@ -74,40 +83,8 @@
 
         <div class="card-body">
           <form method="post">
-            {% csrf_token %}
-          {% with form=recipe_form %}
 
-            <!-- Name -->
-            {% with field=form.name %}
-            <div class="row mb-3">
-              {{ field|add_label_class:'col-md-2 col-form-label' }}
-              <div class="col">
-                {% render_field field|add_class:'form-control' %}
-              </div>
-            </div>
-            {% endwith %}
-
-            <!-- Serving Size -->
-            {% with field=form.serving_size %}
-            <div class="row mb-3">
-              {{ field|add_label_class:'col-md-2 col-form-label' }}
-              <div class="col">
-                {% render_field field|add_class:'form-control' min='1' %}
-              </div>
-            </div>
-            {% endwith %}
-
-            <!-- Directions -->
-            {% with field=form.directions %}
-            <div class="row mb-3">
-              {{ field|add_label_class:'col-md-2 col-form-label' }}
-              <div class="col">
-                {% render_field field|add_class:'form-control' rows='10' %}
-              </div>
-            </div>
-            {% endwith %}
-
-          {% endwith %}
+            {% crispy recipe_form %}
 
             <!-- Ingredients -->
             <h4 class="mt-5 mb-3">Ingredients</h4>

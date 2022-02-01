@@ -1,7 +1,6 @@
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
        -moz-user-select: none; /* Old versions of Firefox */
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
@@ -16,3 +15,66 @@
 #messages-container > div {
   padding-top: var(--bs-gutter-y);
 }
+
+/* Select 2 */
+.select2-dropdown {
+  overflow: hidden;
+}
+
+.select2-dropdown--below {
+  box-shadow: 0 0.25rem 0.5rem -.25rem rgba(0,0,0,.4),
+  0 0.5rem 1rem -.55rem rgba(0,0,0,.1),
+  2.5rem 2.5rem 2rem -2rem rgba(0,0,0,.1),
+  -2.5rem 2.5rem 2rem -2rem rgba(0,0,0,.1);
+}
+
+.select2-dropdown--above {
+  box-shadow: 0 -0.25rem 0.5rem -.25rem rgba(0,0,0,.1),
+  0.5rem 0.25rem 0.5rem -.8rem rgba(0,0,0,.4),
+  -0.5rem 0.25rem 0.5rem -.8rem rgba(0,0,0,.4),
+  1.25rem 0.25rem 1rem -1rem rgba(0,0,0,.05),
+  -1.25rem 0.25rem 1rem -1rem rgba(0,0,0,.05);
+}
+
+.input-group>.select2-hidden-accessible:first-child + .select2 {
+  margin-left: 0 !important;
+}
+
+/* Close Button Icon */
+/* <span class="close-icon"></span> */
+.close-icon {
+  -webkit-mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+
+  display: block;
+  background: currentColor;
+  width: 1em;
+  height: 1em;
+  padding: 0;
+}
+
+/* Replace default Bootstrap shadow with a nicer, stacked version */
+.shadow {
+  box-shadow: 0 .065rem .125rem rgba(0,0,0,.075),
+  0 .125rem .25rem rgba(0,0,0,.075),
+  0 .35rem .5rem rgba(0,0,0,.075),
+  0 1rem 1rem -0.25rem rgba(0,0,0,0.125) !important
+}
+
+/*
+.shadow-lg {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075),
+  0 2px 2px rgba(0, 0, 0, 0.075),
+  0 4px 4px rgba(0, 0, 0, 0.075),
+  0 8px 8px rgba(0, 0, 0, 0.075),
+  0 12px 12px rgba(0, 0, 0, 0.075),
+  0 16px 16px rgba(0, 0, 0, 0.075) !important;
+}
+*/
+

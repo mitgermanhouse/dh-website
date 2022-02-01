@@ -1,21 +1,44 @@
 // Load select options once and store as a global variable
 $(function() {
-    let selectOptions = $("#template-recipe-select-options").html();
-    window._selectOptions = selectOptions;
+    window._recipesJson = JSON.parse(document.getElementById('recipes-json').textContent);
 });
 
-function makeSelectpicker(element) {
+function setUpSelect(element) {
     let select = $(element);
+    select.html("<option></option>");
+    select.select2({
+        theme: "bootstrap-5",
+        width: "style",
+        placeholder: "Select Recipe",
+        data: window._recipesJson.data,
+        templateResult: formatState,
+        templateSelection: formatState,
+    });
 
-    select.html(window._selectOptions);
-    select.selectpicker("val", select.data("selection").toString());
+    let selection = element.getAttribute("data-selected");
+    if (selection != null && selection !== "") {
+        select.val(selection).trigger("change");
+    }
+}
+
+function formatState (state) {
+    if (!state.id) {
+        return state.text;
+    }
+
+    var badge = '';
+    if (state.category != null) {
+        badge = '<span class="badge rounded-pill category-badge' + (state.category.color_is_light ? ' text-dark' : '') + '" style="background-color:' + state.category.color + ';">' + state.category.name + '</span>';
+    }
+
+    return jQuery.parseHTML(state.text + ' ' + badge);
 }
 
 function addRecipe(button) {
     let template = $("#template-recipe-select").html();
     let recipeNode = $(template);
     $(".recipe-select", recipeNode).each(function() {
-        makeSelectpicker(this);
+        setUpSelect(this);
     });
 
     let recipeList = $(button).closest(".meal-container").find(".recipe-list");
@@ -97,6 +120,19 @@ $(function() {
     });
 
     $(".recipe-select").each(function() {
-        makeSelectpicker(this);
+        setUpSelect(this);
     });
+});
+
+
+/*
+ * Hacky fix for a bug in select2 with jQuery 3.6.0's new nested-focus "protection"
+ * see: https://github.com/select2/select2/issues/5993
+ * see: https://github.com/jquery/jquery/issues/4382
+ *
+ * TODO: Recheck with the select2 GH issue and remove once this is fixed on their side
+ */
+
+$(document).on('select2:open', () => {
+    document.querySelector('.select2-search__field').focus();
 });

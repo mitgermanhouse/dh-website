@@ -1,5 +1,9 @@
+import colorsys
+
+import django.db.models
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from colorfield.fields import ColorField
 
 from essen.helper import reify
 from recipes.units import units
@@ -8,6 +12,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=255)
     directions = models.TextField()
     serving_size = models.PositiveSmallIntegerField(validators = [MinValueValidator(1), MaxValueValidator(1000)])
+    category = models.ForeignKey('recipes.Category', on_delete = django.db.models.deletion.SET_NULL, blank = True, null = True)
 
     def __str__(self):
         return self.name
@@ -60,4 +65,23 @@ class Ingredient(models.Model):
 
     @reify
     def magnitude_str(self):
-        return f'{round(self._p_simplified_quantity.m, 2):.3g}'
+        m = self._p_simplified_quantity.m
+        if m >= 100:
+            return str(int(m))
+        return f'{round(m, 2):.3g}'
+
+
+class Category(models.Model):
+    name = models.CharField(max_length = 127, unique = True, help_text = 'Short descriptive name for this category.')
+    color = ColorField(default = '#adadab', help_text = 'The color that should get used when displaying this category.')
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def color_is_light(self):
+        hex = self.color[1:]
+        r, g, b = tuple(int(hex[i:i+2], 16) / 255 for i in (0, 2, 4))
+        h, l, s = colorsys.rgb_to_hls(r, g, b)
+
+        return l >= 0.5

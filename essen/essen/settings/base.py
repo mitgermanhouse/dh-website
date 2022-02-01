@@ -94,7 +94,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = '/essen'
+LOGIN_REDIRECT_URL = '/home'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

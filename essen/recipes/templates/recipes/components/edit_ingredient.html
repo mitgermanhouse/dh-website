@@ -13,7 +13,9 @@
     <div class="col col-8">
       <div class="input-group">
         {% render_field form.name|add_class:'form-control' placeholder=form.name.label %}
-        <button type="button" class="btn btn-danger remove-button" onclick="deleteIngredient(this)"> &#x2717 </button>
+        <button type="button" class="btn btn-danger remove-button" onclick="deleteIngredient(this)">
+          <span class="close-icon"></span>
+        </button>
       </div>
     </div>
   </div>

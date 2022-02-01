@@ -66,13 +66,30 @@ class MenuEditView(PermissionRequiredMixin, DetailView):
 
     permission_required = 'menu.change_menu'
 
+    def recipe_to_dict(self, r):
+        d = {
+            'id': r.id,
+            'text': r.name,
+        }
+
+        if r.category is not None:
+            d['category'] = {
+                'name': r.category.name,
+                'color': r.category.color,
+                'color_is_light': r.category.color_is_light
+            }
+
+        return d
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         menu = self.object  # Can be None
 
         # Modify context
         context['sorted_meals'] = menu.meal_set.prefetch_related('recipes').prefetch_related('meal_day_time').order_by(*Meal.meal_order) if menu is not None else None
-        context['available_recipes'] = Recipe.objects.all().values('name', 'id').order_by(Lower('name'))
+
+        recipes = Recipe.objects.all().select_related('category').only('name', 'id', 'category__name', 'category__color').order_by(Lower('name'))
+        context['available_recipes_dict'] = {'data': [self.recipe_to_dict(r) for r in recipes]}
 
         context['weekdays'] = [(tag.value, tag.description) for tag in Weekday]
         context['meal_times'] = [(tag.value, tag.description) for tag in MealTime]

@@ -6,12 +6,12 @@ from django.db.models.functions import Lower
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import DetailView, ListView
 
-from recipes.models import Recipe
+from recipes.models import Recipe, Category
 from recipes.forms import RecipeForm, IngredientForm
 
 class RecipesListView(ListView):
     template_name = 'recipes/index.html'
-    queryset = Recipe.objects.all().values('name', 'id').order_by(Lower('name'))
+    queryset = Recipe.objects.all().select_related('category').only('name', 'id', 'category__name', 'category__color').order_by(Lower('name'))
     context_object_name = 'recipe_list'
 
 class RecipeDetailView(DetailView):
