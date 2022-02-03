@@ -63,7 +63,7 @@ function addMeal() {
     let template = $("#template-meal").html();
     let mealNode = $(template);
     mealNode.find(".recipe-select").each(function() {
-        makeSelectpicker(this);
+        setUpSelect(this);
     });
 
     // Set Day / Time
