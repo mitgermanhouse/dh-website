@@ -17,6 +17,7 @@ $(function() {
 
         templateResult: formatState,
         templateSelection: formatState,
+        escapeMarkup: (x => x)  // Don't escape
     });
 })
 
@@ -29,6 +30,5 @@ function formatState (state) {
     let color = $element.data('color')
     let colorIsLight = $element.data('color_is_light') === "True";
 
-    let badge = '<span class="badge rounded-pill category-badge' + (colorIsLight ? ' text-dark' : '') + '" style="background-color:' + color + ';">' + state.text + '</span>';
-    return jQuery.parseHTML(badge);
+    return '<span class="badge rounded-pill category-badge' + (colorIsLight ? ' text-dark' : '') + '" style="background-color:' + color + ';">' + state.text + '</span>';
 }

@@ -4,6 +4,49 @@ $(function() {
 });
 
 function setUpSelect(element) {
+
+    function formatState(state) {
+        if (!state.id) {
+            return state.text;
+        }
+
+        var badge = '';
+        if (state.category != null) {
+            badge = '<span class="badge rounded-pill category-badge' + (state.category.color_is_light ? ' text-dark' : '') + '" style="background-color:' + state.category.color + ';">' + state.category.name + '</span>';
+        }
+
+        return state.text + ' ' + badge;
+    }
+
+    let filterCache = {}
+    function filterSearch(query, data) {
+        if (query.term === undefined) return data;
+
+        // Get the query -> Use caching to prevent having to re-derive the name
+        // and category query.
+        const queryString = query.term.toLowerCase();
+        let nameQuery, categoryQuery;
+
+        if (filterCache[queryString] !== undefined) {
+            nameQuery = filterCache[queryString].nameQuery;
+            categoryQuery = filterCache[queryString].categoryQuery;
+        } else {
+            nameQuery = queryString.split(" ").filter(v => !v.startsWith("#")).join(" ");
+            categoryQuery = queryString.split(" ").filter(v => v.startsWith("#")).map(v => v.slice(1)).join(" ");
+
+            filterCache[queryString] = {
+                nameQuery: nameQuery,
+                categoryQuery: categoryQuery
+            }
+        }
+
+        // Filter
+        if (data.text === undefined || data.text.toLowerCase().indexOf(nameQuery) === -1) return null;
+        if (categoryQuery.length > 0 && (data.category === undefined || data.category.name.toLowerCase().indexOf(categoryQuery) === -1)) return null;
+
+        return data;
+    }
+
     let select = $(element);
     select.html("<option></option>");
     select.select2({
@@ -11,27 +54,17 @@ function setUpSelect(element) {
         width: "style",
         placeholder: "Select Recipe",
         data: window._recipesJson.data,
+        matcher: filterSearch,
+
         templateResult: formatState,
         templateSelection: formatState,
+        escapeMarkup: (x => x) // Don't escape -> Significant performance improvement
     });
 
     let selection = element.getAttribute("data-selected");
     if (selection != null && selection !== "") {
         select.val(selection).trigger("change");
     }
-}
-
-function formatState (state) {
-    if (!state.id) {
-        return state.text;
-    }
-
-    var badge = '';
-    if (state.category != null) {
-        badge = '<span class="badge rounded-pill category-badge' + (state.category.color_is_light ? ' text-dark' : '') + '" style="background-color:' + state.category.color + ';">' + state.category.name + '</span>';
-    }
-
-    return jQuery.parseHTML(state.text + ' ' + badge);
 }
 
 function addRecipe(button) {
