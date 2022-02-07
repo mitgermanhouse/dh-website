@@ -25,7 +25,7 @@ class IndexView(TemplateView):
     context_object_name = 'menu'
 
     def today(self):
-        return datetime.now(timezone('EST')).today().date()
+        return datetime.now(timezone('EST')).date()
 
     def get_current_week_date(self):
         today = self.today()
