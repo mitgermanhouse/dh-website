@@ -277,7 +277,7 @@ class ShopperView(DetailView):
 
 class ReviewsView(PermissionRequiredMixin, TemplateView):
     template_name = 'menu/menu_reviews.html'
-    permission_required = 'menu.view_meal_rating'
+    permission_required = 'menu.view_mealrating'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
