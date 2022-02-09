@@ -238,8 +238,8 @@ class RateMealView(LoginRequiredMixin, DetailView):
         meal = self.get_object()
 
         # Get previous rating. If it exists, update values using form, else create a new rating
-        rating = meal.mealrating_set.filter(username=request.user.username).first() or MealRating()
-        rating.username = request.user.username
+        rating = meal.mealrating_set.filter(user=request.user).first() or MealRating()
+        rating.user = request.user
         rating.meal = meal
 
         rating_form = MealRatingForm(instance=rating, data=request.POST)
