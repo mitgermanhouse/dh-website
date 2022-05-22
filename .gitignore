@@ -1,11 +1,11 @@
-**/media/home/images/*
 *.pyc
 .DS_Store
-**db.sqlite3
-requirements.txt
 
 .idea
 
 /essen/essen/settings/*
 !/essen/essen/settings/__init__.py
 !/essen/essen/settings/base.py
+
+/venv
+/local
