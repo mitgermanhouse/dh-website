@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from adminsortable.admin import SortableAdmin
+
 from home.models import Member, DietaryRestriction, GalleryContent
 
 @admin.register(Member)
@@ -21,6 +23,8 @@ class MemberAdmin(admin.ModelAdmin):
     def display_is_active(self, obj: Member):
         return obj.user.is_active
 
+@admin.register(GalleryContent)
+class GalleryContentAdmin(SortableAdmin):
+    pass
 
 admin.site.register(DietaryRestriction)
-admin.site.register(GalleryContent)

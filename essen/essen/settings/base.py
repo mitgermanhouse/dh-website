@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'easy_thumbnails',
     'easy_thumbnails.optimize',
+    'adminsortable',
     'django_cleanup.apps.CleanupConfig',
 ]
 
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
             ],
             'libraries': {
                 'essen_base_tags': 'essen.templatetags.base_tags',

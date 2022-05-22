@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from adminsortable.models import SortableMixin
+
 # Create your models here.
 
 class DietaryRestriction(models.Model):
@@ -31,12 +33,16 @@ class Member(models.Model):
 
         return self.user.get_full_name() + ' ' + dr_str
     
-class GalleryContent(models.Model):
+class GalleryContent(SortableMixin):
+    class Meta:
+        ordering = ['gallery_order']
+
     title = models.CharField(max_length=255, blank=True)
     caption = models.TextField(blank=True)
     date = models.DateField(null=True, blank=True)
-
     image = models.ImageField(upload_to='gallery/')
+
+    gallery_order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return self.title or self.caption
