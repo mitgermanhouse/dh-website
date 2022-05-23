@@ -5,7 +5,7 @@ from django.contrib.auth.backends import RemoteUserBackend
 from django.contrib.auth.middleware import PersistentRemoteUserMiddleware
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.urls import reverse
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponseRedirect
 
 from django.conf import settings
