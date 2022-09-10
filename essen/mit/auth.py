@@ -55,7 +55,7 @@ def kerb_login(request):
 
         # They're already authenticated --- go ahead and redirect
         redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '')
-        url_is_safe = is_safe_url(
+        url_is_safe = url_has_allowed_host_and_scheme(
             url = redirect_to,
             allowed_hosts = {request.get_host()},
             require_https = request.is_secure()
