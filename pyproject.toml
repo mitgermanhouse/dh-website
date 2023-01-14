@@ -1,0 +1,31 @@
+[tool.black]
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+preview = true
+
+[tool.ruff]
+select = [
+    "F",
+    "E",
+    "UP",
+    "W",
+    "I001",
+    "B",
+    "A",
+]
+force-exclude = true
+extend-exclude = ["tests/*", "docs/*"]
+ignore-init-module-imports = true
+fix = true
+target-version = "py38"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+
