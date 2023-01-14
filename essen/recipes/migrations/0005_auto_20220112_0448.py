@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recipes', '0004_auto_20220107_2005'),
+        ("recipes", "0004_auto_20220107_2005"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ingredient',
-            name='ingredient_name',
+            model_name="ingredient",
+            name="ingredient_name",
             field=models.CharField(max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='ingredient',
-            name='units',
+            model_name="ingredient",
+            name="units",
             field=models.CharField(max_length=127, null=True),
         ),
         migrations.AlterField(
-            model_name='recipe',
-            name='recipe_name',
+            model_name="recipe",
+            name="recipe_name",
             field=models.CharField(max_length=255),
         ),
     ]

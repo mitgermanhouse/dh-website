@@ -4,20 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0010_auto_20220107_2240'),
+        ("menu", "0010_auto_20220107_2240"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='meal',
-            name='deleted_auto_lateplates',
-            field=models.ManyToManyField(blank=True, related_name='deleted_auto_lateplate_meals', to='home.Member'),
+            model_name="meal",
+            name="deleted_auto_lateplates",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="deleted_auto_lateplate_meals",
+                to="home.Member",
+            ),
         ),
         migrations.AlterField(
-            model_name='meal',
-            name='manual_lateplates',
-            field=models.ManyToManyField(blank=True, related_name='manual_lateplate_meals', to='home.Member'),
+            model_name="meal",
+            name="manual_lateplates",
+            field=models.ManyToManyField(
+                blank=True, related_name="manual_lateplate_meals", to="home.Member"
+            ),
         ),
     ]

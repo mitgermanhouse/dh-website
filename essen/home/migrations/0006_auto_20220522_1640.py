@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('home', '0005_gallerycontent'),
+        ("home", "0005_gallerycontent"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='gallerycontent',
-            options={'ordering': ['gallery_order']},
+            name="gallerycontent",
+            options={"ordering": ["gallery_order"]},
         ),
         migrations.AddField(
-            model_name='gallerycontent',
-            name='gallery_order',
+            model_name="gallerycontent",
+            name="gallery_order",
             field=models.PositiveIntegerField(db_index=True, default=0, editable=False),
         ),
     ]

@@ -4,28 +4,45 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('menu', '0009_auto_20220107_2153'),
+        ("menu", "0009_auto_20220107_2153"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='meal',
-            name='meal_name',
+            model_name="meal",
+            name="meal_name",
         ),
         migrations.RemoveField(
-            model_name='mealrating',
-            name='username',
+            model_name="mealrating",
+            name="username",
         ),
         migrations.AlterField(
-            model_name='mealdaytime',
-            name='meal_time',
-            field=models.CharField(choices=[('BRK', 'Breakfast'), ('BRU', 'Brunch'), ('LUN', 'Lunch'), ('DIN', 'Dinner')], max_length=5),
+            model_name="mealdaytime",
+            name="meal_time",
+            field=models.CharField(
+                choices=[
+                    ("BRK", "Breakfast"),
+                    ("BRU", "Brunch"),
+                    ("LUN", "Lunch"),
+                    ("DIN", "Dinner"),
+                ],
+                max_length=5,
+            ),
         ),
         migrations.AlterField(
-            model_name='mealdaytime',
-            name='weekday',
-            field=models.SmallIntegerField(choices=[(0, 'Sunday'), (1, 'Monday'), (2, 'Tuesday'), (3, 'Wednesday'), (4, 'Thursday'), (5, 'Friday'), (6, 'Saturday')]),
+            model_name="mealdaytime",
+            name="weekday",
+            field=models.SmallIntegerField(
+                choices=[
+                    (0, "Sunday"),
+                    (1, "Monday"),
+                    (2, "Tuesday"),
+                    (3, "Wednesday"),
+                    (4, "Thursday"),
+                    (5, "Friday"),
+                    (6, "Saturday"),
+                ]
+            ),
         ),
     ]
