@@ -6,7 +6,7 @@ cd $(dirname "${BASH_SOURCE[0]}")
 python -m venv venv
 source venv/bin/activate
 
-python -m pip install -r requirements.txt
+python -m pip install --require-virtualenv -r requirements.txt
 
 # Create dev settings
 test ! -f essen/essen/settings/dev.py && cat << EOF > essen/essen/settings/dev.py
