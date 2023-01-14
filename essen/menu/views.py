@@ -53,6 +53,7 @@ class IndexView(TemplateView):
             ):
                 sorted_meals.append({"meal": meal, "today": meal.date == today})
 
+        context["title"] = target_date.strftime("Menu for %b %d, %Y")
         context["menu"] = menu
         context["sorted_meals"] = sorted_meals
         context["page_date"] = target_date

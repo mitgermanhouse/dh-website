@@ -11,12 +11,7 @@
 <!-- Menu Header -->
 <div class="container pt-5 pb-3">
   <div class="row text-center">
-  {% if menu %}
-    <h1> {{ menu }} </h1>
-  {% else %}
-    <h1>No menu for this week</h1>
-  {% endif %}
-
+    <h1>{{ title }}</h1>
     <ul class="nav justify-content-center">
       <li class="nav-item">
         <a class="nav-link" href="{% url 'menu:index' page_date|changedate:-7%}">Previous Week</a>
@@ -38,6 +33,12 @@
 
     <div class="col-lg-8">
       <div class="row row-cols-1 g-4">
+      {% if menu is none %}
+        <p class="lead text-center pt-5">
+          No Menu
+        </p>
+      {% endif %}
+
       {% for meal in sorted_meals %}
         <div class="col">
           <div class="card shadow">
