@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import feeds, views
 
 app_name = "recipes"
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path("<int:pk>/edit/", views.RecipeEditView.as_view(), name="edit"),
     path("<int:pk>/delete/", views.RecipeDeleteView.as_view(), name="delete"),
     path("add/", views.RecipeAddView.as_view(), name="add"),
+    path("feed/", feeds.RecipesFeed()),
 ]
