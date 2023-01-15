@@ -154,8 +154,10 @@
           <div class="card-body">
             <h5 class="card-title">{{plushie}}</h5>
             <p class="card-text">
-              {{plushie.bio}}
-              <br>
+              {% if plushie.bio %}
+                {{plushie.bio}}
+                <br>
+              {% endif %}
               <small class="text-muted">
                 Owned by:
                 <a href="#member_{{ plushie.member.user.username }}" class="link-secondary">{{ plushie.member }}</a>
