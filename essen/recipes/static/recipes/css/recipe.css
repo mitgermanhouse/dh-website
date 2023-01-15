@@ -12,3 +12,7 @@
   white-space: nowrap;
   font-weight: 600;
 }
+
+.recipe-container .card-text p:last-child {
+  margin-bottom: 0;
+}

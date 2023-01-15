@@ -4,8 +4,10 @@ import django.db.models
 from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.html import escape
+from django.utils.safestring import SafeString
 
-from essen.helper import reify
+from essen.helper import reify, replace_url_with_link
 from recipes.units import units
 
 
@@ -39,6 +41,20 @@ class Recipe(models.Model):
             return self._modified_serving_size
         else:
             return self.serving_size
+
+    @property
+    def directions_parts(self):
+        d = self.directions.strip()
+        d = escape(d)
+        d = d.replace("\r\n", "\n").replace("\r", "\n")
+
+        parts_delimiter = "\n\n" if "\n\n" in d else "\n"
+        parts = d.split(parts_delimiter)
+        parts = [p.strip().replace("\n", "<br>") for p in parts]
+        parts = [p for p in parts if p]
+        parts = [SafeString(replace_url_with_link(p)) for p in parts]
+
+        return parts
 
 
 class Ingredient(models.Model):

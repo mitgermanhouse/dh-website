@@ -26,6 +26,10 @@
     </table>
 
     <h4 class="card-title mt-4">Directions</h4>
-    <p class="card-text" style="white-space: pre-wrap">{{ recipe.directions }}</p>
+    <div class="card-text">
+      {% for part in recipe.directions_parts %}
+        <p>{{ part }}</p>
+      {% endfor %}
+    </div>
   </div>
 </div>

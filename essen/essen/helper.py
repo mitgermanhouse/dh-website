@@ -1,3 +1,7 @@
+import re
+from urllib.parse import urlparse
+
+
 class reify:
     """Use as a class method decorator.  It operates almost exactly like the
     Python ``@property`` decorator, but it puts the result of the method it
@@ -44,3 +48,18 @@ class reify:
         # from subsequent lookups
         setattr(inst, self.wrapped.__name__, val)
         return val
+
+
+URL_REGEX = re.compile(
+    r"(https?:\/\/(www\.)?)?[-a-zA-Z0-9@:%._\+~#=]{3,256}\.[a-zA-Z]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)",
+    flags=re.UNICODE | re.IGNORECASE,
+)
+
+
+def replace_url_with_link(text, link_template='<a href="{}">{}</a>'):
+    def replace(match):
+        match = match.group(0)
+        url = urlparse(match, scheme="http").geturl()
+        return link_template.format(url, match)
+
+    return re.sub(URL_REGEX, replace, text)
