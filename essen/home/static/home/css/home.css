@@ -9,10 +9,12 @@
 }
 
 /* Members Card */
-#members .card-img-top {
+#members .card-img-top,
+#plushies .card-img-top {
     max-height: 50vh;
     object-fit: cover;
 }
+
 
 /* i3 Videos */
 #i3 .card {

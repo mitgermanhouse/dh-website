@@ -1,9 +1,9 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Column, Div, Field, Layout, Row, Submit
+from crispy_forms.layout import Column, Div, Field, Hidden, Layout, Row, Submit
 from django import forms
 from menu.models import MealDayTime
 
-from home.models import Member
+from home.models import Member, Plushie
 
 
 class NonClearableImageField(forms.fields.ImageField):
@@ -17,8 +17,8 @@ class MemberDataForm(forms.ModelForm):
 
         labels = {"class_year": "Class Year", "major": "Major", "bio": "About Yourself"}
 
-    def __init__(self, *args, **kargs):
-        super().__init__(*args, **kargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -38,8 +38,8 @@ class MemberImageForm(forms.ModelForm):
 
         field_classes = {"image": NonClearableImageField}
 
-    def __init__(self, *args, **kargs):
-        super().__init__(*args, **kargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_id = "image_form"
@@ -60,8 +60,8 @@ class MemberDiningForm(forms.ModelForm):
             "dietary_restrictions": forms.CheckboxSelectMultiple,
         }
 
-    def __init__(self, *args, **kargs):
-        super().__init__(*args, **kargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.fields["auto_lateplates"].queryset = MealDayTime.objects.order_by(
             *MealDayTime.day_time_order
         )
@@ -93,8 +93,8 @@ class MemberCreateForm(forms.ModelForm):
             "image": "Profile Picture",
         }
 
-    def __init__(self, *args, **kargs):
-        super().__init__(*args, **kargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -106,3 +106,31 @@ class MemberCreateForm(forms.ModelForm):
                 css_class="d-grid d-md-flex justify-content-md-end",
             ),
         )
+
+
+class PlushieForm(forms.ModelForm):
+    class Meta:
+        model = Plushie
+        fields = ("name", "bio", "image")
+
+        labels = {
+            "name": "Name",
+            "bio": "About",
+            "image": "Picture",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Hidden("type", "plushie"),
+            Row("name"),
+            Field("bio", rows="4"),
+            "image",
+        )
+
+        if instance := kwargs.get("instance"):
+            self.helper.form_id = f"plushie_edit_{instance.id}"
+        else:
+            self.helper.form_id = "plushie_create"

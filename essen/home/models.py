@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-# Create your models here.
-
 
 class DietaryRestriction(models.Model):
     long_name = models.CharField(max_length=255)
@@ -37,6 +35,16 @@ class Member(models.Model):
         dr_str = "".join([dr.short_name for dr in drs])
 
         return self.user.get_full_name() + " " + dr_str
+
+
+class Plushie(models.Model):
+    name = models.CharField(max_length=127, blank=False)
+    bio = models.TextField(blank=True)
+    image = models.ImageField(upload_to="images/", null=True)
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 
 class GalleryContent(SortableMixin):

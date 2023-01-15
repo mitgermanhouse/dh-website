@@ -1,7 +1,7 @@
 from adminsortable.admin import SortableAdmin
 from django.contrib import admin
 
-from home.models import DietaryRestriction, GalleryContent, Member
+from home.models import DietaryRestriction, GalleryContent, Member, Plushie
 
 
 @admin.register(Member)
@@ -29,3 +29,4 @@ class GalleryContentAdmin(SortableAdmin):
 
 
 admin.site.register(DietaryRestriction)
+admin.site.register(Plushie)

@@ -122,7 +122,7 @@
   </div>
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for member in members %}
-      <div class="col" id="{{member.user.username}}">
+      <div class="col" id="member_{{member.user.username}}">
         <div class="card h-100 shadow bg-body">
           {% if member.image %}
           <img class="card-img-top" src="{{ member.image|thumbnail_url:'avatar' }}">
@@ -132,6 +132,35 @@
             <h6 class="card-subtitle mb-2 text-muted">Class of {{member.class_year}}</h6>
             <h6 class="card-subtitle mb-2 text-muted">Course {{member.major}}</h6>
             <p class="card-text">{{member.bio}}</p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Plushies -->
+<div class="container py-5" id="plushies">
+  <div class="row pb-3 text-center">
+    <h1>Plushies</h1>
+  </div>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for plushie in plushies %}
+      <div class="col" id="{{plushie.name}}">
+        <div class="card h-100 shadow bg-body">
+          {% if plushie.image %}
+            <img class="card-img-top" src="{{ plushie.image|thumbnail_url:'avatar' }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{plushie}}</h5>
+            <p class="card-text">
+              {{plushie.bio}}
+              <br>
+              <small class="text-muted">
+                Owned by:
+                <a href="#member_{{ plushie.member.user.username }}" class="link-secondary">{{ plushie.member }}</a>
+              </small>
+            </p>
           </div>
         </div>
       </div>
