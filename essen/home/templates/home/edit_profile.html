@@ -149,13 +149,11 @@
         </div>
 
         <div class="modal fade" id="addPlushieModal" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog w-100">
+          <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title">Add Plushie</h5>
-                <button type="button" class="btn btn-outline-danger p-2" id="button-recipe-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-recipe">
-                  <span class="close-icon"></span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 {% crispy plushie_create_form %}
