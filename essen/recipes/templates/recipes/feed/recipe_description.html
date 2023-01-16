@@ -1,0 +1,9 @@
+<p>Servings: {{ obj.serving_size }}</p>
+{% if obj.category %}<p>Category: {{ obj.category.name }}</p>{% endif %}
+<h1>Ingredients</h1>
+<ul>{% for ingredient in obj.ingredient_set.all %}
+  <li>{{ ingredient.magnitude_str }} {{ ingredient.unit_str }} {{ ingredient.name }}</li>{% endfor %}
+</ul>
+<h1>Directions</h1>
+{% for part in obj.directions_parts %}<p>{{ part }}</p>
+{% endfor %}
