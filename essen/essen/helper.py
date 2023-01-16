@@ -51,7 +51,8 @@ class reify:
 
 
 URL_REGEX = re.compile(
-    r"(https?:\/\/(www\.)?)?[-a-zA-Z0-9@:%._\+~#=]{3,256}\.[a-zA-Z]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)",
+    r"(((https?:\/\/(www\.)?)|www\.)[-a-zA-Z0-9@:%._\+~#=]{3,256}(?<!\.)\.[a-zA-Z]{2,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))"
+    r"|([-a-zA-Z0-9@:%._\+~#=]{3,256}(?<!\.)\.(com|net|org|uk|de|ca|us|ch|recipes)\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))",
     flags=re.UNICODE | re.IGNORECASE,
 )
 
