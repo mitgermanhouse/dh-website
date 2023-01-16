@@ -9,6 +9,12 @@
   <link rel="stylesheet" href="{% static 'recipes/css/recipe.css'%}">
 {% endblock %}
 
+{% block head %}
+  <script type="application/ld+json">
+  {{ recipe.structured_data }}
+  </script>
+{% endblock %}
+
 {% block script %}
   <script src="{% static 'recipes/js/recipe.js' %}"></script>
 {% endblock %}

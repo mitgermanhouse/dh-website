@@ -1,4 +1,5 @@
 import colorsys
+import json
 
 import django.db.models
 from colorfield.fields import ColorField
@@ -55,6 +56,25 @@ class Recipe(models.Model):
         parts = [SafeString(replace_url_with_link(p)) for p in parts]
 
         return parts
+
+    @property
+    def structured_data(self):
+        # https://schema.org/Recipe
+        # https://developers.google.com/search/docs/appearance/structured-data/recipe
+        data = {
+            "@context": "https://schema.org/",
+            "@type": "Recipe",
+            "name": self.name,
+            "recipeYield": self.serving_size,
+            **({"recipeCategory": self.category.name.lower()} if self.category else {}),
+            "recipeIngredient": [
+                f"{ingr.magnitude_str} {ingr.unit_str} {ingr.name}"
+                for ingr in self.ingredient_set.all()
+            ],
+            "recipeInstructions": self.directions_parts,
+        }
+
+        return SafeString(json.dumps(data))
 
 
 class Ingredient(models.Model):
