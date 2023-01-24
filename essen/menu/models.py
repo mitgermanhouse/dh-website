@@ -80,6 +80,13 @@ class Menu(models.Model):
     servings = models.IntegerField(validators=[MinValueValidator(1)])
     notes = models.TextField(blank=True)
 
+    @property
+    def name(self):
+        return self.start_date.strftime("Menu for %b %d, %Y")
+
+    def __str__(self):
+        return self.name
+
 
 class Meal(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=True)

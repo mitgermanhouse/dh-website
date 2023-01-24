@@ -28,18 +28,19 @@ class IndexView(TemplateView):
     def today(self):
         return datetime.now(timezone("EST")).date()
 
-    def get_current_week_date(self):
-        today = self.today()
-        days_from_sunday = (today.weekday() + 1) % 7
-
-        return today - timedelta(days=days_from_sunday)
+    @staticmethod
+    def shift_date_to_sunday(d):
+        """Shift date backwards to closest sunday"""
+        days_since_sunday = (d.weekday() + 1) % 7
+        return d - timedelta(days=days_since_sunday)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         # Get Menu for Date
-        target_date = kwargs.get("date") or self.get_current_week_date()
-        menu = Menu.objects.filter(start_date=target_date).first()
+        menu_date = kwargs.get("date") or self.today()
+        menu_date = self.shift_date_to_sunday(menu_date)
+        menu = Menu.objects.filter(start_date=menu_date).first()
 
         # Today
         today = self.today()
@@ -53,10 +54,10 @@ class IndexView(TemplateView):
             ):
                 sorted_meals.append({"meal": meal, "today": meal.date == today})
 
-        context["title"] = target_date.strftime("Menu for %b %d, %Y")
+        context["title"] = menu_date.strftime("Menu for %b %d, %Y")
         context["menu"] = menu
         context["sorted_meals"] = sorted_meals
-        context["page_date"] = target_date
+        context["page_date"] = menu_date
 
         return context
 
