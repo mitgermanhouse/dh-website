@@ -15,6 +15,7 @@ DEBUG = False
 # Application definition
 INSTALLED_APPS = [
     "home.apps.HomeConfig",
+    "faqs.apps.FaqsConfig",
     "recipes.apps.RecipesConfig",
     "menu.apps.MenuConfig",
     "admin_interface",

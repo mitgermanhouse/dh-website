@@ -1,0 +1,44 @@
+{% extends 'essen/base.html' %}
+{% load static %}
+
+{% block title %}
+  {{ faq.question }}
+{% endblock %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'faqs/css/faq.css'%}">
+{% endblock %}
+
+{% block head %}
+  <script type="application/ld+json">
+  {{ faq.structured_data }}
+  </script>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'faqs/js/faq.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-5">
+  <div class="row">
+    <!-- Left column -->
+    <div class="col-lg-2"> </div>
+    
+    <!-- Center column -->
+    <div class="col-lg-8" id="meal">
+      {% include 'faqs/components/faq.html' with show_serves='True' %}
+    </div>
+
+    <!-- Right column -->
+    <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
+      {% if perms.faqs.change_faq %}
+      <nav class="nav flex-column">
+        <a class="nav-link" href="{% url 'faqs:edit' faq.id %}">Edit Faq</a>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,102 @@
+{% extends 'essen/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}
+  Edit Faq
+{% endblock %}
+
+{% block style %}
+  <style type="text/css">
+    .form-quantity::-webkit-outer-spin-button, 
+    .form-quantity::-webkit-inner-spin-button { margin-left: 1ch; } 
+
+    .form-quantity {
+      text-align: right;
+    }
+
+    .asteriskField {
+      display: none;
+    }
+  </style>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'faqs/js/edit_script.js'%}"></script>
+
+  <!-- Select2 + Bootstrap 5 Theme https://github.com/apalfrey/select2-bootstrap-5-theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-xxl py-5">
+  <div class="row justify-content-md-center">
+
+    <!-- Body -->
+    <div class="col col-lg-10 col-xl-8">
+      <div class="card shadow">
+        <div class="card-header">
+          <div class="d-flex gap-4 justify-content-between align-items-center">
+            <h2 class="my-2">
+            {% firstof faq.question 'Add FAQ' %}
+            </h2>
+
+          {% if faq is not None and perms.faqs.delete_faq %}
+            <!-- Delete Button -->
+            <button type="button" class="btn btn-outline-danger p-2" id="button-faq-delete" data-bs-toggle="modal" data-bs-target="#modal-delete-faq">
+              <span class="close-icon"></span>
+            </button>
+          {% endif %}
+
+          </div>
+        </div>
+
+        <div class="card-body">
+          <form method="post">
+
+            {% crispy faq_form %}
+
+            <!-- Buttons  -->
+            <div class="d-grid gap-2 d-md-flex justify-content-md-around mb-md-2">
+              <button type="submit" class="btn btn-outline-primary">Save FAQ</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% if faq is not None %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="modal-delete-faq" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete FAQ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you absolutely sure you want to delete this faq? This can't be undone.
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'faqs:delete' faq.id %}" id="form-faq-delete" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

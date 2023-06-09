@@ -12,6 +12,7 @@ register_converter(DateConverter, "y-m-d")
 
 urlpatterns = [
     path("", lambda r: HttpResponseRedirect("home/")),
+    path("faqs/", include("faqs.urls")),
     path("recipes/", include("recipes.urls")),
     path("menu/", include("menu.urls")),
     path("admin/", admin.site.urls),
