@@ -9,12 +9,6 @@
   <link rel="stylesheet" href="{% static 'faqs/css/faq.css'%}">
 {% endblock %}
 
-{% block head %}
-  <script type="application/ld+json">
-  {{ faq.structured_data }}
-  </script>
-{% endblock %}
-
 {% block script %}
   <script src="{% static 'faqs/js/faq.js' %}"></script>
 {% endblock %}
@@ -27,7 +21,7 @@
     
     <!-- Center column -->
     <div class="col-lg-8" id="meal">
-      {% include 'faqs/components/faq.html' with show_serves='True' %}
+      {% include 'faqs/components/faq.html' %}
     </div>
 
     <!-- Right column -->
