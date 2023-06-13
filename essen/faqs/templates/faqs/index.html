@@ -1,0 +1,61 @@
+{% extends 'essen/base.html' %}
+{% load static %}
+
+{% block title %}
+  FAQs
+{% endblock %}
+
+{% block style %}
+  <style>
+    .category-badge {
+      margin-top: calc((1.5rem - 1.7em) / 2);
+      vertical-align: top;
+    }
+  </style>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'faqs/js/searchbar.js'%}" charset="UTF-8"></script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Menu Header -->
+<div class="container pt-5 pb-3">
+  <div class="row text-center">
+    <h1>FAQs</h1>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row">
+    <div class="col-lg-2"> </div>
+    
+    <div class="col-lg-8">
+
+      <!-- Search Bar -->
+      <input value="" id="searchbar" onkeyup="searchbarFilter()" name="searchbar" class="form-control" type="text" placeholder="Search FAQs" aria-label="Search">
+
+      <!-- FAQs -->
+      <div class="card overflow-hidden mt-3">
+        <div class="list-group list-group-flush" id="faq-list">
+        {% for faq in faq_list %}
+	        <a href="{% url 'faqs:detail' faq.id %}" class="list-group-item list-group-item-action" id="faq_{{ faq.id }}" data-faq="{{ faq.question }}" data-category="{{ faq.category.name }}">
+            {{ faq.question }}
+            {% if faq.category is not None %}<span class="badge rounded-pill category-badge {% if faq.category.color_is_light %}text-dark{% endif %}" style="background-color: {{ faq.category.color }};">{{ faq.category.name }}</span>{% endif %}
+          </a>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
+      <nav class="nav flex-column">
+        {% if perms.faqs.add_faq %}
+        <a class="nav-link" href="{% url 'faqs:add' %}">Add FAQ</a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+</div>
+{% endblock %}
