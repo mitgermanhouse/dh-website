@@ -1,15 +1,8 @@
 import colorsys
-import json
 
 import django.db.models
 from colorfield.fields import ColorField
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.utils.html import escape
-from django.utils.safestring import SafeString
-
-from essen.helper import reify, replace_url_with_link
-from faqs.units import units
 
 
 class Faq(models.Model):
@@ -24,20 +17,6 @@ class Faq(models.Model):
 
     def __str__(self):
         return self.question
-
-    @property
-    def structured_data(self):
-        # https://schema.org/Faq
-        # https://developers.google.com/search/docs/appearance/structured-data/faq
-        data = {
-            "@context": "https://schema.org/",
-            "@type": "Faq",
-            "question": self.question,
-            "answer": self.answer,
-            **({"faqCategory": self.category.name.lower()} if self.category else {}),
-        }
-
-        return SafeString(json.dumps(data))
 
 
 class Category(models.Model):

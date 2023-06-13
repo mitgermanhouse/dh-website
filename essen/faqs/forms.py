@@ -4,7 +4,6 @@ from django import forms
 
 from essen.widgets import Select2Widget
 from faqs.models import Faq
-from faqs.units import units
 
 
 class FaqForm(forms.ModelForm):

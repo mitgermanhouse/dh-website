@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-  Faqs
+  FAQs
 {% endblock %}
 
 {% block style %}
@@ -23,7 +23,7 @@
 <!-- Menu Header -->
 <div class="container pt-5 pb-3">
   <div class="row text-center">
-    <h1>Faqs</h1>
+    <h1>FAQs</h1>
   </div>
 </div>
 
@@ -36,7 +36,7 @@
       <!-- Search Bar -->
       <input value="" id="searchbar" onkeyup="searchbarFilter()" name="searchbar" class="form-control" type="text" placeholder="Search FAQs" aria-label="Search">
 
-      <!-- Faqs -->
+      <!-- FAQs -->
       <div class="card overflow-hidden mt-3">
         <div class="list-group list-group-flush" id="faq-list">
         {% for faq in faq_list %}
@@ -52,7 +52,7 @@
     <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
       <nav class="nav flex-column">
         {% if perms.faqs.add_faq %}
-        <a class="nav-link" href="{% url 'faqs:add' %}">Add Faq</a>
+        <a class="nav-link" href="{% url 'faqs:add' %}">Add FAQ</a>
         {% endif %}
       </nav>
     </div>
