@@ -15,7 +15,7 @@ class FaqsListView(ListView):
         Faq.objects.all()
         .select_related("category")
         .only("question", "id", "category__name", "category__color")
-        .order_by(Lower("question"))
+        .order_by(Lower("category__name"), Lower("question"))
     )
     context_object_name = "faq_list"
 
