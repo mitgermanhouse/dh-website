@@ -44,7 +44,7 @@
       <div id="carouselMain" class="carousel carousel-fade slide" data-bs-ride="carousel">
         <div class="carousel-inner">
         {% for content in galleryContent %}
-        
+
           <div class="carousel-item ratio ratio-16x9 {% if forloop.first %}active{% endif %}">
 
             <img src="{{ content.image|thumbnail_url:'carousel' }}" class="d-block" alt="{{content}}"/>
@@ -66,7 +66,7 @@
 
         {% endfor %}
         </div>
-        
+
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselMain" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
@@ -177,6 +177,17 @@
   </div>
 
   <div class="row row-cols-1 row-cols-lg-3 g-4 justify-content-center">
+    <div class="col">
+      <div class="card video-card shadow h-100 bg-body">
+        <div class="card-img-top">
+          <lite-vimeo videoid="851610025" autoload></lite-vimeo>
+        </div>
+        <div class="card-body">
+          <h5>2023</h5>
+        </div>
+      </div>
+    </div>
+
     <div class="col">
       <div class="card video-card shadow h-100 bg-body">
         <div class="card-img-top">
