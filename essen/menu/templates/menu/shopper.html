@@ -76,6 +76,23 @@
         $(".unit", row).text(quantities[newIndex][1]);
       });
     });
+
+    $(function() {
+      $("#button-copy").click(function() {
+        let text = "";
+        $("#shopper tr.primary.quantity").each(function() {
+          let quantities = $(this).data("quantities");
+          let currentIndex = $(this).data("index");
+          if (!quantities.length) return;
+          if (currentIndex === undefined) currentIndex = 0;
+          let quantity = quantities[currentIndex];
+          let name_div = $(this).parent().parent().parent().siblings('.name');
+          text += quantity[0] + " " + quantity[1] + "\t" + name_div.text() + "\n";
+        });
+        navigator.clipboard.writeText(text);
+        alert("Copied to clipboard");
+      });
+    });
   </script>
 {% endblock %}
 
@@ -106,6 +123,9 @@
     <!-- Shopping List -->
     <div class="col-lg-8" id="ingredients">
       <div class="card shadow overflow-hidden">
+        <button type="button" class="btn btn-primary p-2 mb-2" id="button-copy">
+          Copy to Clipboard
+        </button>
         <table class="table table-light m-0" id="shopper">
           <colgroup>
             <col style="width: 10rem">
@@ -117,9 +137,9 @@
             <td class="px-0">
               <table class="table table-borderless m-0 quantity-table"> 
               {% for q in c_ingredient.quantities %}
-                <tr class="quantity" data-quantities='{% data_quantities_str quantity=q %}'>
-                  <td class="magnitude noselect">{{ q.magnitude_str }}</td>
-                  <td class="unit noselect">{{ q.unit_str }}</td>
+                <tr class="primary quantity" data-quantities='{% data_quantities_str quantity=q %}'>
+                  <td class="magnitude">{{ q.magnitude_str }}</td>
+                  <td class="unit">{{ q.unit_str }}</td>
                 </tr>
               {% endfor %}
               </table>
