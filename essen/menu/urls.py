@@ -18,5 +18,6 @@ urlpatterns = [
     ),
     path("meal/<int:pk>/rate/", views.RateMealView.as_view(), name="rate_meal"),
     path("shopper/<int:pk>/", views.ShopperView.as_view(), name="shopper"),
+    path("shopper/<int:pk>.tsv", views.ShopperTSV.as_view(), name="shopper_tsv"),
     path("menu_reviews/", views.ReviewsView.as_view(), name="menu_reviews"),
 ]

@@ -55,7 +55,7 @@
         let row = $(this).parent();
         let currentIndex = row.data("index");
         let quantities = row.data("quantities") ;
-        
+
         if (quantities.length == 0) return;
         if (currentIndex === undefined) {
           // Set the initial index
@@ -76,6 +76,14 @@
         $(".unit", row).text(quantities[newIndex][1]);
       });
     });
+
+    function copy_tsv() {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", "{% url 'menu:shopper_tsv' menu.id %}", false);
+      xhr.send(null);
+      navigator.clipboard.writeText(xhr.responseText);
+      alert("Copied to clipboard");
+    }
   </script>
 {% endblock %}
 
@@ -115,11 +123,11 @@
         {% for c_ingredient in ingredients %}
           <tr class="{% cycle 'striped' '' %}">
             <td class="px-0">
-              <table class="table table-borderless m-0 quantity-table"> 
+              <table class="table table-borderless m-0 quantity-table">
               {% for q in c_ingredient.quantities %}
-                <tr class="quantity" data-quantities='{% data_quantities_str quantity=q %}'>
-                  <td class="magnitude noselect">{{ q.magnitude_str }}</td>
-                  <td class="unit noselect">{{ q.unit_str }}</td>
+                <tr class="primary quantity" data-quantities='{% data_quantities_str quantity=q %}'>
+                  <td class="magnitude">{{ q.magnitude_str }}</td>
+                  <td class="unit">{{ q.unit_str }}</td>
                 </tr>
               {% endfor %}
               </table>
@@ -154,7 +162,22 @@
       </div>
     </div>
 
-    <div class="col-lg-2"></div>
+    <div class="col-lg-2 mt-3 mt-lg-0 sticky-lg-top h-100" style="top: 24px;">
+      {% if not after_meal %}
+      <nav class="nav flex-column">
+        <a class="nav-link" href="javascript:copy_tsv();"> Copy to Clipboard </a>
+        <a class="nav-link" href="{% url 'menu:shopper_tsv' menu.id %}"> Export TSV </a>
+      </nav>
+      {% endif %}
+    </div>
   </div>
 </div>
+<!--
+<div class="container">
+  <div class="row text-center d-flex justify-content-center">
+      <button type="button" class="btn btn-primary p-2 mb-2 col-lg-2" id="button-copy">
+        Copy to Clipboard
+      </button>
+  </div>
+</div> -->
 {% endblock %}

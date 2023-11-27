@@ -34,6 +34,9 @@ class MealTime(Enum):
     BRUNCH = "BRU", "Brunch"
     LUNCH = "LUN", "Lunch"
     DINNER = "DIN", "Dinner"
+    BIRTHDAYS = "BIR", "Birthdays"
+    # Unlike the other meal times, birthday recipes DON'T get scaled
+    # according to the menu servings.
 
     def __new__(cls, value, description=None):
         entry = object.__new__(cls)
@@ -69,6 +72,7 @@ class MealDayTime(models.Model):
             When(meal_time="BRU", then=Value(1)),
             When(meal_time="LUN", then=Value(2)),
             When(meal_time="DIN", then=Value(3)),
+            When(meal_time="BIR", then=Value(4)),
             default=Value(100),
         ),
     )
@@ -130,6 +134,7 @@ class Meal(models.Model):
             When(meal_day_time__meal_time="BRU", then=Value(1)),
             When(meal_day_time__meal_time="LUN", then=Value(2)),
             When(meal_day_time__meal_time="DIN", then=Value(3)),
+            When(meal_day_time__meal_time="BIR", then=Value(4)),
             default=Value(100),
         ),
     )

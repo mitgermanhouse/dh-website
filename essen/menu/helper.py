@@ -7,7 +7,7 @@ from pint.quantity import Quantity
 from recipes.models import Ingredient
 from recipes.units import units
 
-from menu.models import Meal
+from menu.models import Meal, MealTime
 
 
 @dataclass
@@ -67,7 +67,9 @@ def combine_ingredients(meals: List[Meal]) -> List[CombinedIngredients]:
     for meal in meals:
         servings = meal.menu.servings
         for recipe in meal.recipes.all():
-            recipe.scale_to(servings)
+            if meal.meal_day_time.meal_time != MealTime.BIRTHDAYS.value:
+                recipe.scale_to(servings)
+
             # Set associated_meal variable for future reference in the template
             recipe.associated_meal = meal
 
