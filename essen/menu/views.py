@@ -255,8 +255,11 @@ class MealView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        scaled_recipes = [recipe for recipe in self.object.recipes.all()]
-        [recipe.scale_to(self.object.menu.servings) for recipe in scaled_recipes]
+        scaled_recipes = list(self.object.recipes.all())
+        if self.object.meal_day_time.meal_time != MealTime.BIRTHDAYS.value:
+            for recipe in scaled_recipes:
+                recipe.scale_to(self.object.menu.servings)
+
         context["scaled_recipes"] = scaled_recipes
         context["members"] = (
             Member.objects.filter(user__is_active=True)

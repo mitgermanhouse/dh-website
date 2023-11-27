@@ -18,7 +18,9 @@
 <div class="container pt-5 pb-3">
   <div class="row text-center">
     <h1> {{ meal.name }} </h1>
+    {% if meal.meal_day_time.meal_time != "BIR" %}
     <h4 class="text-muted"> Serves: {{ meal.menu.servings }} </h4>
+    {% endif %}
   </div>
 </div>
 
