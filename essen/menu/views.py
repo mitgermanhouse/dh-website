@@ -1,4 +1,5 @@
 import collections
+import csv
 from datetime import datetime, timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -6,9 +7,10 @@ from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import HttpResponse, get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView, TemplateView, View
+from django.views.generic.detail import SingleObjectMixin
 from home.models import Member
 from pytz import timezone
 from recipes.models import Recipe
@@ -315,6 +317,32 @@ class ShopperView(DetailView):
         context["ingredients"] = combine_ingredients(meal_set)
 
         return context
+
+
+class ShopperTSV(View, SingleObjectMixin):
+    model = Menu
+    context_object_name = "menu"
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type="text/tab-separated-values")
+
+        # Compute Ingredients
+        menu = self.get_object()
+        meal_set = (
+            menu.meal_set.order_by(*Meal.meal_order)
+            .prefetch_related("recipes")
+            .prefetch_related("recipes__ingredient_set")
+            .select_related("meal_day_time")
+        )
+
+        ingredients = combine_ingredients(meal_set)
+
+        # Write
+        csv_writer = csv.writer(response, dialect="excel-tab")
+        for ingredient in ingredients:
+            csv_writer.writerow((ingredient.quantities_str, ingredient.name))
+
+        return response
 
 
 class ReviewsView(PermissionRequiredMixin, TemplateView):
