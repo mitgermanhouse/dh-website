@@ -1,6 +1,6 @@
-from adminsortable.admin import SortableAdmin
 from django.contrib import admin
 
+from essen.helper import compress_image_upload
 from home.models import DietaryRestriction, GalleryContent, Member, Plushie
 
 
@@ -24,8 +24,11 @@ class MemberAdmin(admin.ModelAdmin):
 
 
 @admin.register(GalleryContent)
-class GalleryContentAdmin(SortableAdmin):
-    pass
+class GalleryContentAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        # Handle image compression
+        obj.image = compress_image_upload(obj.image, max_width=4000, max_height=4000)
+        super().save_model(request, obj, form, change)
 
 
 admin.site.register(DietaryRestriction)
