@@ -3,6 +3,7 @@ from crispy_forms.layout import Column, Div, Field, Hidden, Layout, Row, Submit
 from django import forms
 from menu.models import MealDayTime
 
+from essen.helper import compress_image_upload
 from home.models import Member, Plushie
 
 
@@ -43,6 +44,10 @@ class MemberImageForm(forms.ModelForm):
 
         self.helper = FormHelper()
         self.helper.form_id = "image_form"
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        return compress_image_upload(image)
 
 
 class MemberDiningForm(forms.ModelForm):
@@ -134,3 +139,7 @@ class PlushieForm(forms.ModelForm):
             self.helper.form_id = f"plushie_edit_{instance.id}"
         else:
             self.helper.form_id = "plushie_create"
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        return compress_image_upload(image)

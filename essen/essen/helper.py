@@ -1,5 +1,9 @@
 import re
+from io import BytesIO
 from urllib.parse import urlparse
+
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from PIL import Image, ImageCms
 
 
 class reify:
@@ -64,3 +68,42 @@ def replace_url_with_link(text, link_template='<a href="{}">{}</a>'):
         return link_template.format(url, match)
 
     return re.sub(URL_REGEX, replace, text)
+
+
+def compress_image_upload(image, max_width=2000, max_height=2000):
+    if not image:
+        return image
+
+    # Convert to JPEG
+    img = Image.open(image)
+    if img.format != "JPEG":
+        img = img.convert("RGB")
+
+    # Convert Color Space to sRGB
+    if icc := img.info.get("icc_profile", ""):
+        io_handle = BytesIO(icc)
+        src_profile = ImageCms.ImageCmsProfile(io_handle)
+        dst_profile = ImageCms.createProfile("sRGB")
+        ImageCms.profileToProfile(img, src_profile, dst_profile, inPlace=True)
+        img.info["icc_profile"] = dst_profile
+
+    # Downscale if needed
+    if img.width > max_width or img.height > max_height:
+        img.thumbnail((max_width, max_height), Image.ANTIALIAS)
+
+    # Compress
+    params = {"format": "JPEG", "quality": 85}
+
+    output = BytesIO()
+    img.save(output, **params)
+    output.seek(0)
+
+    # Replace the image with the compressed version
+    return InMemoryUploadedFile(
+        output,
+        "ImageField",
+        f"{image.name.split('.')[0]}.jpg",
+        "image/jpeg",
+        output.getbuffer().nbytes,
+        None,
+    )
