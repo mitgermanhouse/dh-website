@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "faqs.apps.FaqsConfig",
     "recipes.apps.RecipesConfig",
     "menu.apps.MenuConfig",
+    "alumni.apps.AlumniConfig",
     "admin_interface",
     "colorfield",
     "django.contrib.admin",

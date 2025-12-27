@@ -15,6 +15,7 @@ urlpatterns = [
     path("faqs/", include("faqs.urls")),
     path("recipes/", include("recipes.urls")),
     path("menu/", include("menu.urls")),
+    path("alumni/", include("alumni.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("home/", include("home.urls")),

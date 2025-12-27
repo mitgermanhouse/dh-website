@@ -11,6 +11,7 @@ django-widget-tweaks==1.4.12
 easy-thumbnails==2.8.1
 flup==1.0.3
 crispy-bootstrap5==0.6
+openpyxl==3.1.5
 Pint==0.18
 psycopg2-binary==2.9.3
 pytz==2022.1
