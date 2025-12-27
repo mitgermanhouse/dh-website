@@ -1,0 +1,24 @@
+{% extends 'essen/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Alumni</h1>
+
+    {% for year, alumni_list in alumni_by_year %}
+    <div class="mb-5">
+        <h2 class="border-bottom pb-2">Class of {{ year }}</h2>
+        <div class="row mt-3">
+            {% for alum in alumni_list %}
+            <div class="col-md-4 mb-2">
+                {% if alum.url %}
+                <a href="{{ alum.url }}" target="_blank">{{ alum.first_name }} {{ alum.last_name }}</a>
+                {% else %}
+                {{ alum.first_name }} {{ alum.last_name }}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
