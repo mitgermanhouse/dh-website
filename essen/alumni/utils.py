@@ -34,25 +34,29 @@ def import_alumni_from_xlsx(file_obj, stdout=None):
         
         for row in rows:
             # Ensure row has enough columns
-            if not row or len(row) < 3:
+            if not row or len(row) < 5:
                 continue
             
             first_name = str(row[0]).strip() if row[0] else ""
             last_name = str(row[1]).strip() if row[1] else ""
             kerb = str(row[2]).strip() if row[2] else ""
+            url = str(row[4]).strip() if row[4] else ""
             
             # Some rows might be empty or just comments
             if not first_name or not last_name:
                 continue
 
             # Create or update
+            defaults = {
+                'kerb': kerb,
+                'year': year,
+                'url': url,
+            }
+
             Alumnus.objects.update_or_create(
                 first_name=first_name,
                 last_name=last_name,
-                defaults={
-                    'kerb': kerb,
-                    'year': year
-                }
+                defaults=defaults
             )
             count += 1
             
