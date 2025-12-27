@@ -1,10 +1,11 @@
 import collections
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import BadRequest
 from django.db import transaction
+from django.db.models import Q
 from django.db.models.functions import Lower
 from django.http import HttpResponseRedirect
 from django.shortcuts import HttpResponse, get_object_or_404
@@ -63,6 +64,45 @@ class IndexView(TemplateView):
 
         return context
 
+
+class LatestMealRedirectView(View):
+    def get(self, request, *args, **kwargs):
+        suffix = (kwargs.get("suffix") or "").strip("/")
+        now = datetime.now(timezone("EST"))
+        today = now.date()
+        now_time = now.time()
+
+        cutoff_by_meal = {
+            "BRK": time(8, 0),
+            "BRU": time(12, 0),
+            "LUN": time(12, 0),
+            "DIN": time(19, 0),
+        }
+
+        eligible = Q(date__lt=today)
+        for code, cutoff in cutoff_by_meal.items():
+            if now_time >= cutoff:
+                print(f"Eligible for {code}")
+                eligible |= Q(date=today, meal_day_time__meal_time=code)
+
+        target = (
+            Meal.objects.filter(eligible)
+            .select_related("meal_day_time")
+            .order_by(*Meal.meal_order)
+            .last()
+        )
+
+        if target is None:
+            return HttpResponseRedirect(reverse("menu:index"))
+
+        base = reverse("menu:display_meal", args=[target.pk])
+        if suffix:
+            base = f"{base}{suffix}/"
+        if request.META.get("QUERY_STRING"):
+            base = f"{base}?{request.META['QUERY_STRING']}"
+        return HttpResponseRedirect(base)
+
+ 
 
 class MenuEditView(PermissionRequiredMixin, DetailView):
     template_name = "menu/edit_menu.html"

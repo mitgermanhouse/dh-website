@@ -42,13 +42,16 @@
       {% for meal in sorted_meals %}
         <div class="col">
           <div class="card shadow">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
               <h3 class="my-2">
                 <a {% if not meal.today %} class="link-secondary" {% endif %}
                    href="{% url 'menu:display_meal' meal.meal.id %}">
                    {{ meal.meal }}
                 </a>
               </h3>
+              <a href="{% url 'menu:rate_meal' meal.meal.id %}">
+                Rate
+              </a>
             </div>
 
             <div class="card-body">
