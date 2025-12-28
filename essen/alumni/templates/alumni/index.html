@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Alumni</h1>
-
+    <a href="{{ form_url }}" class="btn btn-primary" target="_blank">Alumni, submit your information here!</a>
     {% for year, alumni_list in alumni_by_year %}
     <div class="mb-5">
         <h2 class="border-bottom pb-2">Class of {{ year }}</h2>
