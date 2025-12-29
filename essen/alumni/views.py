@@ -17,6 +17,6 @@ def index(request):
     
     context = {
         'alumni_by_year': [(year, alumni_by_year[year]) for year in years],
-        'form_url': settings.ALUMNI_FORM_URL
+        'form_url': settings.EXTERNAL_CONTENT.ALUMNI_FORM_URL
     }
     return render(request, 'alumni/index.html', context)
