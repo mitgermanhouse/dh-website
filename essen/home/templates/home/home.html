@@ -11,6 +11,8 @@
 {% endblock %}
 
 {% block script %}
+  <script type="module" src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.js"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.css" />
   <script type="module" src="https://cdn.jsdelivr.net/npm/@slightlyoff/lite-vimeo@0.1.2/lite-vimeo.min.js"></script>
 {% endblock %}
 
@@ -176,75 +178,24 @@
     <h1>i3 Videos</h1>
   </div>
 
-  <div class="row row-cols-1 row-cols-lg-3 g-4 justify-content-center">
+ <div class="row row-cols-1 row-cols-lg-3 g-4 justify-content-center">
+  {% for year, video in I3_VIDEOS.items %}
     <div class="col">
       <div class="card video-card shadow h-100 bg-body">
         <div class="card-img-top">
-          <lite-vimeo videoid="851610025" autoload></lite-vimeo>
+          {% if video.source == "Vimeo" %}
+          <lite-vimeo videoid="{{ video.url }}" autoload></lite-vimeo>
+          {% elif video.source == "YouTube" %}
+          <lite-youtube videoid="{{ video.url }}" autoload></lite-youtube>
+          {% endif %}
         </div>
         <div class="card-body">
-          <h5>2023</h5>
+          <h5>{{ year }}</h5>
         </div>
       </div>
     </div>
-
-    <div class="col">
-      <div class="card video-card shadow h-100 bg-body">
-        <div class="card-img-top">
-          <lite-vimeo videoid="731080849" autoload></lite-vimeo>
-        </div>
-        <div class="card-body">
-          <h5>2022</h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card video-card shadow h-100 bg-body">
-        <div class="card-img-top">
-          <lite-vimeo videoid="714593489" autoload></lite-vimeo>
-        </div>
-        <div class="card-body">
-          <h5>2022 House Tour</h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card video-card shadow h-100 bg-body">
-        <div class="card-img-top">
-          <lite-vimeo videoid="562801172" autoload></lite-vimeo>
-        </div>
-        <div class="card-body">
-          <h5>2021</h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card video-card shadow h-100 bg-body">
-        <div class="card-img-top">
-          <lite-vimeo videoid="417246220" autoload></lite-vimeo>
-        </div>
-        <div class="card-body">
-          <h5>2020</h5>
-        </div>
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="card video-card shadow h-100 bg-body">
-        <div class="card-img-top">
-          <lite-vimeo videoid="333324282" autoload></lite-vimeo>
-        </div>
-        <div class="card-body">
-          <h5>2019</h5>
-        </div>
-      </div>
-    </div>
-  </div>
+  {% endfor %}
 </div>
-
 <!-- Contact -->
 <div class="container py-5" id="contact">
   <div class="row pb-3 text-center">
