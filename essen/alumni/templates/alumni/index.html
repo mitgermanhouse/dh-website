@@ -3,7 +3,12 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4">Alumni</h1>
-
+    <div>
+        <p class="mb-2">Welcome to the DH Alumni page! Here, you can find information about our distinguished alumni!</p>
+        <p> Once a German House resident, always part of the family. Help us keep our directory up-to-date by submitting your info      
+            <a href="{{ form_url }}" target="_blank">here!</a>
+        </p>
+    </div>
     {% for year, alumni_list in alumni_by_year %}
     <div class="mb-5">
         <h2 class="border-bottom pb-2">Class of {{ year }}</h2>

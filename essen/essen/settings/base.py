@@ -139,3 +139,5 @@ MESSAGE_TAGS = {
     messages.WARNING: "alert-warning",
     messages.ERROR: "alert-danger",
 }
+
+ALUMNI_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfEGCG-j4cafu4-mMhyeebDZFl9j_XJzzQNxnl18j_--ZraXA/viewform?usp=publish-editor"
