@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -33,6 +34,7 @@ class HomeView(TemplateView):
             .all()
         )
         context["galleryContent"] = GalleryContent.objects.all()
+        context["I3_VIDEOS"] = settings.EXTERNAL_CONTENT['I3_VIDEOS']
         return context
 
 

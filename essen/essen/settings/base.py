@@ -140,4 +140,27 @@ MESSAGE_TAGS = {
     messages.ERROR: "alert-danger",
 }
 
-ALUMNI_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfEGCG-j4cafu4-mMhyeebDZFl9j_XJzzQNxnl18j_--ZraXA/viewform?usp=publish-editor"
+
+#TODO: YC's comment - Putting the URL in the settings instead of hardcoding it in the HTML is a good idea. 
+#  This is ok, but I imagine we have a couple of other key-value pairs scattered in the HTML templates right now
+#  that could benefit from this organization, so perhaps it would be good to group this under a section, e.g. 
+# External content (such as i3 videos) or a dictionary. You could also add some way of updating these pairs in the CMS (overkill for this, but maybe good for i3 video).
+  
+# External Links
+EXTERNAL_CONTENT ={
+    'ALUMNI_FORM_URL': "https://docs.google.com/forms/d/e/1FAIpQLSfEGCG-j4cafu4-mMhyeebDZFl9j_XJzzQNxnl18j_--ZraXA/viewform?usp=publish-editor",
+    'I3_VIDEOS': { 2024: {"url": "TfJ4DCnrups",
+                          "source": "YouTube"},
+                   2023: {'url': "851610025",
+                          "source": "Vimeo"},
+                   2022: {'url': "731080849",
+                          "source": "Vimeo"},
+                   2021: {'url': "562801172",
+                          "source": "Vimeo"},
+                   2020: {'url': "417246220",
+                          "source": "Vimeo"},
+                   2019: {'url': "333324282",
+                          "source": "Vimeo"},
+    }
+}
+# ALUMNI_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfEGCG-j4cafu4-mMhyeebDZFl9j_XJzzQNxnl18j_--ZraXA/viewform?usp=publish-editor"
